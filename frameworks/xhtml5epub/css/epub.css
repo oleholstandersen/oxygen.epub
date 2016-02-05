@@ -1,0 +1,70 @@
+@import "xhtml.css";
+
+@namespace epub "http://www.idpf.org/2007/ops";
+
+body::before, section::before {
+    background-color: #BFB;
+    content: oxy_xpath("upper-case(name())") " | depth: "
+        oxy_xpath("count(ancestor::section|ancestor::body) + (if (matches(document-uri(/), '/concat.xhtml$')) then 0 else 1)")
+        " | @epub:type: " oxy_editor(type, text, edit, "@epub:type");
+    display: block;
+    font-size: small;
+    width: 100%;   
+}
+
+h1::before, h2::before, h3::before, h4::before, h5::before, h6::before {
+    color: #F00;
+    content: oxy_xpath("upper-case(name())") " ";
+    font-size: small;
+    font-weight: normal;
+    padding-right: .25em;
+}
+
+h6 {
+    font-size: 100%;
+}
+
+figure > img::before {
+    background-color: #FBB;
+    content: "@alt: " oxy_editor(type, text, edit, "@alt");
+    display: block;
+    font-size: small;
+    width: 100%;
+}
+
+p.bridgehead::before {
+    color: #F00;
+    content: "BRIDGEHEAD";
+    font-size: small;
+    font-weight: normal;
+    padding-right: .25em;
+}
+
+section {
+    margin: 1%;
+}
+
+span {
+    background-color: #BBF;
+}
+
+span[lang]::before {
+    content: "@lang: " oxy_editor(type, combo, edit, "@lang", values,
+        oxy_xpath("string-join(('da', 'en', 'se', 'fr', 'de', //@lang), ', ')"),
+        selectionMode, "single");
+    font-size: small;
+}
+
+table::before {
+    background-color: #CCC;
+    content: "@class: " oxy_editor(type, combo, edit, "@class", values,
+        "render_by_row, render_by_column", selectionMode, "single");
+    display: block;
+    font-size: small;
+    width: 100%;   
+}
+
+ol.list-style-type-none,
+ul.list-style-type-none {
+    list-style-type: none;
+}
