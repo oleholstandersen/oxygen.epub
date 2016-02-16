@@ -29,10 +29,10 @@ public class InsertImagesAction extends AbstractAction {
 	
 	public InsertImagesAction() {
 		super("Insert images");
-		putValue(Action.SMALL_ICON, new ImageIcon(getClass().getResource(
-				"/images/Image16.gif")));
 		putValue(Action.LARGE_ICON_KEY, new ImageIcon(getClass().getResource(
 				"/images/Image20.png")));
+		putValue(Action.SMALL_ICON, new ImageIcon(getClass().getResource(
+				"/images/Image16.gif")));
 	}
 
 	@Override
@@ -42,6 +42,7 @@ public class InsertImagesAction extends AbstractAction {
 		File[] imageFiles = editorAccess.getWorkspace().chooseFiles(null,
 				"Insert", new String[] { "gif", "jpg", "jpeg", "png" },
 				"Image files");
+		if (imageFiles == null) return;
 		HashMap<String,String> fileTypes = new HashMap<String,String>();
 		try {
 			for (File file : imageFiles) {
@@ -52,7 +53,7 @@ public class InsertImagesAction extends AbstractAction {
 			epubAccess.addItemsToEpub(fileTypes, "image", false);
 			String fragment = createFragment(imageFiles);
 			insertFragment(fragment, editorAccess);
-		} catch (IOException | SaxonApiException | AuthorOperationException |
+		} catch (AuthorOperationException | IOException | SaxonApiException |
 				TextOperationException e) {
 			editorAccess.showErrorMessage(e.toString());
 		}

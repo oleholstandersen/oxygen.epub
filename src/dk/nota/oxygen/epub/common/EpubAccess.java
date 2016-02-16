@@ -2,20 +2,21 @@ package dk.nota.oxygen.epub.common;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.util.LinkedList;
 import java.util.Map;
 
 import javax.xml.transform.ErrorListener;
 
+import de.schlichtherle.io.DefaultArchiveDetector;
 import de.schlichtherle.io.File;
 import dk.nota.oxygen.xml.XmlAccess;
 import net.sf.saxon.s9api.MessageListener;
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmAtomicValue;
+import net.sf.saxon.s9api.XdmDestination;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmValue;
@@ -55,22 +56,24 @@ public class EpubAccess {
 	}
 	
 	public void backupArchive() throws IOException {
-		Files.copy(getArchiveFile().toPath(), new File(archiveFileUrl.getPath()
-				+ ".bak").toPath(), StandardCopyOption.REPLACE_EXISTING);
-	}
-	
-	public void copyFileToArchive(java.io.File file, String relativeFolder) {
 		File archiveFile = getArchiveFile();
-		File zipFile = new File(archiveFile, relativeFolder + file.getName());
-		zipFile.archiveCopyFrom(file);
+		archiveFile.copyTo(new File(archiveFile.getPath() + ".bak"));
 	}
 	
-	public void copyFileToContentFolder(java.io.File file) {
-		copyFileToArchive(file, "EPUB/");
+	public boolean copyFileToArchive(java.io.File file, String relativePath)
+			throws IOException {
+		File zipFile = new EpubArchiveDetector().createFile(getArchiveFile()
+				.getPath() + "/" + relativePath + file.getName());
+		return zipFile.archiveCopyFrom(file);
 	}
 	
-	public void copyFileToImageFolder(java.io.File file) {
-		copyFileToArchive(file, "EPUB/images/");
+	public boolean copyFileToContentFolder(java.io.File file)
+			throws IOException {
+		return copyFileToArchive(file, "EPUB/");
+	}
+	
+	public boolean copyFileToImageFolder(java.io.File file) throws IOException {
+		return copyFileToArchive(file, "EPUB/images/");
 	}
 	
 	private void determineUrls(URL editorUrl)
@@ -91,16 +94,28 @@ public class EpubAccess {
 		contentFolderUrl = new URL(opfUrl, "./");
 	}
 	
-	public void doNavigationUpdate(MessageListener messageListener) {
-		
-	}
-	
-	public File getArchiveFile() {
-		return new File(archiveFileUrl.getPath());
+	public File getArchiveFile() throws IOException {
+		try {
+			return new File(archiveFileUrl.toURI());
+		} catch (URISyntaxException e) {
+			throw new IOException(e.toString());
+		}
 	}
 	
 	public URL getArchiveUrlInternal() {
 		return archiveContentUrl;
+	}
+	
+	public XdmNode getConcatDocument() throws SaxonApiException {
+		XsltTransformer concatTransformer = getConcatTransformer();
+		concatTransformer.setDestination(new XdmDestination());
+		concatTransformer.setParameter(new QName("UPDATE_OPF"),
+				new XdmAtomicValue(false));
+		concatTransformer.transform();
+		XdmNode concatResult = (((XdmDestination)concatTransformer
+				.getDestination()).getXdmNode());
+		return xmlAccess.getFirstNodeByXpath(concatResult,
+				"/nota:documents/nota:document/xhtml:html");
 	}
 	
 	public XsltTransformer getConcatTransformer() throws SaxonApiException {
@@ -199,6 +214,15 @@ public class EpubAccess {
 	public URL makeArchiveBasedUrl(String relativePath)
 			throws MalformedURLException {
 		return new URL(archiveContentUrl, relativePath);
+	}
+	
+	public class EpubArchiveDetector extends DefaultArchiveDetector {
+
+		public EpubArchiveDetector() {
+			super(DefaultArchiveDetector.ALL, "epub", DefaultArchiveDetector.ALL
+					.getArchiveDriver(".jar"));
+		}
+		
 	}
 	
 }

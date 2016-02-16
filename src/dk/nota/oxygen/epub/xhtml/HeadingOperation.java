@@ -2,7 +2,6 @@ package dk.nota.oxygen.epub.xhtml;
 
 import javax.swing.text.BadLocationException;
 
-import dk.nota.oxygen.epub.common.EpubAuthorOperation;
 import ro.sync.ecss.extensions.api.ArgumentDescriptor;
 import ro.sync.ecss.extensions.api.ArgumentsMap;
 import ro.sync.ecss.extensions.api.AuthorOperationException;
@@ -10,7 +9,7 @@ import ro.sync.ecss.extensions.api.node.AuthorDocumentFragment;
 import ro.sync.ecss.extensions.api.node.AuthorElement;
 import ro.sync.ecss.extensions.api.node.AuthorNode;
 
-public class HeadingOperation extends EpubAuthorOperation {
+public class HeadingOperation extends XhtmlEpubAuthorOperation {
 	
 	private boolean dissolve;
 	private int newDepth;
@@ -30,7 +29,7 @@ public class HeadingOperation extends EpubAuthorOperation {
 		if (section.getName().equals("body")) return;
 		AuthorElement precedingSection = getFirstElementByXpath(
 				"preceding-sibling::*[1]/self::section", section);
-		normaliseToDepth(section, precedingSection == null ? --depth : depth);
+		normaliseToDepth(section, --depth);
 		if (precedingSection == null) dissolveElement(section);
 		else {
 			AuthorDocumentFragment sectionContent = getDocumentController().
@@ -47,8 +46,11 @@ public class HeadingOperation extends EpubAuthorOperation {
 		try {
 			AuthorElement heading = getFirstElementByXpath(
 					"ancestor-or-self::*[parent::body or parent::section][1]");
-			getDocumentController().renameElement(heading, dissolve ? "p" :
-					"h" + newDepth);
+			if (dissolve) getDocumentController().renameElement(heading, "p");
+			else {
+				stripElements(heading, "em", "strong");
+				getDocumentController().renameElement(heading, "h" + newDepth);
+			}
 			AuthorElement[] ancestorSections = getElementsByXpath(
 					"ancestor::body|ancestor::section", heading);
 			int depth = ancestorSections.length;

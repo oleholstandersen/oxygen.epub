@@ -1,4 +1,4 @@
-package dk.nota.oxygen.epub.common;
+package dk.nota.oxygen.epub.xhtml;
 
 import javax.swing.text.BadLocationException;
 
@@ -7,7 +7,7 @@ import ro.sync.ecss.extensions.api.AuthorOperationException;
 import ro.sync.ecss.extensions.api.node.AttrValue;
 import ro.sync.ecss.extensions.api.node.AuthorElement;
 
-public abstract class EpubAuthorOperation extends AbstractAuthorOperation {
+public abstract class XhtmlEpubAuthorOperation extends AbstractAuthorOperation {
 	
 	public boolean editingConcatDocument() {
 		return getAuthorEditor().getEditorLocation().toString().endsWith(

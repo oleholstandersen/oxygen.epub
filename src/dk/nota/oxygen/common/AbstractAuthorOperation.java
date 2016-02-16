@@ -233,6 +233,21 @@ public abstract class AbstractAuthorOperation implements AuthorOperation {
 			getDocumentController().insertFragment(start, fragmentBefore);
 	}
 	
+	public void stripElements(AuthorElement element, String... elementNames)
+			throws AuthorOperationException, BadLocationException {
+		for (AuthorElement childElement : getElementsByXpath("*", element)) {
+			boolean matches = false;
+			for (String elementName : elementNames) {
+				if (childElement.getName().equals(elementName)) {
+					matches = true;
+					break;
+				}
+			}
+			stripElements(childElement, elementNames);
+			if (matches) dissolveElement(childElement);
+		}
+	}
+	
 	public void wrapInFragment(String fragment, int start, int end)
 			throws AuthorOperationException {
 		getDocumentController().surroundInFragment(fragment, start, end);

@@ -58,7 +58,7 @@ span[lang]::before {
 table::before {
     background-color: #CCC;
     content: "@class: " oxy_editor(type, combo, edit, "@class", values,
-        "render_by_row, render_by_column", selectionMode, "single");
+        "render_by_row, render_by_column, render_by_both", selectionMode, "single");
     display: block;
     font-size: small;
     width: 100%;   

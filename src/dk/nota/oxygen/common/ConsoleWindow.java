@@ -38,6 +38,8 @@ public class ConsoleWindow extends JFrame {
 		contextMenu = new PopupMenu();
 		Action copyAction = new DefaultEditorKit.CopyAction();
 		copyAction.putValue(Action.NAME, "Copy");
+		copyAction.putValue(Action.LARGE_ICON_KEY, new ImageIcon(getClass()
+				.getResource("/images/Copy20.png")));
 		copyAction.putValue(Action.SMALL_ICON, new ImageIcon(getClass()
 				.getResource("/images/Copy16.gif")));
 		contextMenu.add(copyAction);

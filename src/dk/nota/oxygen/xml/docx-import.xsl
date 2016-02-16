@@ -16,8 +16,8 @@
     exclude-result-prefixes="a dc epub nota opf pic r rel w wp xhtml xs"
     version="2.0">
     <xsl:output method="xml" indent="yes"/>
-    <xsl:param name="WORD_FOLDER_URLS" as="xs:string*"/>
     <xsl:param name="SPLIT_DOCUMENTS" as="xs:boolean" select="false()"/>
+    <xsl:param name="WORD_FOLDER_URLS" as="xs:string*"/>
     <xsl:variable name="OPF_LANGUAGE" as="xs:string*"
         select="/opf:package/opf:metadata/dc:language/text()"/>
     <xsl:variable name="OPF_PID" as="xs:string*"
@@ -293,7 +293,7 @@
     <xsl:template mode="SECOND_PASS" match="xhtml:body">
         <xsl:apply-templates mode="SECOND_PASS"
             select="@*|xhtml:p[not(preceding-sibling::nota:hd)]|
-                    nota:hd[@depth = 1]"/>
+                    nota:hd"/>
     </xsl:template>
     <xsl:template mode="SECOND_PASS" match="xhtml:em">
         <xsl:copy>
@@ -304,7 +304,7 @@
     </xsl:template>
     <xsl:template mode="SECOND_PASS"
         match="xhtml:em[preceding-sibling::node()[1]/self::xhtml:em]"/>
-    <xsl:template mode="SECOND_PASS" match="nota:hd">
+    <xsl:template mode="SECOND_PASS NEST_SECTIONS" match="nota:hd">
         <xsl:variable name="depth" as="xs:integer"
             select="xs:integer(@depth)"/>
         <section>
@@ -313,13 +313,17 @@
                     select="@*|node()"/>
             </xsl:element>
             <xsl:apply-templates mode="SECOND_PASS"
-                select="following-sibling::* except following-sibling::nota:hd
-                        [1]/(self::nota:hd|following-sibling::*)|
-                        following-sibling::nota:hd except
+                select="following-sibling::* except
+                        following-sibling::nota:hd[1]/
+                        (self::nota:hd|following-sibling::*)"/>
+            <xsl:apply-templates mode="NEST_SECTIONS"
+                select="following-sibling::nota:hd[@depth - $depth = 1] except
                         following-sibling::nota:hd[@depth &lt;= $depth][1]/
-                        (self::nota:hd|following-sibling::nota:hd)"/>
+                        (self::nota:hd|following-sibling::*)"/>
         </section>
     </xsl:template>
+    <xsl:template mode="SECOND_PASS"
+        match="nota:hd[@depth &gt; preceding-sibling::nota:hd/@depth]"/>
     <xsl:template mode="SECOND_PASS" match="nota:hd/@depth"/>
     <xsl:template mode="SECOND_PASS THIRD_PASS" match="xhtml:li">
         <xsl:variable name="listElementName" as="xs:string"

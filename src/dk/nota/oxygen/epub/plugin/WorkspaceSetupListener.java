@@ -43,9 +43,9 @@ public class WorkspaceSetupListener extends WSEditorChangeListener {
 			String documentType = editor.getDocumentTypeInformation().getName();
 			if (documentType.equals("XHTML [EPUB 3]"))
 				setupXhtmlWorkspace(editor);
-			else if (documentType.equals("OPF 3.0 [Nota]"))
+			else if (documentType.equals("OPF"))
 				setupOPFWorkspace(editor);
-			else if (documentType.equals("NCX [Nota]"))
+			else if (documentType.equals("NCX"))
 				setupNavWorkspace(editor);
 			else setupOtherWorkspace();
 		}
@@ -60,7 +60,7 @@ public class WorkspaceSetupListener extends WSEditorChangeListener {
 			pluginWorkspace.hideToolbar(EpubPluginExtension.XHTML_TOOLBAR);
 		}
 		
-		private boolean setupEditorAndEpubAccess(WSEditor editor) {
+		private boolean setupEpubAccess(WSEditor editor) {
 			try {
 				epubAccess = new EpubAccess(editor);
 				return true;
@@ -71,13 +71,13 @@ public class WorkspaceSetupListener extends WSEditorChangeListener {
 		
 		private void setupNavWorkspace(WSEditor editor) {
 			hideAllEpubToolbars();
-			if (setupEditorAndEpubAccess(editor))
+			if (setupEpubAccess(editor))
 				pluginWorkspace.showToolbar(EpubPluginExtension.NAV_TOOLBAR);
 		}
 		
 		private void setupOPFWorkspace(WSEditor editor) {
 			hideAllEpubToolbars();
-			if (setupEditorAndEpubAccess(editor))
+			if (setupEpubAccess(editor))
 				pluginWorkspace.showToolbar(EpubPluginExtension.OPF_TOOLBAR);
 		}
 		
@@ -87,7 +87,7 @@ public class WorkspaceSetupListener extends WSEditorChangeListener {
 		
 		private void setupXhtmlWorkspace(WSEditor editor) {
 			hideAllEpubToolbars();
-			if (setupEditorAndEpubAccess(editor)) {
+			if (setupEpubAccess(editor)) {
 				if (editor.getEditorLocation().toString().endsWith("/nav.xhtml"))
 					pluginWorkspace.showToolbar(EpubPluginExtension.NAV_TOOLBAR);
 				else pluginWorkspace.showToolbar(EpubPluginExtension.XHTML_TOOLBAR);

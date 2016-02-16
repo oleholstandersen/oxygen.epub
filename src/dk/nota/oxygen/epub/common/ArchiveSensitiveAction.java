@@ -29,7 +29,8 @@ public abstract class ArchiveSensitiveAction extends AbstractAction {
 		try {
 			editorAccess.getEpubAccess().backupArchive();
 		} catch (IOException e) {
-			editorAccess.showErrorMessage("Unable to back up archive");
+			editorAccess.showErrorMessage("Unable to back up archive: " +
+					e.toString());
 			return;
 		}
 		actionPerformed(editorAccess);

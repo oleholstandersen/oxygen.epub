@@ -13,6 +13,7 @@
     <xsl:strip-space elements="opf:*"/>
     <xsl:param name="CONTENT_FOLDER_URL" as="xs:string"
         select="replace(document-uri(/), '/[^/]*$', '/')"/>
+    <xsl:param name="UPDATE_OPF" as="xs:boolean" select="true()"/>
     <xsl:variable name="PID" as="xs:string*"
         select="/opf:package/opf:metadata/dc:identifier/text()"/>
     <xsl:variable name="LANGUAGE" as="xs:string*"
@@ -35,7 +36,7 @@
                 <meta name="viewport" content="width=device-width"/>
                 <xsl:for-each
                     select="/opf:package/opf:manifest/opf:item
-                    [@media-type eq 'text/css']">
+                            [@media-type eq 'text/css']">
                     <link rel="stylesheet" type="text/css" href="{@href}"/>
                 </xsl:for-each>
             </head>
@@ -62,9 +63,7 @@
             </xsl:if>
             <xsl:variable name="reference" as="xs:string*"
                 select="$item/@href"/>
-            <xsl:variable name="isXhtmlDocument" as="xs:boolean"
-                select="$item/@media-type = 'application/xhtml+xml'"/>
-            <xsl:if test="$isXhtmlDocument">
+            <xsl:if test="$item/@media-type = 'application/xhtml+xml'">
                 <xsl:variable name="documentUrl" as="xs:string"
                     select="concat($CONTENT_FOLDER_URL, $reference)"/>
                 <xsl:apply-templates mode="XHTML_FIRST_PASS"
@@ -98,26 +97,18 @@
         <xsl:message>
             <nota:out>CONCATENATING CONTENT DOCUMENTS...</nota:out>
         </xsl:message>
-        <xsl:choose>
-            <xsl:when
-                test="document(concat($CONTENT_FOLDER_URL, 'concat.xhtml'))">
-                <xsl:message terminate="yes">
-                    <nota:out>ERROR: concat.xhtml already exists</nota:out>
-                </xsl:message>
-            </xsl:when>
-            <xsl:otherwise>
-                <nota:documents>
-                    <nota:document
-                        url="{concat($CONTENT_FOLDER_URL, 'concat.xhtml')}">
-                        <xsl:call-template name="CONCAT_DOCUMENT"/>
-                    </nota:document>
-                    <nota:document
-                        url="{concat($CONTENT_FOLDER_URL, 'package.opf')}">
-                        <xsl:apply-templates mode="OPF"/>
-                    </nota:document>
-                </nota:documents>
-            </xsl:otherwise>
-        </xsl:choose>
+        <nota:documents>
+            <nota:document
+                url="{concat($CONTENT_FOLDER_URL, 'concat.xhtml')}">
+                <xsl:call-template name="CONCAT_DOCUMENT"/>
+            </nota:document>
+            <xsl:if test="$UPDATE_OPF">
+                <nota:document
+                    url="{concat($CONTENT_FOLDER_URL, 'package.opf')}">
+                    <xsl:apply-templates mode="OPF"/>
+                </nota:document>
+            </xsl:if>
+        </nota:documents>
     </xsl:template>
     <!-- XHTML first pass: Assign IDs and document names -->
     <xsl:template mode="XHTML_FIRST_PASS" match="xhtml:body">
@@ -142,15 +133,14 @@
     </xsl:template>
     <!-- XHTML second pass: Update references -->
     <xsl:template mode="XHTML_SECOND_PASS" match="xhtml:a">
-        <xsl:variable name="isInternalReference" as="xs:boolean"
-            select="if (not(contains(@href, ':'))) then true() else false()"/>
         <xsl:variable name="reference" as="xs:string"
-            select="if ($isInternalReference) then (
+            select="if (not(contains(@href, ':'))) then (
                     if (matches(@href, '#.+$'))
                     then concat('#', substring-after(@href, '#'))
                     else concat('#', ancestor::documents/xhtml:section
                         [matches(@originalDocumentName, current()/@href)]/@id)
-                    ) else @href"/>
+                    )
+                    else @href"/>
         <xsl:copy>
             <xsl:attribute name="href" select="$reference"/>
             <xsl:apply-templates mode="XHTML_SECOND_PASS"

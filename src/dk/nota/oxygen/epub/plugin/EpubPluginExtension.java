@@ -49,26 +49,18 @@ public class EpubPluginExtension implements WorkspaceAccessPluginExtension {
 	
 	private class EpubToolbarCustomizer implements ToolbarComponentsCustomizer {
 		
-		private JComponent[] navComponents;
-		private JComponent[] opfComponents;
-		private JComponent[] xhtmlComponents;
-		
-		public EpubToolbarCustomizer() {
-			navComponents = new JComponent[] {
-					new ToolbarButton(new UpdateNavigationAction(), true)
-			};
-			opfComponents = new JComponent[] {
-					new ToolbarButton(new ConcatAction(), true),
-					new ToolbarButton(new SplitAction(), true),
-					new ToolbarButton(new ImportDocxAction(true), true),
-					new ToolbarButton(new CreateDTBookAction(), true)
-			};
-			xhtmlComponents = new JComponent[] {
-					new ToolbarButton(new InsertImagesAction(), false),
-					new ToolbarButton(new UpdateNavigationAction(), true),
-					new ToolbarButton(new ImportDocxAction(false), true)
-			};			
-		}
+		private JComponent[] navComponents = new JComponent[] {
+				new ToolbarButton(new UpdateNavigationAction(), true)
+		};
+		private JComponent[] opfComponents = new JComponent[] {
+				new ToolbarButton(new ConcatAction(), true),
+				new ToolbarButton(new SplitAction(), true),
+				new ToolbarButton(new ImportDocxAction(true), true)
+		};
+		private JComponent[] xhtmlComponents = new JComponent[] {
+				new ToolbarButton(new UpdateNavigationAction(), true),
+				new ToolbarButton(new ImportDocxAction(false), true)
+		};
 
 		@Override
 		public void customizeToolbar(ToolbarInfo toolbar) {

@@ -14,9 +14,9 @@ public class ConcatAction extends ArchiveSensitiveAction {
 	
 	@Override
 	public void actionPerformed(EditorAccess editorAccess) {
+		EpubAccess epubAccess = editorAccess.getEpubAccess();
 		ConsoleListener messageListener =
 				new ConsoleListener(new ConsoleWindow("Concat"));
-		EpubAccess epubAccess = editorAccess.getEpubAccess();
 		ConcatWorker concatWorker = new ConcatWorker(epubAccess,
 				messageListener);
 		concatWorker.execute();

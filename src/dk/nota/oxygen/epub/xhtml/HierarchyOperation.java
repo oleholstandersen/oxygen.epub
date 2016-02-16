@@ -2,12 +2,11 @@ package dk.nota.oxygen.epub.xhtml;
 
 import javax.swing.text.BadLocationException;
 
-import dk.nota.oxygen.epub.common.EpubAuthorOperation;
 import ro.sync.ecss.extensions.api.ArgumentDescriptor;
 import ro.sync.ecss.extensions.api.ArgumentsMap;
 import ro.sync.ecss.extensions.api.AuthorOperationException;
 
-public class HierarchyOperation extends EpubAuthorOperation {
+public class HierarchyOperation extends XhtmlEpubAuthorOperation {
 
 	@Override
 	protected void doOperation() throws AuthorOperationException {

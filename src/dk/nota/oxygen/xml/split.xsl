@@ -11,6 +11,11 @@
     <xsl:output method="xml" indent="yes"/>
     <xsl:param name="CONTENT_FOLDER_URL" as="xs:string"
         select="replace(document-uri(/), '[^/]*$', '')"/>
+    <xsl:param name="ID_BASE" as="xs:string" select="'split'"/>
+    <xsl:param name="ID_COUNT" as="xs:integer"
+        select="/opf:package/opf:manifest/count(opf:item[matches(@id,
+                concat('^', $ID_BASE, '_\d+$'))])">
+    </xsl:param>
     <xsl:variable name="PID" as="xs:string"
         select="/opf:package/opf:metadata/dc:identifier/text()"/>
     <xsl:variable name="LANGUAGE" as="xs:string"
@@ -77,9 +82,6 @@
                 <nota:out>ERROR: Unable to process concat document</nota:out>
             </xsl:message>
         </xsl:if>
-        <xsl:message>
-            <nota:out>Processing concat document</nota:out>
-        </xsl:message>
         <nota:documents>
             <xsl:for-each
                 select="$CONCAT_DOCUMENT/xhtml:html/xhtml:body/xhtml:section">
@@ -143,7 +145,8 @@
                 select="$CONCAT_DOCUMENT/xhtml:html/xhtml:body/xhtml:section">
                 <xsl:variable name="documentName" as="xs:string"
                     select="nota:create-document-name(.)"/>
-                <xsl:variable name="id" as="xs:string" select="generate-id()"/>
+                <xsl:variable name="id" as="xs:string"
+                    select="concat($ID_BASE, '_', $ID_COUNT + position())"/>
                 <item xmlns="http://www.idpf.org/2007/opf"
                     href="{$documentName}"
                     id="{$id}"
@@ -156,7 +159,8 @@
             <xsl:apply-templates select="@*|node()"/>
             <xsl:for-each
                 select="$CONCAT_DOCUMENT/xhtml:html/xhtml:body/xhtml:section">
-                <xsl:variable name="id" as="xs:string" select="generate-id()"/>
+                <xsl:variable name="id" as="xs:string"
+                    select="concat($ID_BASE, '_', $ID_COUNT + position())"/>
                 <itemref xmlns="http://www.idpf.org/2007/opf"
                     idref="{$id}"/>
             </xsl:for-each>

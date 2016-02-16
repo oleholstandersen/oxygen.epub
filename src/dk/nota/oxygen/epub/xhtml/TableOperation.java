@@ -3,7 +3,6 @@ package dk.nota.oxygen.epub.xhtml;
 import java.util.LinkedList;
 import javax.swing.text.BadLocationException;
 
-import dk.nota.oxygen.epub.common.EpubAuthorOperation;
 import ro.sync.ecss.extensions.api.ArgumentDescriptor;
 import ro.sync.ecss.extensions.api.ArgumentsMap;
 import ro.sync.ecss.extensions.api.AuthorOperationException;
@@ -11,7 +10,7 @@ import ro.sync.ecss.extensions.api.node.AuthorDocumentFragment;
 import ro.sync.ecss.extensions.api.node.AuthorElement;
 import ro.sync.ecss.extensions.api.node.AuthorNode;
 
-public class TableOperation extends EpubAuthorOperation {
+public class TableOperation extends XhtmlEpubAuthorOperation {
 	
 	private String cellFragment = "<td xmlns='http://www.w3.org/1999/xhtml'/>";
 	private int columns;
@@ -64,15 +63,19 @@ public class TableOperation extends EpubAuthorOperation {
 			// Get selected paragraphs
 			LinkedList<AuthorElement> paragraphs =
 					new LinkedList<AuthorElement>();
-			for (AuthorNode node : getSelectedNodes()) paragraphs.add(
-					getFirstElementByXpath("ancestor-or-self::p", node));
+			for (AuthorNode node : getSelectedNodes()) {
+				AuthorElement paragraph = getFirstElementByXpath(
+						"ancestor-or-self::p", node);
+				if (paragraph != null && !paragraphs.contains(paragraph))
+					paragraphs.add(paragraph);
+			}
 			LinkedList<AuthorDocumentFragment> cellFragments =
 					new LinkedList<AuthorDocumentFragment>();
 			// Establish initial offset before deletion
 			int offset = paragraphs.getFirst().getStartOffset();
 			determineTableLayout(paragraphs.size());
 			// For each selected paragraph: convert to table cell, create
-			// document fragment from cell, delete cell
+			// document fragment, delete
 			for (AuthorElement paragraph : paragraphs) {
 				getDocumentController().renameElement(paragraph, "td");
 				cellFragments.addLast(getDocumentController()
@@ -80,8 +83,7 @@ public class TableOperation extends EpubAuthorOperation {
 				getDocumentController().deleteNode(paragraph);
 			}
 			// Insert an empty table and advance the offset to within the table
-			getDocumentController().insertXMLFragment(tableFragment,
-					offset++);
+			getDocumentController().insertXMLFragment(tableFragment, offset++);
 			for (int i = 1; i <= rows; i++) {
 				// Insert an empty row and advance the offset to within the row
 				getDocumentController().insertXMLFragment(rowFragment,

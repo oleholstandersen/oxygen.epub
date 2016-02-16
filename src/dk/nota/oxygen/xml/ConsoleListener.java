@@ -45,10 +45,8 @@ public class ConsoleListener implements ErrorListener, MessageListener {
 		XdmSequenceIterator messageIterator = message.axisIterator(Axis
 				.DESCENDANT_OR_SELF, new QName(XmlAccess.NOTA_NAMESPACE,
 						"out"));
-		while (messageIterator.hasNext()) {
-			XdmNode consoleNode = (XdmNode)messageIterator.next();
-			consoleWindow.writeToConsole(consoleNode.getStringValue());
-		}
+		while (messageIterator.hasNext()) consoleWindow.writeToConsole(
+				messageIterator.next().getStringValue());
 		handleMessage(message, terminate, sourceLocator);
 	}
 

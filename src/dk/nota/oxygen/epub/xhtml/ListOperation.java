@@ -4,14 +4,13 @@ import java.util.LinkedList;
 
 import javax.swing.text.BadLocationException;
 
-import dk.nota.oxygen.epub.common.EpubAuthorOperation;
 import ro.sync.ecss.extensions.api.ArgumentDescriptor;
 import ro.sync.ecss.extensions.api.ArgumentsMap;
 import ro.sync.ecss.extensions.api.AuthorOperationException;
 import ro.sync.ecss.extensions.api.node.AuthorElement;
 import ro.sync.ecss.extensions.api.node.AuthorNode;
 
-public class ListOperation extends EpubAuthorOperation {
+public class ListOperation extends XhtmlEpubAuthorOperation {
 	
 	private ListType listType;
 	
