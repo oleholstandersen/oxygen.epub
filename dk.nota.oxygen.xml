@@ -13,7 +13,7 @@
         <xt:license>Copyrighted by Nota and distributed under GNU LGPL Version 3</xt:license>
     </xt:extension>
     <xt:extension id="dk.nota.oxygen.epub.ncx">
-        <xt:location href="1.0.3/plugncx-1.0.3.zip"/>
+        <xt:location href="1.0.3/ncx-1.0.3.zip"/>
         <xt:version>1.0.3</xt:version>
         <xt:oxy_version>16.0+</xt:oxy_version>
         <xt:type>framework</xt:type>
