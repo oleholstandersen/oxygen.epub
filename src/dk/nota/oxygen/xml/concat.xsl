@@ -55,20 +55,20 @@
     <xsl:variable name="CONTENT_DOCUMENTS_FIRST_PASS" as="node()*">
         <xsl:for-each
             select="/opf:package/opf:spine/opf:itemref">
-            <xsl:variable name="item" as="node()*"
+            <xsl:variable name="item" as="node()?"
                 select="//opf:item[@id = current()/@idref]"/>
             <xsl:if test="not($item)">
                 <xsl:message terminate="yes">
                     <nota:out>
                         <xsl:value-of
                             select="concat('ERROR: Spine reference ',
-                            @idref, ' does not resolve')"/>
+                                    @idref, ' does not resolve')"/>
                     </nota:out>
                 </xsl:message>
             </xsl:if>
-            <xsl:variable name="reference" as="xs:string*"
+            <xsl:variable name="reference" as="xs:string?"
                 select="$item/@href"/>
-            <xsl:variable name="navigationDepth" as="xs:integer*"
+            <xsl:variable name="navigationDepth" as="xs:integer?"
                 select="($NAVIGATION_LIST//xhtml:a[matches(@href, concat('^',
                         $reference))])[1]/count(ancestor::xhtml:ol)"/>
             <xsl:if test="$item/@media-type = 'application/xhtml+xml'">
@@ -82,6 +82,11 @@
                     <xsl:with-param name="originalDocumentName" as="xs:string"
                         select="$reference"/>
                 </xsl:apply-templates>
+                <xsl:message>
+                    <nota:document>
+                        <xsl:value-of select="$reference"/>
+                    </nota:document>
+                </xsl:message>
             </xsl:if>
         </xsl:for-each>
     </xsl:variable>
