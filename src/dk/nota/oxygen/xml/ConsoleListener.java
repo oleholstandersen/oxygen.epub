@@ -27,7 +27,7 @@ public class ConsoleListener implements ErrorListener, MessageListener {
 	@Override
 	public void fatalError(TransformerException exception)
 			throws TransformerException {
-		consoleWindow.writeToConsole("ERROR: " + exception);
+		writeToConsole("ERROR: " + exception);
 	}
 	
 	public ConsoleWindow getConsoleWindow() {
@@ -45,14 +45,18 @@ public class ConsoleListener implements ErrorListener, MessageListener {
 		XdmSequenceIterator messageIterator = message.axisIterator(Axis
 				.DESCENDANT_OR_SELF, new QName(XmlAccess.NOTA_NAMESPACE,
 						"out"));
-		while (messageIterator.hasNext()) consoleWindow.writeToConsole(
-				messageIterator.next().getStringValue());
+		while (messageIterator.hasNext()) writeToConsole(messageIterator.next()
+				.getStringValue());
 		handleMessage(message, terminate, sourceLocator);
 	}
 
 	@Override
 	public void warning(TransformerException exception)
 			throws TransformerException {
+	}
+	
+	public void writeToConsole(String string) {
+		getConsoleWindow().writeToConsole(string);
 	}
 
 }

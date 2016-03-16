@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plugin SYSTEM "../plugin.dtd">
+<plugin id="dk.nota.oxygen.epub.plugin"
+    name="EPUB Plugin"
+    description="Various extensions to aid in the editing and creation of EPUB books"
+    version="1.0.0"
+    vendor="Nota"
+    class="dk.nota.oxygen.epub.plugin.EpubPlugin">
+    <runtime>
+        <library name="epub.jar"/>
+    </runtime>
+    <extension type="WorkspaceAccess" 
+        class="dk.nota.oxygen.epub.plugin.EpubPluginExtension"/>
+    <toolbar id="dk.nota.oxygen.epub.toolbar.nav" initialSide="NORTH" initialRow="8"/>
+    <toolbar id="dk.nota.oxygen.epub.toolbar.opf" initialSide="NORTH" initialRow="8"/>
+    <toolbar id="dk.nota.oxygen.epub.toolbar.xhtml" initialSide="NORTH" initialRow="8"/>
+</plugin>

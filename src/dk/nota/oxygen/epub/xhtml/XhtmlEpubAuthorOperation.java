@@ -14,18 +14,8 @@ public abstract class XhtmlEpubAuthorOperation extends AbstractAuthorOperation {
 				"concat.xhtml");
 	}
 	
-	public String getEpubType(AuthorElement element) {
-		if (!hasEpubType(element)) return null;
-		return element.getAttribute("epub:type").getValue();
-	}
-	
 	public boolean hasEpubType(AuthorElement element) {
 		return (element.getAttribute("epub:type") != null);
-	}
-	
-	public boolean hasEpubType(String epubType, AuthorElement element) {
-		if (!hasEpubType(element)) return false;
-		return getEpubType(element).equals(epubType);
 	}
 	
 	public void normaliseToDepth(AuthorElement element, int depth)

@@ -2,8 +2,11 @@ package dk.nota.oxygen.epub.opf;
 
 import javax.swing.SwingWorker;
 
+import dk.nota.oxygen.common.ConsoleWindow;
 import dk.nota.oxygen.epub.common.EpubAccess;
 import dk.nota.oxygen.xml.ConsoleListener;
+import net.sf.saxon.s9api.QName;
+import net.sf.saxon.s9api.XdmAtomicValue;
 import net.sf.saxon.s9api.XsltTransformer;
 
 public class ConcatWorker extends SwingWorker<Object,Object> {
@@ -11,16 +14,17 @@ public class ConcatWorker extends SwingWorker<Object,Object> {
 	private EpubAccess epubAccess;
 	private ConsoleListener messageListener;
 	
-	public ConcatWorker(EpubAccess epubAccess,
-			ConsoleListener messageListener) {
+	public ConcatWorker(EpubAccess epubAccess, ConsoleWindow consoleWindow) {
 		this.epubAccess = epubAccess;
-		this.messageListener = messageListener;
+		this.messageListener = new ConsoleListener(consoleWindow);
 	}
 
 	@Override
 	protected Object doInBackground() throws Exception {
 		XsltTransformer concatTransformer = epubAccess.getConcatTransformer(
 				messageListener, messageListener);
+		concatTransformer.setParameter(new QName("UPDATE_OPF"),
+				new XdmAtomicValue(true));
 		XsltTransformer outputTransformer = epubAccess.getOutputTransformer(
 				messageListener, messageListener);
 		concatTransformer.setDestination(outputTransformer);
@@ -30,7 +34,7 @@ public class ConcatWorker extends SwingWorker<Object,Object> {
 	
 	@Override
 	protected void done() {
-		messageListener.getConsoleWindow().writeToConsole("DONE");
+		messageListener.writeToConsole("DONE");
 	}
 
 }

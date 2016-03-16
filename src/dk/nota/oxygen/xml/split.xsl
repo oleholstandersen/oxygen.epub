@@ -123,11 +123,10 @@
             </xsl:message>
         </xsl:if>
         <xsl:variable name="referencedSection" as="node()*"
-            select="$referencedElement/ancestor::xhtml:section
+            select="$referencedElement/ancestor-or-self::xhtml:section
                     [position() = last()]"/>
         <xsl:variable name="referencedFile" as="xs:string"
-            select="if (ancestor::node() intersect $referencedSection)
-                    then ''
+            select="if (ancestor::node() intersect $referencedSection) then ''
                     else nota:create-document-name($referencedSection)"/>
         <xsl:copy>
             <xsl:attribute name="href"
@@ -162,7 +161,11 @@
                 <xsl:variable name="id" as="xs:string"
                     select="concat($ID_BASE, '_', $ID_COUNT + position())"/>
                 <itemref xmlns="http://www.idpf.org/2007/opf"
-                    idref="{$id}"/>
+                    idref="{$id}">
+                    <xsl:if test="nota:get-primary-type(@epub:type) eq 'cover'">
+                        <xsl:attribute name="linear" select="'no'"/>
+                    </xsl:if>
+                </itemref>
             </xsl:for-each>
         </xsl:copy>
     </xsl:template>

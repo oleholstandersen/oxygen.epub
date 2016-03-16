@@ -4,7 +4,6 @@ import dk.nota.oxygen.common.ConsoleWindow;
 import dk.nota.oxygen.common.EditorAccess;
 import dk.nota.oxygen.epub.common.ArchiveSensitiveAction;
 import dk.nota.oxygen.epub.common.EpubAccess;
-import dk.nota.oxygen.xml.ConsoleListener;
 
 public class ConcatAction extends ArchiveSensitiveAction {
 
@@ -15,10 +14,8 @@ public class ConcatAction extends ArchiveSensitiveAction {
 	@Override
 	public void actionPerformed(EditorAccess editorAccess) {
 		EpubAccess epubAccess = editorAccess.getEpubAccess();
-		ConsoleListener messageListener =
-				new ConsoleListener(new ConsoleWindow("Concat"));
 		ConcatWorker concatWorker = new ConcatWorker(epubAccess,
-				messageListener);
+				new ConsoleWindow("Concat"));
 		concatWorker.execute();
 	}
 

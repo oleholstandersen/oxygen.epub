@@ -185,6 +185,10 @@ public abstract class AbstractAuthorOperation implements AuthorOperation {
 		return false;
 	}
 	
+	public boolean hasClassAttribute(AuthorElement element) {
+		return (element.getAttribute("class") != null);
+	}
+	
 	public AuthorNode moveNodeToOffset(AuthorNode node, int offset)
 			throws BadLocationException {
 		AuthorDocumentFragment nodeFragment = getDocumentController()
@@ -198,8 +202,8 @@ public abstract class AbstractAuthorOperation implements AuthorOperation {
 			throws IllegalArgumentException;
 	
 	public void setClass(AuthorElement element, String classValue) {
-		getDocumentController().setAttribute("class",
-				new AttrValue(classValue), element);
+		getDocumentController().setAttribute("class", new AttrValue(classValue),
+				element);
 	}
 	
 	public void showErrorMessage(String message) {

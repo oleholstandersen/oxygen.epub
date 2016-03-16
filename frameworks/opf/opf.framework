@@ -9,23 +9,16 @@
 						<null/>
 					</field>
 					<field name="name">
-						<String>NCX</String>
+						<String>OPF</String>
 					</field>
 					<field name="schemaDescriptor">
-						<docTypeSchema>
-							<field name="type">
-								<Integer>4</Integer>
-							</field>
-							<field name="uri">
-								<String>${framework}/schemas/rng/ncx.rng</String>
-							</field>
-						</docTypeSchema>
+						<null/>
 					</field>
 					<field name="classpath">
 						<String-array/>
 					</field>
 					<field name="parentClassLoaderID">
-						<null/>
+						<String>dk.nota.oxygen.epub.plugin</String>
 					</field>
 					<field name="authorExtensionDescriptor">
 						<authorExtension>
@@ -33,13 +26,24 @@
 								<cssFile-array>
 									<cssFile>
 										<field name="href">
-											<String>${framework}/css/ncx.css</String>
+											<String>${framework}/css/opf.css</String>
 										</field>
 										<field name="title">
-											<String></String>
+											<String>Default</String>
 										</field>
 										<field name="alternate">
 											<Boolean>false</Boolean>
+										</field>
+									</cssFile>
+									<cssFile>
+										<field name="href">
+											<String>${framework}/css/opfImages.css</String>
+										</field>
+										<field name="title">
+											<String>Show images</String>
+										</field>
+										<field name="alternate">
+											<Boolean>true</Boolean>
 										</field>
 									</cssFile>
 								</cssFile-array>
@@ -48,12 +52,127 @@
 								<Boolean>false</Boolean>
 							</field>
 							<field name="actionDescriptors">
-								<action-array/>
+								<action-array>
+									<action>
+										<field name="id">
+											<String>opf.concat</String>
+										</field>
+										<field name="name">
+											<String>Concat</String>
+										</field>
+										<field name="description">
+											<String>Concatenates all content documents into a single document</String>
+										</field>
+										<field name="largeIconPath">
+											<String></String>
+										</field>
+										<field name="smallIconPath">
+											<String></String>
+										</field>
+										<field name="accessKey">
+											<String></String>
+										</field>
+										<field name="accelerator">
+											<null/>
+										</field>
+										<field name="actionModes">
+											<actionMode-array>
+												<actionMode>
+													<field name="xpathCondition">
+														<String>/package</String>
+													</field>
+													<field name="argValues">
+														<serializableOrderedMap/>
+													</field>
+													<field name="operationID">
+														<String>dk.nota.oxygen.epub.opf.ConcatOperation</String>
+													</field>
+												</actionMode>
+											</actionMode-array>
+										</field>
+									</action>
+									<action>
+										<field name="id">
+											<String>opf.split</String>
+										</field>
+										<field name="name">
+											<String>Split</String>
+										</field>
+										<field name="description">
+											<String>Splits concatenated content document into separate documents</String>
+										</field>
+										<field name="largeIconPath">
+											<String></String>
+										</field>
+										<field name="smallIconPath">
+											<String></String>
+										</field>
+										<field name="accessKey">
+											<String></String>
+										</field>
+										<field name="accelerator">
+											<null/>
+										</field>
+										<field name="actionModes">
+											<actionMode-array>
+												<actionMode>
+													<field name="xpathCondition">
+														<String>/package</String>
+													</field>
+													<field name="argValues">
+														<serializableOrderedMap/>
+													</field>
+													<field name="operationID">
+														<String>dk.nota.oxygen.epub.opf.SplitOperation</String>
+													</field>
+												</actionMode>
+											</actionMode-array>
+										</field>
+									</action>
+									<action>
+										<field name="id">
+											<String>opf.test</String>
+										</field>
+										<field name="name">
+											<String>Test</String>
+										</field>
+										<field name="description">
+											<String>Tests various things</String>
+										</field>
+										<field name="largeIconPath">
+											<String></String>
+										</field>
+										<field name="smallIconPath">
+											<String></String>
+										</field>
+										<field name="accessKey">
+											<String></String>
+										</field>
+										<field name="accelerator">
+											<null/>
+										</field>
+										<field name="actionModes">
+											<actionMode-array>
+												<actionMode>
+													<field name="xpathCondition">
+														<String>/</String>
+													</field>
+													<field name="argValues">
+														<serializableOrderedMap/>
+													</field>
+													<field name="operationID">
+														<String>dk.nota.oxygen.epub.common.TestOperation</String>
+													</field>
+												</actionMode>
+											</actionMode-array>
+										</field>
+									</action>
+								</action-array>
 							</field>
 							<field name="menubarDescriptor">
 								<menu>
 									<field name="label">
-										<String>NCX</String>
+										<String>OPF</String>
 									</field>
 									<field name="accessKey">
 										<String></String>
@@ -62,7 +181,23 @@
 										<String></String>
 									</field>
 									<field name="menuEntriesDescriptorList">
-										<menuEntry-array/>
+										<menuEntry-array>
+											<menuItem>
+												<field name="actionID">
+													<String>opf.concat</String>
+												</field>
+											</menuItem>
+											<menuItem>
+												<field name="actionID">
+													<String>opf.split</String>
+												</field>
+											</menuItem>
+											<menuItem>
+												<field name="actionID">
+													<String>opf.test</String>
+												</field>
+											</menuItem>
+										</menuEntry-array>
 									</field>
 								</menu>
 							</field>
@@ -133,22 +268,23 @@
 					</field>
 					<field name="templatesLocations">
 						<String-array>
-							<String>${frameworkDir}/templates</String>
+							<String>${frameworkDir}/templates/3.0</String>
 						</String-array>
 					</field>
 					<field name="xmlCatalogs">
-						<String-array>
-							<String>${framework}/catalog.xml</String>
-						</String-array>
+						<String-array/>
 					</field>
 					<field name="description">
-						<String>A declarative global navigation definition (the Navigation Center eXtended).</String>
+						<String>The Open Packaging Format (OPF) defines the mechanism by which all components of a published work conforming to the Open Publication Structure (OPS) standard including metadata, reading order and navigational information are packaged into an OPS Publication.  
+- Specifies the linear reading-order of the publication.
+- Provides fallback information to use when unsupported extensions to OPS are employed.
+- Provides a mechanism to specify a declarative table of contentsglobal navigation structure (the NCX).</String>
 					</field>
 					<field name="doctypeRules">
 						<documentTypeRule-array>
 							<documentTypeRule>
 								<field name="namespace">
-									<String>http://www.daisy.org/z3986/2005/ncx/</String>
+									<String>http://www.idpf.org/2007/opf</String>
 								</field>
 								<field name="rootElem">
 									<String>*</String>
@@ -221,7 +357,7 @@
 														<Integer>7</Integer>
 													</field>
 													<field name="uri">
-														<String>${framework}/schema/nordic-nav.sch</String>
+														<String>${framework}/schema/nordic-opf.sch</String>
 													</field>
 												</validationUnitSchema>
 											</field>
@@ -232,14 +368,14 @@
 									<String>Validation_scenario</String>
 								</field>
 								<field name="name">
-									<String>NCX</String>
+									<String>OPF</String>
 								</field>
 							</validationScenario>
 						</validationScenario-array>
 					</field>
 					<field name="defaultValidationScenarios">
 						<list>
-							<String>NCX</String>
+							<String>OPF</String>
 						</list>
 					</field>
 					<field name="defaultTransformationScenarios">

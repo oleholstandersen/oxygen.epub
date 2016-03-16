@@ -50,7 +50,7 @@ public class InsertImagesAction extends AbstractAction {
 						.probeContentType(file.toPath()));
 				epubAccess.copyFileToImageFolder(file);
 			}
-			epubAccess.addItemsToEpub(fileTypes, "image", false);
+			epubAccess.addItemReferencesToOpf(fileTypes, "image", false);
 			String fragment = createFragment(imageFiles);
 			insertFragment(fragment, editorAccess);
 		} catch (AuthorOperationException | IOException | SaxonApiException |

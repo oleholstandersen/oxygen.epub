@@ -1,0 +1,77 @@
+<?xml version="1.0" ?>
+<project name="oxygen.epub" default="dist">
+	<property name="version-number" value="1.1.0" />
+	<target name="dist">
+		<jar destfile="frameworks/epub.jar" basedir="bin/">
+			<manifest>
+				<attribute name="Implementation-Version"
+					value="${version-number}"/>
+			</manifest>
+		</jar>
+	    <copy todir="./frameworks/ncx/" file="./frameworks/epub.jar"/>
+		<copy todir="./frameworks/opf/" file="./frameworks/epub.jar"/>
+		<copy todir="./frameworks/plugin/epub/" file="./frameworks/epub.jar"/>
+		<copy todir="./frameworks/xhtml5epub/" file="./frameworks/epub.jar"/>
+		<zip destfile="./deploy/${version-number}/ncx-${version-number}.zip"
+			basedir="./frameworks" includes="ncx/**"/>
+		<zip destfile="./deploy/${version-number}/opf-${version-number}.zip"
+			basedir="./frameworks" includes="opf/**"/>
+		<zip destfile="./deploy/${version-number}/plugin-${version-number}.zip"
+			basedir="./frameworks/plugin" includes="**"/>
+		<zip destfile="./deploy/${version-number}/xhtml5epub-${version-number}.zip"
+			basedir="./frameworks" includes="xhtml5epub/**"/>
+		<echo file="./deploy/dk.nota.oxygen.xml"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<xt:extensions xmlns:xt="http://www.oxygenxml.com/ns/extension"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.oxygenxml.com/ns/extension http://www.oxygenxml.com/ns/extension/extensions.xsd">
+    <xt:extension id="dk.nota.oxygen.epub.plugin">
+        <xt:location href="${version-number}/plugin-${version-number}.zip"/>
+        <xt:version>${version-number}</xt:version>
+        <xt:oxy_version>16.0+</xt:oxy_version>
+        <xt:type>plugin</xt:type>
+        <xt:author>Nota</xt:author>
+        <xt:name>EPUB Plugin</xt:name>
+        <xt:description xmlns="http://www.w3.org/1999/xhtml">A workspace plugin adding EPUB-relationed functionality in Text and Author mode</xt:description>
+        <xt:license>Copyrighted by Nota and distributed under GNU LGPL Version 3</xt:license>
+    </xt:extension>
+    <xt:extension id="dk.nota.oxygen.epub.ncx">
+        <xt:location href="${version-number}/ncx-${version-number}.zip"/>
+        <xt:version>${version-number}</xt:version>
+        <xt:oxy_version>16.0+</xt:oxy_version>
+        <xt:type>framework</xt:type>
+        <xt:author>Nota</xt:author>
+        <xt:name>NCX framework</xt:name>
+        <xt:description xmlns="http://www.w3.org/1999/xhtml">Framework for NCX</xt:description>
+        <xt:license>Copyrighted by Nota and distributed under GNU LGPL Version 3</xt:license>
+    </xt:extension>
+        <xt:extension id="dk.nota.oxygen.epub.opf3">
+        <xt:location href="${version-number}/opf-${version-number}.zip"/>
+        <xt:version>${version-number}</xt:version>
+        <xt:oxy_version>16.0+</xt:oxy_version>
+        <xt:type>framework</xt:type>
+        <xt:author>Nota</xt:author>
+        <xt:name>OPF framework</xt:name>
+        <xt:description xmlns="http://www.w3.org/1999/xhtml">Framework for OPF</xt:description>
+        <xt:license>Copyrighted by Nota and distributed under GNU LGPL Version 3</xt:license>
+    </xt:extension>
+    <xt:extension id="dk.nota.oxygen.epub.xhtml5epub">
+        <xt:location href="${version-number}/xhtml5epub-${version-number}.zip"/>
+        <xt:version>${version-number}</xt:version>
+        <xt:oxy_version>16.0+</xt:oxy_version>
+        <xt:type>framework</xt:type>
+        <xt:author>Nota</xt:author>
+        <xt:name>XHTML 5 [EPUB 3] framework</xt:name>
+        <xt:description xmlns="http://www.w3.org/1999/xhtml">Framework for EPUB-flavoured XHTML</xt:description>
+        <xt:license>Copyrighted by Nota and distributed under GNU LGPL Version 3</xt:license>
+    </xt:extension>
+</xt:extensions>]]>
+		</echo>
+		<copy todir="../stesk.github.io/oxygen" file="./deploy/dk.nota.oxygen.xml"/>
+		<copy todir="../stesk.github.io/oxygen/${version-number}">
+			<fileset dir="./deploy/${version-number}/" includes="**"/>
+		</copy>
+		<copy todir="C:/Program Files/Oxygen XML Editor 16/plugins/epub/">
+			<fileset dir="./frameworks/plugin/epub" includes="**"/>
+		</copy>
+	</target>
+</project>

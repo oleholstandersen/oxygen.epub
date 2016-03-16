@@ -13,7 +13,12 @@
     <xsl:strip-space elements="opf:*"/>
     <xsl:param name="CONTENT_FOLDER_URL" as="xs:string"
         select="replace(document-uri(/), '/[^/]*$', '/')"/>
+    <xsl:param name="NAVIGATION_DOCUMENT" as="document-node()*"
+        select="document(concat($CONTENT_FOLDER_URL, 'nav.xhtml'))"/>
     <xsl:param name="UPDATE_OPF" as="xs:boolean" select="true()"/>
+    <xsl:variable name="NAVIGATION_LIST" as="node()*"
+        select="$NAVIGATION_DOCUMENT/xhtml:html/xhtml:body/xhtml:nav
+                [@epub:type eq 'toc']/xhtml:ol[1]"/>
     <xsl:variable name="PID" as="xs:string*"
         select="/opf:package/opf:metadata/dc:identifier/text()"/>
     <xsl:variable name="LANGUAGE" as="xs:string*"
@@ -42,12 +47,12 @@
             </head>
             <body>
                 <xsl:apply-templates mode="XHTML_SECOND_PASS"
-                    select="$CONTENT_DOCUMENTS_FIRST_PASS/node()"/>
+                    select="$CONTENT_DOCUMENTS_FIRST_PASS"/>
             </body>
         </html>
     </xsl:template>
     <!-- Content documents after first pass -->
-    <xsl:variable name="CONTENT_DOCUMENTS_FIRST_PASS">
+    <xsl:variable name="CONTENT_DOCUMENTS_FIRST_PASS" as="node()*">
         <xsl:for-each
             select="/opf:package/opf:spine/opf:itemref">
             <xsl:variable name="item" as="node()*"
@@ -63,19 +68,24 @@
             </xsl:if>
             <xsl:variable name="reference" as="xs:string*"
                 select="$item/@href"/>
+            <xsl:variable name="navigationDepth" as="xs:integer*"
+                select="($NAVIGATION_LIST//xhtml:a[matches(@href, concat('^',
+                        $reference))])[1]/count(ancestor::xhtml:ol)"/>
             <xsl:if test="$item/@media-type = 'application/xhtml+xml'">
                 <xsl:variable name="documentUrl" as="xs:string"
                     select="concat($CONTENT_FOLDER_URL, $reference)"/>
                 <xsl:apply-templates mode="XHTML_FIRST_PASS"
                     select="document($documentUrl)/xhtml:html/xhtml:body">
-                    <xsl:with-param name="originalDocumentName"
+                    <xsl:with-param name="navigationDepth" as="xs:integer*"
+                        select="if ($navigationDepth) then $navigationDepth
+                                else 1"/>
+                    <xsl:with-param name="originalDocumentName" as="xs:string"
                         select="$reference"/>
                 </xsl:apply-templates>
             </xsl:if>
         </xsl:for-each>
     </xsl:variable>
-    
-    <xsl:template name="ID_ATTRIBUTE">
+    <xsl:template name="ATTRIBUTE.ID">
         <xsl:if test="not(@id)">
             <xsl:variable name="id" as="xs:string" select="generate-id()"/>
             <xsl:message>
@@ -88,9 +98,9 @@
             <xsl:attribute name="id" select="$id"/>
         </xsl:if>
     </xsl:template>
-    <xsl:template match="node()|@*" mode="#all">
+    <xsl:template match="@*|node()" mode="#all">
         <xsl:copy>
-            <xsl:apply-templates mode="#current" select="node()|@*"/>
+            <xsl:apply-templates mode="#current" select="@*|node()"/>
         </xsl:copy>
     </xsl:template>
     <xsl:template match="/">
@@ -112,6 +122,7 @@
     </xsl:template>
     <!-- XHTML first pass: Assign IDs and document names -->
     <xsl:template mode="XHTML_FIRST_PASS" match="xhtml:body">
+        <xsl:param name="navigationDepth" as="xs:integer" select="1"/>
         <xsl:param name="originalDocumentName" as="xs:string"/>
         <xsl:message>
             <nota:out>
@@ -119,15 +130,19 @@
                     select="concat('Adding document ', $originalDocumentName)"/>
             </nota:out>
         </xsl:message>
-        <section originalDocumentName="{$originalDocumentName}">
-            <xsl:call-template name="ID_ATTRIBUTE"/>
+        <section nota:originalDocumentName="{$originalDocumentName}">
+        	<!--<xsl:if test="not(@nota:navigationDepth)">
+        	    <xsl:attribute name="nota:navigationDepth"
+        	        select="$navigationDepth"/>
+        	</xsl:if>-->
+            <xsl:call-template name="ATTRIBUTE.ID"/>
             <xsl:apply-templates mode="XHTML_FIRST_PASS" select="@*|node()"/>
         </section>
     </xsl:template>
     <xsl:template mode="XHTML_FIRST_PASS"
         match="xhtml:section|xhtml:*[matches(local-name(), 'h\d')]">
         <xsl:copy>
-            <xsl:call-template name="ID_ATTRIBUTE"/>
+            <xsl:call-template name="ATTRIBUTE.ID"/>
             <xsl:apply-templates mode="XHTML_FIRST_PASS" select="node()|@*"/>
         </xsl:copy>
     </xsl:template>
@@ -137,9 +152,8 @@
             select="if (not(contains(@href, ':'))) then (
                     if (matches(@href, '#.+$'))
                     then concat('#', substring-after(@href, '#'))
-                    else concat('#', ancestor::documents/xhtml:section
-                        [matches(@originalDocumentName, current()/@href)]/@id)
-                    )
+                    else concat('#', ancestor::documents/xhtml:section[matches(
+                    @nota:originalDocumentName, current()/@href)]/@id))
                     else @href"/>
         <xsl:copy>
             <xsl:attribute name="href" select="$reference"/>
@@ -148,7 +162,7 @@
         </xsl:copy>
     </xsl:template>
     <xsl:template mode="XHTML_SECOND_PASS"
-        match="xhtml:section/@originalDocumentName"/>
+        match="xhtml:section/@nota:originalDocumentName"/>
     <!-- OPF: Remove references to content documents and add concat.xhtml -->
     <xsl:template mode="OPF" match="opf:item">
         <xsl:if test="not(//opf:itemref[@idref = current()/@id])">

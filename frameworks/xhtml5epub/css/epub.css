@@ -1,43 +1,116 @@
 @import "xhtml.css";
 
 @namespace epub "http://www.idpf.org/2007/ops";
+@namespace nota "http://www.nota.dk/oxygen";
 
 body::before, section::before {
     background-color: #BFB;
     content: oxy_xpath("upper-case(name())") " | depth: "
-        oxy_xpath("count(ancestor::section|ancestor::body) + (if (matches(document-uri(/), '/concat.xhtml$')) then 0 else 1)")
+        oxy_xpath("count(ancestor::section|ancestor::body) + (if (matches(document-uri(/), 'concat\.xhtml$')) then 0 else 1)")
         " | @epub:type: " oxy_editor(type, text, edit, "@epub:type");
     display: block;
+    font-family: sans-serif;
     font-size: small;
+    font-weight: normal;
+    padding: .25em;
     width: 100%;   
+}
+
+body[nota|navigationDepth]::before, section[nota|navigationDepth]::before {
+    content: oxy_xpath("upper-case(name())") " | depth: "
+        oxy_xpath("count(ancestor::section|ancestor::body) + (if (matches(document-uri(/), '/concat.xhtml$')) then 0 else 1)")
+        " | navigation depth: " oxy_editor(type, text, edit, "@nota:navigationDepth", contentType, "text/plain")
+        " | @epub:type: " oxy_editor(type, text, edit, "@epub:type")  ;
+}
+
+div[epub|type~="pagebreak"] {
+    background-color: #CCC;
+    content: "page " oxy_editor(type, text, edit, "@title", contentType, "text/plain")
+	    " " oxy_editor(type, combo, edit, "@class", values, "page-normal, page-front", selectionMode, "single");
+	display: block;
+	font-family: sans-serif;
+	font-size: small;
+	font-weight: normal;
+    padding: .25em;
+	width: 25%;
+}
+
+div.linegroup {
+    background-color: #DDF;
+    margin-bottom: .25em;
+    padding: .25em;
+}
+
+figure {
+    border: 3px solid #FBB;
+    padding: .5em;
 }
 
 h1::before, h2::before, h3::before, h4::before, h5::before, h6::before {
     color: #F00;
     content: oxy_xpath("upper-case(name())") " ";
+    font-family: sans-serif;
     font-size: small;
     font-weight: normal;
-    padding-right: .25em;
+    padding: 0 .25em 0 .25em;
 }
 
 h6 {
     font-size: 100%;
 }
 
-figure > img::before {
+img::before {
     background-color: #FBB;
     content: "@alt: " oxy_editor(type, text, edit, "@alt");
+    font-family: sans-serif;
+    font-size: small;
+    font-weight: normal;
+    padding: 0 .25em 0 .25em;
+}
+
+figure img::before {
+    display: block;
+    padding: .25em;
+    width: 40%;
+}
+
+ol::before, ul::before {
+    background-color: #CEC;
+    content: "@class: " oxy_editor(type, combo, edit, "@class", values,
+        "list-style-type-none, ", selectionMode, "single") " @type: "
+        oxy_editor(type, combo, edit, "@type", values,
+        "1, a, A, i, I, ", selectionMode, "single");
     display: block;
     font-size: small;
-    width: 100%;
+    font-weight: normal;
+    padding: .25em;
+    width: 100%;  
+}
+
+ol.list-style-type-none > li, ul.list-style-type-none > li {
+    list-style-type: none;
 }
 
 p.bridgehead::before {
     color: #F00;
     content: "BRIDGEHEAD";
+    font-family: sans-serif;
     font-size: small;
     font-weight: normal;
     padding-right: .25em;
+}
+
+p.line::before {
+    color: #F66;
+    content: "LINE";
+    font-family: sans-serif;
+    font-size: small;
+    font-weight: normal;
+    padding-right: .25em;
+}
+
+div.linegroup > p.line::before {
+    color: #FFF;
 }
 
 section {
@@ -52,19 +125,30 @@ span[lang]::before {
     content: "@lang: " oxy_editor(type, combo, edit, "@lang", values,
         oxy_xpath("string-join(('da', 'en', 'se', 'fr', 'de', //@lang), ', ')"),
         selectionMode, "single");
+    font-family: sans-serif;
     font-size: small;
+    font-weight: normal;
+    padding: 0 .25em 0 .25em;
+}
+
+span[epub|type~="pagebreak"] {
+    background-color: #CCC;
+    content: "page " oxy_editor(type, text, edit, "@title", contentType, "text/plain")
+	    " " oxy_editor(type, combo, edit, "@class", values, "page-normal, page-front", selectionMode, "single");
+	font-family: sans-serif;
+	font-size: small;
+    font-weight: normal;
+    padding: 0 .25em 0 .25em;
 }
 
 table::before {
     background-color: #CCC;
     content: "@class: " oxy_editor(type, combo, edit, "@class", values,
-        "render_by_row, render_by_column, render_by_both", selectionMode, "single");
+        "render_by_row, render_by_column, render_by_both, ", selectionMode, "single");
     display: block;
+    
     font-size: small;
+    font-weight: normal;
+    padding: .25em;
     width: 100%;   
-}
-
-ol.list-style-type-none,
-ul.list-style-type-none {
-    list-style-type: none;
 }

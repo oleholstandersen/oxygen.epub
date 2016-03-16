@@ -6,9 +6,8 @@ import dk.nota.oxygen.common.EditorAccess;
 import dk.nota.oxygen.epub.common.ImportDocxAction;
 import dk.nota.oxygen.epub.nav.UpdateNavigationAction;
 import dk.nota.oxygen.epub.opf.ConcatAction;
-import dk.nota.oxygen.epub.opf.CreateDTBookAction;
+import dk.nota.oxygen.epub.opf.CreateDtbAction;
 import dk.nota.oxygen.epub.opf.SplitAction;
-import dk.nota.oxygen.epub.xhtml.InsertImagesAction;
 import ro.sync.exml.plugin.workspace.WorkspaceAccessPluginExtension;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.editor.WSEditor;
@@ -55,7 +54,8 @@ public class EpubPluginExtension implements WorkspaceAccessPluginExtension {
 		private JComponent[] opfComponents = new JComponent[] {
 				new ToolbarButton(new ConcatAction(), true),
 				new ToolbarButton(new SplitAction(), true),
-				new ToolbarButton(new ImportDocxAction(true), true)
+				new ToolbarButton(new ImportDocxAction(true), true),
+				new ToolbarButton(new CreateDtbAction(), true)
 		};
 		private JComponent[] xhtmlComponents = new JComponent[] {
 				new ToolbarButton(new UpdateNavigationAction(), true),
@@ -64,8 +64,7 @@ public class EpubPluginExtension implements WorkspaceAccessPluginExtension {
 
 		@Override
 		public void customizeToolbar(ToolbarInfo toolbar) {
-			if (!toolbar.getToolbarID().startsWith(TOOLBAR_PREFIX))
-				return;
+			if (!toolbar.getToolbarID().startsWith(TOOLBAR_PREFIX)) return;
 			if (toolbar.getToolbarID().equals(NAV_TOOLBAR)) {
 				toolbar.setTitle("EPUB Navigation");
 				toolbar.setComponents(navComponents);
