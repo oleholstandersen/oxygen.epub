@@ -15,7 +15,7 @@ public class SplitAction extends ArchiveSensitiveAction {
 	public void actionPerformed(EditorAccess editorAccess) {
 		EpubAccess epubAccess = editorAccess.getEpubAccess();
 		SplitWorker splitWorker = new SplitWorker(epubAccess,
-				new ConsoleWindow("split"));
+				new ConsoleWindow("Split"));
 		splitWorker.execute();
 	}
 
