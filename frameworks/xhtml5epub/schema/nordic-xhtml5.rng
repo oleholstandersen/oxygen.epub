@@ -1624,6 +1624,7 @@
             <list>
                 <ref name="classes"/>
                 <value>prodnote</value>
+                <value>desc</value>
                 <ref name="classes"/>
             </list>
         </attribute>

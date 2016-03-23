@@ -116,7 +116,7 @@
 
     <!-- navdoc references must all be unique -->
     <pattern>
-        <rule context="html:a">
+        <rule context="html:a[ancestor::html:nav/tokenize(@epub:type,'\s+')=('toc', 'page-list')]">
             <report test="@href = preceding::html:a/@href">[nordic_nav_ncx_5] Two references in the navigation document can not point to the same location in the content. <value-of
                     select="concat('&lt;',name(),string-join(for $a in (@*) return concat(' ',$a/name(),'=&quot;',$a,'&quot;'),''),'&gt;')"/></report>
         </rule>
