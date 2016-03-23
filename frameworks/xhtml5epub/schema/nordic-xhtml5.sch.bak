@@ -68,7 +68,7 @@
     <!-- Rule 13: All books must have frontmatter and bodymatter -->
     <pattern id="epub_nordic_13_a">
         <!-- see also nordic2015-1.opf-and-html.sch for multi-document version -->
-        <rule context="html:body[html:header or matches(base-uri(), 'concat\.xhtml$')]">
+        <rule context="html:body[html:header]">
             <assert test="((html:section|html:article)/tokenize(@epub:type,'\s+')=('cover','frontmatter')) = true()">[nordic13a] A single-HTML document must have at least one frontmatter or cover
                 section</assert>
             <assert test="((html:section|html:article)/tokenize(@epub:type,'\s+')='bodymatter') = true()">[nordic13a] A single-HTML document must have at least one bodymatter section</assert>
@@ -78,21 +78,21 @@
     </pattern>
 
     <pattern id="epub_nordic_13_b">
-        <rule context="html:*[self::html:section or self::html:article][ancestor::html:body[html:header or matches(base-uri(), 'concat\.xhtml$')] and not(parent::html:body) and not(parent::html:section[tokenize(@epub:type,'\s+')='part'])]">
+        <rule context="html:*[self::html:section or self::html:article][ancestor::html:body[html:header] and not(parent::html:body) and not(parent::html:section[tokenize(@epub:type,'\s+')='part'])]">
             <assert test="not((tokenize(@epub:type,'\s+')=('cover','frontmatter','bodymatter','backmatter')) = true())">[nordic13b] The single-HTML document must not have cover, frontmatter,
                 bodymatter or backmatter on any of its sectioning elements other than the top-level elements that has body as its parent</assert>
         </rule>
     </pattern>
 
     <pattern id="epub_nordic_13_c">
-        <rule context="html:body[not((html:header|html:nav) or matches(base-uri(), 'concat\.xhtml$'))]">
+        <rule context="html:body[not(html:header|html:nav)]">
             <assert test="tokenize(@epub:type,'\s+')=('cover','frontmatter','bodymatter','backmatter')">[nordic13c] The document must have either cover, frontmatter, bodymatter or backmatter as
                 epub:type on its body element.</assert>
         </rule>
     </pattern>
 
     <pattern id="epub_nordic_13_d">
-        <rule context="html:*[self::html:section or self::html:article][ancestor::html:body[not((html:header|html:nav) or matches(base-uri(), 'concat\.xhtml$'))]]">
+        <rule context="html:*[self::html:section or self::html:article][ancestor::html:body[not(html:header|html:nav)]]">
             <assert test="not((tokenize(@epub:type,'\s+')=('cover','frontmatter','bodymatter','backmatter')) = true())">[nordic13d] The document must not have cover, frontmatter, bodymatter or
                 backmatter on any of its sectioning elements (they are only allowed on the body element).</assert>
         </rule>
@@ -101,7 +101,7 @@
     <!-- Rule 14:  Don't allow <h x+1> in section w/depth x+1 unless <h x> in section w/depth x is present -->
     <pattern id="epub_nordic_14">
         <rule
-            context="html:*[self::html:body[not(html:header or matches(base-uri(), 'concat\.xhtml$'))] or self::html:section or self::html:article][not(tokenize(@epub:type,'\s+')='cover')][html:section[not(tokenize(@epub:type,'\t+')=('z3998:poem','z3998:verse'))]|html:article]">
+            context="html:*[self::html:body[not(html:header)] or self::html:section or self::html:article][not(tokenize(@epub:type,'\s+')='cover')][html:section[not(tokenize(@epub:type,'\t+')=('z3998:poem','z3998:verse'))]|html:article]">
             <assert test="html:h1 | html:h2 | html:h3 | html:h4 | html:h5 | html:h6">[nordic14] sectioning element with no headline (h1-h6) when sub-section is present (is only allowed for sectioning
                 element with epub:type="cover" or when sub-section is a poem): <value-of
                     select="concat('&lt;',name(),string-join(for $a in (@*) return concat(' ',$a/name(),'=&quot;',$a,'&quot;'),''),'&gt;')"/></assert>
@@ -110,7 +110,7 @@
 
     <pattern id="epub_nordic_15">
         <!-- see also nordic2015-1.opf-and-html.sch for multi-document version -->
-        <rule context="html:body[html:header or matches(base-uri(), 'concat\.xhtml$')]/html:*[self::html:section or self::html:article]">
+        <rule context="html:body[html:header]/html:*[self::html:section or self::html:article]">
             <report test="tokenize(@epub:type,'\s+')[.='cover'] and preceding-sibling::html:*[self::html:section or self::html:article]">[nordic15] Cover must not be preceded by any other top-level
                 sections (<value-of select="concat('&lt;',name(),string-join(for $a in (@*) return concat(' ',$a/name(),'=&quot;',$a,'&quot;'),''),'&gt;')"/>)</report>
             <report test="tokenize(@epub:type,'\s+')[.='frontmatter'] and preceding-sibling::html:*[self::html:section or self::html:article]/tokenize(@epub:type,'\s') = ('bodymatter', 'backmatter')"
@@ -169,7 +169,7 @@
 
     <!-- Rule 26a: Each note must have a noteref -->
     <pattern id="epub_nordic_26_a">
-        <rule context="html:*[ancestor::html:body[html:header or matches(base-uri(), 'concat\.xhtml$')] and tokenize(@epub:type,'\s+')=('note','rearnote','footnote')]">
+        <rule context="html:*[ancestor::html:body[html:header] and tokenize(@epub:type,'\s+')=('note','rearnote','footnote')]">
             <!-- this is the single-HTML version of the rule; the multi-HTML version of this rule is in nordic2015-1.opf-and-html.sch -->
             <assert test="count(//html:a[tokenize(@epub:type,'\s+')='noteref'][substring-after(@href, '#')=current()/@id])&gt;=1">[nordic26a] Each note must have at least one &lt;a epub:type="noteref"
                 ...&gt; referencing it: <value-of select="concat('&lt;',name(),string-join(for $a in (@*) return concat(' ',$a/name(),'=&quot;',$a,'&quot;'),''),'&gt;')"/></assert>
@@ -178,7 +178,7 @@
 
     <!-- Rule 26b: Each noteref must reference a note -->
     <pattern id="epub_nordic_26_b">
-        <rule context="html:a[ancestor::html:body[html:header or matches(base-uri(), 'concat\.xhtml$')] and tokenize(@epub:type,'\s+')='noteref']">
+        <rule context="html:a[ancestor::html:body[html:header] and tokenize(@epub:type,'\s+')='noteref']">
             <!-- this is the single-HTML version of the rule; the multi-HTML version of this rule is in nordic2015-1.opf-and-html.sch -->
             <assert test="count(//html:*[tokenize(@epub:type,'\s+')=('note','rearnote','footnote') and @id = current()/substring-after(@href,'#')]) &gt;= 1">[nordic26b] The note reference with the
                 href "<value-of select="@href"/>" attribute must resolve to a note, rearnote or footnote in the publication: <value-of
@@ -188,7 +188,7 @@
 
     <!-- Rule 27a: Each annotation must have an annoref -->
     <pattern id="epub_nordic_27_a">
-        <rule context="html:*[ancestor::html:body[html:header or matches(base-uri(), 'concat\.xhtml$')] and tokenize(@epub:type,' ')='annotation']">
+        <rule context="html:*[ancestor::html:body[html:header] and tokenize(@epub:type,' ')='annotation']">
             <!-- this is the single-HTML version of the rule; the multi-HTML version of this rule is in nordic2015-1.opf-and-html.sch -->
             <assert test="count(//html:a[tokenize(@epub:type,' ')='annoref'][substring-after(@href, '#')=current()/@id])&gt;=1">[nordic27a] Each annotation must have at least one &lt;a
                 epub:type="annoref" ...&gt; referencing it: <value-of select="concat('&lt;',name(),string-join(for $a in (@*) return concat(' ',$a/name(),'=&quot;',$a,'&quot;'),''),'&gt;')"/></assert>
@@ -197,7 +197,7 @@
 
     <!-- Rule 27b: Each annoref must reference a annotation -->
     <pattern id="epub_nordic_27_b">
-        <rule context="html:a[ancestor::html:body[html:header or matches(base-uri(), 'concat\.xhtml$')] and tokenize(@epub:type,'\s+')='annoref']">
+        <rule context="html:a[ancestor::html:body[html:header] and tokenize(@epub:type,'\s+')='annoref']">
             <!-- this is the single-HTML version of the rule; the multi-HTML version of this rule is in nordic2015-1.opf-and-html.sch -->
             <assert test="count(//html:*[tokenize(@epub:type,'\s+')=('annotation') and @id = current()/substring-after(@href,'#')]) &gt;= 1">[nordic26b] The annotation with the href "<value-of
                     select="@href"/>" must resolve to a annotation in the publication: <value-of
@@ -915,7 +915,7 @@
     </pattern>
 
     <pattern id="epub_nordic_269">
-        <rule context="html:body[not(html:header or matches(base-uri(), 'concat\.xhtml$'))]">
+        <rule context="html:body[not(html:header)]">
             <let name="filename-regex" value="'^.*/[A-Za-z0-9_-]+-\d+-([a-z-]+)(-\d+)?\.xhtml$'"/>
             <let name="base-uri-type" value="if (matches(base-uri(.), $filename-regex)) then replace(base-uri(.), $filename-regex, '$1') else ()"/>
             <assert test="not(matches(base-uri(.), $filename-regex)) or (for $t in tokenize(@epub:type,'\s+') return tokenize($t,':')[last()]) = $base-uri-type">[nordic269] The type used in the
@@ -938,7 +938,7 @@
         <rule context="html:a[tokenize(@epub:type,'\s+')='annoref']">
             <assert test="contains(@href, '#')">[nordic272a] Note reference href attribute does not contain a fragment identifier: <value-of
                     select="concat('&lt;',name(),string-join(for $a in (@*) return concat(' ',$a/name(),'=&quot;',$a,'&quot;'),''),'&gt;')"/></assert>
-            <report test="ancestor::html:body[html:header or matches(base-uri(), 'concat\.xhtml$')] and contains(@href, '#') and substring-after(@href, '#')=//html:*[tokenize(@epub:type,'\s+')=('annotation')]/@id">[nordic272b] Annotation
+            <report test="ancestor::html:body[html:header] and contains(@href, '#') and substring-after(@href, '#')=//html:*[tokenize(@epub:type,'\s+')=('annotation')]/@id">[nordic272b] Annotation
                 reference href attribute does not resolve to a note, rearnote or footnote in the publication: <value-of
                     select="concat('&lt;',name(),string-join(for $a in (@*) return concat(' ',$a/name(),'=&quot;',$a,'&quot;'),''),'&gt;')"/></report>
         </rule>
@@ -974,7 +974,7 @@
         JAJ20150225: Imported from Pipeline 1 DTBook validator and adapted to EPUB3
     -->
     <pattern id="epub_nordic_275">
-        <rule context="html:img[@longdesc and ancestor::html:body[html:header or matches(base-uri(), 'concat\.xhtml$')]]">
+        <rule context="html:img[@longdesc and ancestor::html:body[html:header]]">
             <assert test="substring-after(normalize-space(@longdesc),'#') = //@id">[nordic275] The URL in the img longdesc attribute does not reference any element in the publication: <value-of
                     select="concat('&lt;',name(),string-join(for $a in (@*) return concat(' ',$a/name(),'=&quot;',$a,'&quot;'),''),'&gt;')"/></assert>
         </rule>

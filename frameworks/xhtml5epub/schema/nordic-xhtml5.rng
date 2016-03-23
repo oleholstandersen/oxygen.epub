@@ -604,15 +604,17 @@
                 </choice>
                 <group>
                     <!-- single-page HTML -->
-                    <element name="header">
-                        <ref name="doctitle.headline"/> <!-- h1 -->
-                        <optional>
-                            <ref name="covertitle"/> <!-- p -->
-                        </optional>
-                        <zeroOrMore>
-                            <ref name="docauthor"/> <!-- p -->
-                        </zeroOrMore>
-                    </element>
+                    <optional>
+                        <element name="header">
+                            <ref name="doctitle.headline"/> <!-- h1 -->
+                            <optional>
+                                <ref name="covertitle"/> <!-- p -->
+                            </optional>
+                            <zeroOrMore>
+                                <ref name="docauthor"/> <!-- p -->
+                            </zeroOrMore>
+                        </element>
+                    </optional>
                     <oneOrMore>
                         <choice>
                            <element name="section">
