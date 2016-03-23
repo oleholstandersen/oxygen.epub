@@ -1623,12 +1623,14 @@
         <attribute name="class">
             <list>
                 <ref name="classes"/>
-                <value>prodnote</value>
-                <value>desc</value>
+                <choice>
+                    <value>prodnote</value>
+                    <value>desc</value>
+                </choice>
                 <ref name="classes"/>
             </list>
         </attribute>
-        <ref name="attrsrqd.base"/> <!-- attrsrqd instead of attrs because all sectioning elements should have id attributes -->
+        <!--<ref name="attrsrqd.base"/>--> <!-- attrsrqd instead of attrs because all sectioning elements should have id attributes -->
         <!--
             @imgref removed. The relationship is stored in img/@longdesc.
             NOTE: an alternative would be to use aria-describedat, linking from the image to the prodnote:
