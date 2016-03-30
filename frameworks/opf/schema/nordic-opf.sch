@@ -158,7 +158,7 @@
     </pattern>
 
     <pattern id="opf_nordic_12_a">
-        <rule context="opf:item[@media-type='application/xhtml+xml' and not(@href='nav.xhtml' or tokenize(@properties,'\s+')='nav')]">
+        <rule context="opf:item[@media-type='application/xhtml+xml' and not(@href=('nav.xhtml','concat.xhtml') or tokenize(@properties,'\s+')='nav')]">
             <assert test="matches(@href,'^[A-Za-z0-9_-]+-\d+-[a-z-]+(-\d+)?\.xhtml$')">[opf12a] The content document "<value-of select="@href"/>" has a bad filename. Content documents must match the
                 "[dc:identifier]-[position in spine]-[epub:type].xhtml" file naming convention. Example: "DTB123-01-cover.xhtml". The identifier are allowed to contain the upper- and lower-case
                 characters A-Z and a-z as well as digits (0-9), dashes (-) and underscores (_). The position is a positive whole number consisting of the digits 0-9. The epub:type must be all
