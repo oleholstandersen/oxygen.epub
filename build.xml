@@ -1,17 +1,21 @@
 <?xml version="1.0" ?>
-<project name="oxygen.epub" default="dist">
-	<property name="version-number" value="1.1.2" />
-	<target name="dist">
-		<jar destfile="frameworks/epub.jar" basedir="bin/">
+<project name="oxygen.epub" default="compile">
+	<property name="version-number" value="1.1.4" />
+	<target name="compile">
+		<jar destfile="./epub.jar" basedir="bin/">
 			<manifest>
 				<attribute name="Implementation-Version"
 					value="${version-number}"/>
 			</manifest>
 		</jar>
-	    <copy todir="./frameworks/ncx/" file="./frameworks/epub.jar"/>
-		<copy todir="./frameworks/opf/" file="./frameworks/epub.jar"/>
-		<copy todir="./frameworks/plugin/epub/" file="./frameworks/epub.jar"/>
-		<copy todir="./frameworks/xhtml5epub/" file="./frameworks/epub.jar"/>
+		<copy todir="C:/Program Files/Oxygen XML Editor 16/plugins/epub/"
+			file="./epub.jar"/>
+	</target>
+	<target name="dist" depends="compile">
+	    <copy todir="./frameworks/ncx/" file="./epub.jar"/>
+		<copy todir="./frameworks/opf/" file="./epub.jar"/>
+		<copy todir="./frameworks/plugin/epub/" file="./epub.jar"/>
+		<copy todir="./frameworks/xhtml5epub/" file="./epub.jar"/>
 		<zip destfile="./deploy/${version-number}/ncx-${version-number}.zip"
 			basedir="./frameworks" includes="ncx/**"/>
 		<zip destfile="./deploy/${version-number}/opf-${version-number}.zip"
@@ -69,9 +73,6 @@
 		<copy todir="../stesk.github.io/oxygen" file="./deploy/dk.nota.oxygen.xml"/>
 		<copy todir="../stesk.github.io/oxygen/${version-number}">
 			<fileset dir="./deploy/${version-number}/" includes="**"/>
-		</copy>
-		<copy todir="C:/Program Files/Oxygen XML Editor 16/plugins/epub/">
-			<fileset dir="./frameworks/plugin/epub" includes="**"/>
 		</copy>
 	</target>
 </project>
