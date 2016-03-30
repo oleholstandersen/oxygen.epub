@@ -101,6 +101,13 @@
         <xsl:call-template name="ATTRIBUTES.GENERIC"/>
         <xsl:copy-of select="@colspan|@rowspan"/>
     </xsl:template>
+    <!-- Named template for copied element with generic attributes -->
+    <xsl:template name="ELEMENT.COPY.GENERIC">
+        <xsl:element name="{local-name()}">
+            <xsl:call-template name="ATTRIBUTES.GENERIC"/>
+            <xsl:apply-templates/>
+        </xsl:element>
+    </xsl:template>
     <!-- Named template for page numbers -->
     <xsl:template name="ELEMENT.LIST_ITEM.PAGENUM.AFTER">
         <xsl:for-each
@@ -136,15 +143,8 @@
         </xsl:if>
     </xsl:template>
     <!-- Generic template for XHTML elements -->
-    <xsl:template mode="#default STRIP_FORMATTING" match="xhtml:*">
-        <xsl:element name="{local-name()}">
-            <xsl:call-template name="ATTRIBUTES.GENERIC"/>
-            <xsl:apply-templates/>
-        </xsl:element>
-    </xsl:template>
-    <!-- Special mode for stripping <em> and <strong> -->
-    <xsl:template mode="STRIP_FORMATTING" match="xhtml:em|xhtml:strong">
-        <xsl:apply-templates mode="STRIP_FORMATTING"/>
+    <xsl:template match="xhtml:*">
+        <xsl:call-template name="ELEMENT.COPY.GENERIC"/>
     </xsl:template>
     <!-- Special mode for grouping inline content in paragraphs -->
     <xsl:template mode="GROUP_INLINE_CONTENT"
@@ -188,13 +188,8 @@
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
-    <xsl:template mode="STRIP_FORMATTING" match="node()|@*">
-        <xsl:copy>
-            <xsl:apply-templates mode="STRIP_FORMATTING" select="node()|@*"/>
-        </xsl:copy>
-    </xsl:template>
     <!-- A -->
-    <xsl:template match="xhtml:a">
+    <xsl:template  match="xhtml:a">
         <xsl:variable name="isExternal" as="xs:boolean"
             select="matches(@href, '^[a-z]+:')"/>
         <xsl:choose>
@@ -210,7 +205,8 @@
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
-    <xsl:template match="xhtml:a[nota:has-classes(., 'noteref')]">
+    <xsl:template
+        match="xhtml:a[nota:has-classes(., 'noteref')]">
         <noteref idref="{replace(@href, '^.*?#', '')}">
         	<xsl:call-template name="ATTRIBUTES.GENERIC"/>
             <xsl:apply-templates/>
@@ -234,6 +230,21 @@
         <div class="blockquote">
             <xsl:apply-templates/>
         </div>
+    </xsl:template>
+    <!-- EM and STRONG -->
+    <xsl:template match="xhtml:em|xhtml:strong">
+        <xsl:param name="discardEmStrong" as="xs:boolean?" tunnel="yes"/>
+        <xsl:choose>
+            <xsl:when test="$discardEmStrong">
+                <xsl:apply-templates>
+                    <xsl:with-param name="discardEmStrong" as="xs:boolean"
+                        tunnel="yes" select="$discardEmStrong"/>
+                </xsl:apply-templates>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:call-template name="ELEMENT.COPY.GENERIC"/>
+            </xsl:otherwise>
+        </xsl:choose>
     </xsl:template>
     <!-- FIGCAPTION -->
     <xsl:template match="xhtml:figcaption">
@@ -409,7 +420,10 @@
         <p>
             <xsl:call-template name="ATTRIBUTES.GENERIC"/>
             <xsl:attribute name="class" select="'bridgehead'"/>
-            <xsl:apply-templates mode="STRIP_FORMATTING"/>
+            <xsl:apply-templates>
+                <xsl:with-param name="discardEmStrong" as="xs:boolean"
+                    tunnel="yes" select="true()"/>
+            </xsl:apply-templates>
         </p>
     </xsl:template>
     <xsl:template match="xhtml:p[preceding-sibling::*[1]/self::xhtml:hr]">
@@ -428,7 +442,8 @@
         </p>
     </xsl:template>
     <!-- PAGE BREAK -->
-    <xsl:template match="xhtml:*[nota:is-page-break(.)]">
+    <xsl:template
+        match="xhtml:*[nota:is-page-break(.)]">
         <xsl:call-template name="ELEMENT.PAGENUM"/>
     </xsl:template>
     <!-- SECTION -->
@@ -466,7 +481,8 @@
             <xsl:apply-templates/>
         </lic>
     </xsl:template>
-    <xsl:template match="xhtml:span[nota:has-classes(., 'linenum')]">
+    <xsl:template 
+        match="xhtml:span[nota:has-classes(., 'linenum')]">
         <linenum>
             <xsl:call-template name="ATTRIBUTES.GENERIC"/>
             <xsl:apply-templates/>
