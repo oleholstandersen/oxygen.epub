@@ -54,7 +54,7 @@
     <!-- Content documents after first pass -->
     <xsl:variable name="CONTENT_DOCUMENTS_FIRST_PASS" as="node()*">
         <xsl:for-each
-            select="/opf:package/opf:spine/opf:itemref">
+            select="/opf:package/opf:spine/opf:itemref[@idref ne 'concat']">
             <xsl:variable name="item" as="node()?"
                 select="//opf:item[@id = current()/@idref]"/>
             <xsl:if test="not($item)">
@@ -112,6 +112,11 @@
         <xsl:message>
             <nota:out>CONCATENATING CONTENT DOCUMENTS...</nota:out>
         </xsl:message>
+        <xsl:if test="document(concat($CONTENT_FOLDER_URL, 'concat.xhtml'))">
+            <xsl:message terminate="yes">
+                <nota:out>ERROR: concat.xhtml already exists</nota:out>
+            </xsl:message>
+        </xsl:if>
         <nota:documents>
             <nota:document
                 url="{concat($CONTENT_FOLDER_URL, 'concat.xhtml')}">
