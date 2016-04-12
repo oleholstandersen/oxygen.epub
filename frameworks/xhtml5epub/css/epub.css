@@ -74,12 +74,23 @@ figure img::before {
     width: 40%;
 }
 
-ol::before, ul::before {
+ol::before {
     background-color: #CEC;
-    content: "@class: " oxy_editor(type, combo, edit, "@class", values,
+    content: oxy_xpath("upper-case(name())") " | @class: " oxy_editor(type, combo, edit, "@class", values,
         "list-style-type-none, ", selectionMode, "single") " @type: "
         oxy_editor(type, combo, edit, "@type", values,
         "1, a, A, i, I, ", selectionMode, "single");
+    display: block;
+    font-size: small;
+    font-weight: normal;
+    padding: .25em;
+    width: 100%;  
+}
+
+ul::before {
+    background-color: #CEC;
+    content: oxy_xpath("upper-case(name())") " | @class: " oxy_editor(type, combo, edit, "@class", values,
+        "list-style-type-none, ", selectionMode, "single");
     display: block;
     font-size: small;
     font-weight: normal;
