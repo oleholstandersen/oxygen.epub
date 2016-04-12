@@ -23,8 +23,8 @@ public abstract class XhtmlEpubAuthorOperation extends AbstractAuthorOperation {
 		if (element.getName().matches("h\\d")) {
 			if (depth > 6) {
 				getDocumentController().renameElement(element, "p");
-				setClass(element, "bridgehead");
-				setEpubType(element, "bridgehead");
+				resetClass(element, "bridgehead");
+				resetEpubType(element, "bridgehead");
 			} else getDocumentController().renameElement(element,
 					"h" + depth);
 			return;
@@ -32,7 +32,7 @@ public abstract class XhtmlEpubAuthorOperation extends AbstractAuthorOperation {
 		for (AuthorElement childElement : getElementsByXpath("*", element))
 			normaliseToDepth(childElement, depth + 1);
 		if (element.getName().matches("section")) {
-			if (depth >= 6 && !hasEpubType(element)) dissolveElement(element);
+			if (depth >= 6 && !hasEpubType(element)) dissolveNode(element);
 		}
 	}
 	
@@ -42,7 +42,7 @@ public abstract class XhtmlEpubAuthorOperation extends AbstractAuthorOperation {
 				depth);
 	}
 	
-	public void setEpubType(AuthorElement element, String epubTypeValue) {
+	public void resetEpubType(AuthorElement element, String epubTypeValue) {
 		getDocumentController().setAttribute("epub:type",
 				new AttrValue(epubTypeValue), element);
 	}

@@ -64,7 +64,7 @@ public class CreateDtbWorker extends SwingWorker<Object,Object> {
 		try {
 			editorAccess.getWorkspace().open(dtbFile.toURI().toURL());
 		} catch (MalformedURLException e) {
-			editorAccess.showErrorMessage("ERROR: " + e);
+			editorAccess.showErrorMessage(e.toString());
 		}
 	}
 	

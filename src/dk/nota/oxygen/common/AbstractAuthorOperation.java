@@ -24,9 +24,9 @@ public abstract class AbstractAuthorOperation implements AuthorOperation {
 	
 	private AuthorAccess authorAccess;
 	
-	public void dissolveElement(AuthorElementBaseInterface element)
+	public void dissolveNode(AuthorNode node)
 			throws AuthorOperationException, BadLocationException {
-		floatInterval(element.getStartOffset() + 1, element.getEndOffset() - 1);
+		floatInterval(node.getStartOffset() + 1, node.getEndOffset() - 1);
 	}
 	
 	protected abstract void doOperation() throws AuthorOperationException;
@@ -201,9 +201,17 @@ public abstract class AbstractAuthorOperation implements AuthorOperation {
 	protected abstract void parseArguments(ArgumentsMap arguments)
 			throws IllegalArgumentException;
 	
-	public void setClass(AuthorElement element, String classValue) {
+	public void resetClass(AuthorElement element, String classValue) {
 		getDocumentController().setAttribute("class", new AttrValue(classValue),
 				element);
+	}
+	
+	public boolean selectionIsSiblingsOnly() throws BadLocationException {
+		AuthorNode nodeAtStart = getDocumentController().getNodeAtOffset(
+				getSelectionStart());
+		AuthorNode nodeAtEnd = getDocumentController().getNodeAtOffset(
+				getSelectionEnd());
+		return nodeAtStart.getParent() == nodeAtEnd.getParent();
 	}
 	
 	public void showErrorMessage(String message) {
@@ -248,7 +256,7 @@ public abstract class AbstractAuthorOperation implements AuthorOperation {
 				}
 			}
 			stripElements(childElement, elementNames);
-			if (matches) dissolveElement(childElement);
+			if (matches) dissolveNode(childElement);
 		}
 	}
 	

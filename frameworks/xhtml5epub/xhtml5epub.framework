@@ -2219,6 +2219,10 @@ ancestor-or-self::node()[self::*:tbody | self::*:tfoot | self::*:thead | self::*
 																<String>listType</String>
 																<String>ordered</String>
 															</entry>
+															<entry>
+																<String>operationType</String>
+																<String>convertOrdered</String>
+															</entry>
 														</serializableOrderedMap>
 													</field>
 													<field name="operationID">
@@ -2262,6 +2266,10 @@ ancestor-or-self::node()[self::*:tbody | self::*:tfoot | self::*:thead | self::*
 																<String>listType</String>
 																<String>unordered</String>
 															</entry>
+															<entry>
+																<String>operationType</String>
+																<String>convertUnordered</String>
+															</entry>
 														</serializableOrderedMap>
 													</field>
 													<field name="operationID">
@@ -2276,16 +2284,16 @@ ancestor-or-self::node()[self::*:tbody | self::*:tfoot | self::*:thead | self::*
 											<String>list.convert.paragraph</String>
 										</field>
 										<field name="name">
-											<String>Convert to paragraphs</String>
+											<String>Dissolve list items</String>
 										</field>
 										<field name="description">
-											<String>Converts selected list items to paragraphs</String>
+											<String>Dissolves selected list items</String>
 										</field>
 										<field name="largeIconPath">
-											<String>/images/Paragraph20.png</String>
+											<String></String>
 										</field>
 										<field name="smallIconPath">
-											<String>/images/Paragraph16.gif</String>
+											<String></String>
 										</field>
 										<field name="accessKey">
 											<String></String>
@@ -2304,6 +2312,10 @@ ancestor-or-self::node()[self::*:tbody | self::*:tfoot | self::*:thead | self::*
 															<entry>
 																<String>listType</String>
 																<String>none</String>
+															</entry>
+															<entry>
+																<String>operationType</String>
+																<String>dissolve</String>
 															</entry>
 														</serializableOrderedMap>
 													</field>
@@ -2863,6 +2875,100 @@ ancestor-or-self::node()[self::*:tbody | self::*:tfoot | self::*:thead | self::*
 											</actionMode-array>
 										</field>
 									</action>
+									<action>
+										<field name="id">
+											<String>list.indent.ordered</String>
+										</field>
+										<field name="name">
+											<String>Indent (ordered)</String>
+										</field>
+										<field name="description">
+											<String>Converts selected list items to list items in an ordered sublist</String>
+										</field>
+										<field name="largeIconPath">
+											<String>/images/OrderedList20.gif</String>
+										</field>
+										<field name="smallIconPath">
+											<String>/images/OrderedList16.gif</String>
+										</field>
+										<field name="accessKey">
+											<String></String>
+										</field>
+										<field name="accelerator">
+											<null/>
+										</field>
+										<field name="actionModes">
+											<actionMode-array>
+												<actionMode>
+													<field name="xpathCondition">
+														<String>ancestor-or-self::li</String>
+													</field>
+													<field name="argValues">
+														<serializableOrderedMap>
+															<entry>
+																<String>listType</String>
+																<String>ordered</String>
+															</entry>
+															<entry>
+																<String>operationType</String>
+																<String>indentOrdered</String>
+															</entry>
+														</serializableOrderedMap>
+													</field>
+													<field name="operationID">
+														<String>dk.nota.oxygen.epub.xhtml.ListOperation</String>
+													</field>
+												</actionMode>
+											</actionMode-array>
+										</field>
+									</action>
+									<action>
+										<field name="id">
+											<String>list.indent.unordered</String>
+										</field>
+										<field name="name">
+											<String>Indent (unordered)</String>
+										</field>
+										<field name="description">
+											<String>Converts selected list items to list items in an unordered sublist</String>
+										</field>
+										<field name="largeIconPath">
+											<String>/images/OrderedList20.gif</String>
+										</field>
+										<field name="smallIconPath">
+											<String>/images/OrderedList16.gif</String>
+										</field>
+										<field name="accessKey">
+											<String></String>
+										</field>
+										<field name="accelerator">
+											<null/>
+										</field>
+										<field name="actionModes">
+											<actionMode-array>
+												<actionMode>
+													<field name="xpathCondition">
+														<String>ancestor-or-self::li</String>
+													</field>
+													<field name="argValues">
+														<serializableOrderedMap>
+															<entry>
+																<String>listType</String>
+																<String>ordered</String>
+															</entry>
+															<entry>
+																<String>operationType</String>
+																<String>indentUnordered</String>
+															</entry>
+														</serializableOrderedMap>
+													</field>
+													<field name="operationID">
+														<String>dk.nota.oxygen.epub.xhtml.ListOperation</String>
+													</field>
+												</actionMode>
+											</actionMode-array>
+										</field>
+									</action>
 								</action-array>
 							</field>
 							<field name="menubarDescriptor">
@@ -3005,6 +3111,18 @@ ancestor-or-self::node()[self::*:tbody | self::*:tfoot | self::*:thead | self::*
 																<String>list.convert.unordered</String>
 															</field>
 														</menuItem>
+														<menuSeparator/>
+														<menuItem>
+															<field name="actionID">
+																<String>list.indent.ordered</String>
+															</field>
+														</menuItem>
+														<menuItem>
+															<field name="actionID">
+																<String>list.indent.unordered</String>
+															</field>
+														</menuItem>
+														<menuSeparator/>
 														<menuItem>
 															<field name="actionID">
 																<String>list.convert.paragraph</String>
@@ -3522,6 +3640,18 @@ ancestor-or-self::node()[self::*:tbody | self::*:tfoot | self::*:thead | self::*
 																<String>list.convert.unordered</String>
 															</field>
 														</toolbarItem>
+														<toolbarSeparator/>
+														<toolbarItem>
+															<field name="actionID">
+																<String>list.indent.ordered</String>
+															</field>
+														</toolbarItem>
+														<toolbarItem>
+															<field name="actionID">
+																<String>list.indent.unordered</String>
+															</field>
+														</toolbarItem>
+														<toolbarSeparator/>
 														<toolbarItem>
 															<field name="actionID">
 																<String>list.convert.paragraph</String>

@@ -30,7 +30,7 @@ public class HeadingOperation extends XhtmlEpubAuthorOperation {
 		AuthorElement precedingSection = getFirstElementByXpath(
 				"preceding-sibling::*[1]/self::section", section);
 		normaliseToDepth(section, --depth);
-		if (precedingSection == null) dissolveElement(section);
+		if (precedingSection == null) dissolveNode(section);
 		else {
 			AuthorDocumentFragment sectionContent = getDocumentController().
 					createDocumentFragment(section.getStartOffset() + 1,

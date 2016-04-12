@@ -28,7 +28,7 @@ public class CreateDtbAction extends ArchiveSensitiveAction {
 					epubAccess, new ConsoleWindow("Create DTBook"), dtbFile);
 			createDtbWorker.execute();
 		} catch (URISyntaxException | SaxonApiException e) {
-			editorAccess.showErrorMessage("ERROR: " + e);
+			editorAccess.showErrorMessage(e.toString());
 		}
 	}
 
