@@ -11,6 +11,7 @@ public class SplitWorker extends SwingWorker<Object,Object> {
 	
 	private EpubAccess epubAccess;
 	private ConsoleListener messageListener;
+	private boolean success = false;
 	
 	public SplitWorker(EpubAccess epubAccess, ConsoleWindow consoleWindow) {
 		this.epubAccess = epubAccess;
@@ -25,12 +26,13 @@ public class SplitWorker extends SwingWorker<Object,Object> {
 				messageListener, messageListener);
 		splitTransformer.setDestination(outputTransformer);
 		splitTransformer.transform();
+		success = true;
 		return null;
 	}
 	
 	@Override
 	protected void done() {
-		messageListener.writeToConsole("DONE");
+		if (success) messageListener.writeToConsole("DONE");
 	}
 
 }

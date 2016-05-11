@@ -26,6 +26,7 @@ public class CreateDtbWorker extends SwingWorker<Object,Object> {
 	private LinkedList<String> imagePaths = new LinkedList<String>();
 	private ImageListener messageListener;
 	private java.io.File dtbFile;
+	private boolean success = false;
 	
 	public CreateDtbWorker(EditorAccess editorAccess, EpubAccess epubAccess,
 			ConsoleWindow consoleWindow, java.io.File dtbFile) {
@@ -44,27 +45,30 @@ public class CreateDtbWorker extends SwingWorker<Object,Object> {
 		dtbConverter.setDestination(epubAccess.getXmlAccess().getSerializer(
 				dtbFile));
 		concatTransformer.setDestination(dtbConverter);
-		concatTransformer.setParameter(new QName("UPDATE_OPF"),
+		concatTransformer.setParameter(new QName("UPDATE_EPUB"),
 				new XdmAtomicValue(false));
 		concatTransformer.transform();
 		messageListener.writeToConsole("MOVING IMAGE FILES...");
 		for (String imagePath : imagePaths) {
-			messageListener.writeToConsole("Moving " + imagePath);
+			messageListener.writeToConsole("Copying " + imagePath);
 			File imageFile = epubAccess.getFileFromContentFolder(imagePath);
 			File newImageFile = new File(dtbFile.getParentFile(), imageFile
 					.getName());
 			newImageFile.archiveCopyFrom(imageFile);
 		}
+		success = true;
 		return null;
 	}
 	
 	@Override
 	protected void done() {
-		messageListener.writeToConsole("DONE");
-		try {
-			editorAccess.getWorkspace().open(dtbFile.toURI().toURL());
-		} catch (MalformedURLException e) {
-			editorAccess.showErrorMessage(e.toString());
+		if (success) {
+			messageListener.writeToConsole("DONE");
+			try {
+				editorAccess.getWorkspace().open(dtbFile.toURI().toURL());
+			} catch (MalformedURLException e) {
+				editorAccess.showErrorMessage(e.toString());
+			}
 		}
 	}
 	

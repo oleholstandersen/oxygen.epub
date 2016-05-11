@@ -15,7 +15,7 @@
         select="replace(document-uri(/), '/[^/]*$', '/')"/>
     <xsl:param name="NAVIGATION_DOCUMENT" as="document-node()*"
         select="document(concat($CONTENT_FOLDER_URL, 'nav.xhtml'))"/>
-    <xsl:param name="UPDATE_OPF" as="xs:boolean" select="true()"/>
+    <xsl:param name="UPDATE_EPUB" as="xs:boolean" select="true()"/>
     <xsl:variable name="NAVIGATION_LIST" as="node()*"
         select="$NAVIGATION_DOCUMENT/xhtml:html/xhtml:body/xhtml:nav
                 [@epub:type eq 'toc']/xhtml:ol[1]"/>
@@ -112,17 +112,20 @@
         <xsl:message>
             <nota:out>CONCATENATING CONTENT DOCUMENTS...</nota:out>
         </xsl:message>
-        <xsl:if test="document(concat($CONTENT_FOLDER_URL, 'concat.xhtml'))">
-            <xsl:message terminate="yes">
-                <nota:out>ERROR: concat.xhtml already exists</nota:out>
-            </xsl:message>
+        <xsl:if test="$UPDATE_EPUB">
+            <xsl:if
+                test="document(concat($CONTENT_FOLDER_URL, 'concat.xhtml'))">
+                <xsl:message terminate="yes">
+                    <nota:out>ERROR: concat.xhtml already exists</nota:out>
+                </xsl:message>
+            </xsl:if>
         </xsl:if>
         <nota:documents>
             <nota:document
                 url="{concat($CONTENT_FOLDER_URL, 'concat.xhtml')}">
                 <xsl:call-template name="CONCAT_DOCUMENT"/>
             </nota:document>
-            <xsl:if test="$UPDATE_OPF">
+            <xsl:if test="$UPDATE_EPUB">
                 <nota:document
                     url="{concat($CONTENT_FOLDER_URL, 'package.opf')}">
                     <xsl:apply-templates mode="OPF"/>

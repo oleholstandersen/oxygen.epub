@@ -6,6 +6,7 @@ import javax.swing.text.BadLocationException;
 import ro.sync.ecss.extensions.api.ArgumentDescriptor;
 import ro.sync.ecss.extensions.api.ArgumentsMap;
 import ro.sync.ecss.extensions.api.AuthorOperationException;
+import ro.sync.ecss.extensions.api.node.AttrValue;
 import ro.sync.ecss.extensions.api.node.AuthorDocumentFragment;
 import ro.sync.ecss.extensions.api.node.AuthorElement;
 import ro.sync.ecss.extensions.api.node.AuthorNode;
@@ -31,6 +32,19 @@ public class TableOperation extends XhtmlEpubAuthorOperation {
 	
 	private void dissolveTable(AuthorElement table)
 			throws AuthorOperationException, BadLocationException {
+		AuthorElement caption = getFirstElementByXpath("caption", table);
+		AuthorDocumentFragment captionFragment = null;
+		if (caption != null) {
+			if (hasBlockContent(caption)) captionFragment =
+					getDocumentController().createDocumentFragment(caption
+							.getStartOffset() + 1, caption.getEndOffset() - 1);
+			else {
+				captionFragment = getDocumentController()
+						.createDocumentFragment(caption, true);
+				((AuthorElement)captionFragment.getContentNodes().get(0))
+						.setName("p");
+			}
+		}
 		LinkedList<AuthorDocumentFragment> cellFragments =
 				new LinkedList<AuthorDocumentFragment>();
 		for (AuthorElement cell : getElementsByXpath(".//(td|th)", table)) {
@@ -47,6 +61,10 @@ public class TableOperation extends XhtmlEpubAuthorOperation {
 		}
 		int offset = table.getStartOffset();
 		getDocumentController().deleteNode(table);
+		if (captionFragment != null) {
+			getDocumentController().insertFragment(offset, captionFragment);
+			offset += captionFragment.getAcceptedLength();
+		}
 		for (AuthorDocumentFragment cellFragment : cellFragments) { 
 			getDocumentController().insertFragment(offset, cellFragment);
 			offset += cellFragment.getAcceptedLength();

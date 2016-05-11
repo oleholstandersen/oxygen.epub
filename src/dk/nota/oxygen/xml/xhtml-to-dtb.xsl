@@ -82,34 +82,91 @@
     </xsl:template>
     <!-- XHTML -->
     <!-- Named templates for attributes -->
-    <xsl:template name="ATTRIBUTES.GENERIC">
-        <xsl:copy-of select="@id|@lang"/>
+    <xsl:template name="ATTRIBUTES.COMBINE" as="attribute()*">
+        <xsl:param name="primarySet" as="attribute()*"/>
+        <xsl:param name="secondarySet" as="attribute()*"/>
+        <xsl:copy-of
+            select="$primarySet[name() ne 'class']|$secondarySet[not(name() =
+                    ('class', $primarySet/name()))]"/>
+        <xsl:if test="($primarySet|$secondarySet)[name() eq 'class']">
+            <xsl:attribute name="class"
+                select="distinct-values(($primarySet|$secondarySet)
+                        [name() eq 'class']/tokenize(., '\s+'))"/>
+        </xsl:if>
     </xsl:template>
-    <xsl:template name="ATTRIBUTES.GENERIC.WITH_CLASS">
-        <xsl:call-template name="ATTRIBUTES.GENERIC"/>
-        <xsl:copy-of select="@class"/>
+    <xsl:template name="ATTRIBUTES.GENERIC" as="attribute()*">
+        <xsl:param name="context" as="node()" select="."/>
+        <xsl:copy-of select="$context/@id"/>
+        <xsl:call-template name="ATTRIBUTES.LANGUAGE">
+            <xsl:with-param name="context" as="node()" select="$context"/>
+        </xsl:call-template>
     </xsl:template>
-    <xsl:template name="ATTRIBUTES.IMAGE">
-        <xsl:call-template name="ATTRIBUTES.GENERIC"/>
-        <xsl:copy-of select="@alt|@height|@width"/>
-        <xsl:attribute name="src" select="nota:get-file-name-from-path(@src)"/>
+    <xsl:template name="ATTRIBUTES.GENERIC.WITH_CLASS" as="attribute()*">
+        <xsl:param name="context" as="node()" select="."/>
+        <xsl:param name="classesToAdd" as="xs:string*"/>
+        <xsl:param name="classesToDiscard" as="xs:string*"/>
+        <xsl:variable name="classes" as="xs:string*"
+            select="tokenize($context/@class, '\s+')[not(. = $classesToDiscard)],
+                    $classesToAdd"/>
+        <xsl:call-template name="ATTRIBUTES.GENERIC">
+            <xsl:with-param name="context" as="node()" select="$context"/>
+        </xsl:call-template>
+        <xsl:if test="count($classes) gt 0">
+            <xsl:attribute name="class" select="distinct-values($classes)"/>
+        </xsl:if>
     </xsl:template>
-    <xsl:template name="ATTRIBUTES.LANGUAGE.PARENT">
-        <xsl:copy-of select="parent::*/@lang"/>
+    <xsl:template name="ATTRIBUTES.IMAGE" as="attribute()*">
+        <xsl:param name="context" as="node()" select="."/>
+        <xsl:call-template name="ATTRIBUTES.GENERIC">
+            <xsl:with-param name="context" as="node()" select="$context"/>
+        </xsl:call-template>
+        <xsl:copy-of select="$context/(@alt|@height|@width)"/>
+        <xsl:attribute name="src"
+            select="nota:get-file-name-from-path($context/@src)"/>
     </xsl:template>
-    <xsl:template name="ATTRIBUTES.TABLE.CELL">
-        <xsl:call-template name="ATTRIBUTES.GENERIC"/>
-        <xsl:copy-of select="@colspan|@rowspan"/>
+    <xsl:template name="ATTRIBUTES.LANGUAGE" as="attribute()*">
+        <xsl:param name="context" as="node()" select="."/>
+        <xsl:choose>
+            <xsl:when test="not($context/@lang)">
+                <xsl:if test="$context/@xml:lang">
+                    <xsl:attribute name="lang" select="$context/@xml:lang"/>
+                </xsl:if>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:copy-of select="$context/@lang"/>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
+    <xsl:template name="ATTRIBUTES.TABLE.CELL" as="attribute()*">
+        <xsl:param name="context" as="node()" select="."/>
+        <xsl:call-template name="ATTRIBUTES.GENERIC">
+            <xsl:with-param name="context" as="node()" select="$context"/>
+        </xsl:call-template>
+        <xsl:copy-of select="$context/(@colspan|@rowspan)"/>
     </xsl:template>
     <!-- Named template for copied element with generic attributes -->
-    <xsl:template name="ELEMENT.COPY.GENERIC">
+    <xsl:template name="ELEMENT.COPY.GENERIC" as="element()*">
         <xsl:element name="{local-name()}">
-            <xsl:call-template name="ATTRIBUTES.GENERIC"/>
+            <xsl:call-template name="ATTRIBUTES.GENERIC.WITH_CLASS"/>
             <xsl:apply-templates/>
         </xsl:element>
     </xsl:template>
+    <xsl:template name="ELEMENT.BRIDGEHEAD">
+        <xsl:param name="context" as="node()" select="."/>
+        <p>
+            <xsl:call-template name="ATTRIBUTES.GENERIC.WITH_CLASS">
+                <xsl:with-param name="classesToAdd" as="xs:string"
+                    select="'bridgehead'"/>
+                <xsl:with-param name="context" as="node()" select="$context"/>
+            </xsl:call-template>
+            <xsl:apply-templates select="$context/node()">
+                <xsl:with-param name="discardEmStrong" as="xs:boolean"
+                    tunnel="yes" select="true()"/>
+            </xsl:apply-templates>
+        </p>
+    </xsl:template>
     <!-- Named template for page numbers -->
-    <xsl:template name="ELEMENT.LIST_ITEM.PAGENUM.AFTER">
+    <xsl:template name="ELEMENT.LIST_ITEM.PAGENUM.AFTER" as="element()*">
         <xsl:for-each
             select="descendant::xhtml:*[nota:is-page-break(.)]
                     [nota:ends-list-item(.)] except descendant::xhtml:li/
@@ -117,7 +174,7 @@
             <xsl:call-template name="ELEMENT.PAGENUM"/>
         </xsl:for-each>
     </xsl:template>
-    <xsl:template name="ELEMENT.LIST_ITEM.PAGENUM.BEFORE">
+    <xsl:template name="ELEMENT.LIST_ITEM.PAGENUM.BEFORE" as="element()*">
         <xsl:for-each
             select="descendant::xhtml:*[nota:is-page-break(.)]
                     [nota:starts-list-item(.)] except descendant::xhtml:li/
@@ -125,7 +182,7 @@
             <xsl:call-template name="ELEMENT.PAGENUM"/>
         </xsl:for-each>
     </xsl:template>
-    <xsl:template name="ELEMENT.PAGENUM">
+    <xsl:template name="ELEMENT.PAGENUM" as="element()">
         <pagenum>
             <xsl:attribute name="id" select="@id"/>
             <xsl:attribute name="page" select="replace(@class, '^page-', '')"/>
@@ -133,14 +190,31 @@
         </pagenum>
     </xsl:template>
     <!-- Named template for table captions -->
-    <xsl:template name="ELEMENT.TABLE.CAPTION">
-        <xsl:if test="xhtml:caption">
-            <xsl:apply-templates mode="GROUP_INLINE_CONTENT"
-                select="xhtml:caption/node()">
-                <xsl:with-param name="parentElementDissolved" as="xs:boolean"
-                    select="true()"/>
-            </xsl:apply-templates>
-        </xsl:if>
+    <xsl:template name="ELEMENT.TABLE.CAPTION" as="element()*">
+        <xsl:variable name="attributes" as="attribute()*">
+            <xsl:call-template name="ATTRIBUTES.GENERIC.WITH_CLASS">
+                <xsl:with-param name="classesToAdd" as="xs:string"
+                    select="'bridgehead'"/>
+                <xsl:with-param name="context" as="node()"
+                    select="xhtml:caption"/>
+            </xsl:call-template>
+        </xsl:variable>
+        <xsl:for-each select="xhtml:caption/node()">
+            <xsl:choose>
+                <xsl:when test="nota:starts-inline(.)">
+                    <xsl:apply-templates mode="GROUP_INLINE_CONTENT" select=".">
+                        <xsl:with-param name="attributes" as="attribute()*"
+                            select="$attributes[name() ne 'id']"/>
+                    </xsl:apply-templates>
+                </xsl:when>
+                <xsl:when test="self::xhtml:* and not(nota:is-inline(.))">
+                    <xsl:apply-templates mode="DISSOLVED_PARENT" select=".">
+                        <xsl:with-param name="attributes" as="attribute()*"
+                            select="$attributes[name() ne 'id']"/>
+                    </xsl:apply-templates>
+                </xsl:when>
+            </xsl:choose>
+        </xsl:for-each>
     </xsl:template>
     <!-- Generic template for XHTML elements -->
     <xsl:template match="xhtml:*">
@@ -148,54 +222,48 @@
     </xsl:template>
     <!-- Special mode for grouping inline content in paragraphs -->
     <xsl:template mode="GROUP_INLINE_CONTENT"
-        match="node()[nota:is-inline(.)]">
-        <xsl:param name="parentElementDissolved" as="xs:boolean*"/>
-        <xsl:choose>
-            <xsl:when test="preceding-sibling::node()[1][nota:is-inline(.)]"/>
-            <xsl:otherwise>
-                <xsl:variable name="group" as="node()*"
-                    select="self::node()|following-sibling::node() except
-                            following-sibling::node()[not(nota:is-inline(.))]
-                            [1]/(self::node()|following-sibling::node())"/>
-                <xsl:if test="$group[normalize-space() ne '']">
-                    <p>
-                        <xsl:if test="$parentElementDissolved">
-                            <xsl:call-template
-                                name="ATTRIBUTES.LANGUAGE.PARENT"/>
-                        </xsl:if>
-                        <xsl:apply-templates select="$group"/>
-                    </p>
-                </xsl:if>
-            </xsl:otherwise>
-        </xsl:choose>
+        match="node()[nota:starts-inline(.)]" priority="1">
+        <xsl:param name="attributes" as="attribute()*"/>
+        <xsl:variable name="group" as="node()*"
+            select="self::node()|following-sibling::node() except
+                    following-sibling::node()[not(nota:is-inline(.))]
+                    [1]/(self::node()|following-sibling::node())"/>
+        <xsl:if test="$group[normalize-space() ne '']">
+            <p>
+                <xsl:copy-of select="$attributes"/>
+                <xsl:apply-templates select="$group"/>
+            </p>
+        </xsl:if>
     </xsl:template>
     <xsl:template mode="GROUP_INLINE_CONTENT"
-        match="node()[not(nota:is-inline(.))]">
-        <xsl:param name="parentElementDissolved" as="xs:boolean*"/>
-        <xsl:choose>
-            <xsl:when test="$parentElementDissolved">
-                <xsl:variable name="element" as="node()">
-                    <xsl:apply-templates select="."/>
-                </xsl:variable>
-                <xsl:element name="{$element/local-name()}">
-                    <xsl:copy-of select="$element/@*"/>
-                    <xsl:call-template name="ATTRIBUTES.LANGUAGE.PARENT"/>
-                    <xsl:copy-of select="$element/node()"/>
-                </xsl:element>
-            </xsl:when>
-            <xsl:otherwise>
-                <xsl:apply-templates select="."/>
-            </xsl:otherwise>
-        </xsl:choose>
+        match="node()[nota:is-inline(.)]"/>
+    <xsl:template mode="GROUP_INLINE_CONTENT" match="node()">
+        <xsl:apply-templates select="."/>
+    </xsl:template>
+    <!-- Special mode for handling children of dissolved elements -->
+    <xsl:template match="xhtml:*" mode="DISSOLVED_PARENT">
+        <xsl:param name="attributes" as="attribute()*"/>
+        <xsl:variable name="element" as="element()">
+            <xsl:apply-templates select="."/>
+        </xsl:variable>
+        <xsl:element name="{$element/local-name()}">
+            <xsl:call-template name="ATTRIBUTES.COMBINE">
+                <xsl:with-param name="primarySet" as="attribute()*"
+                    select="$element/@*"/>
+                <xsl:with-param name="secondarySet" as="attribute()*"
+                    select="$attributes"/>
+            </xsl:call-template>
+            <xsl:copy-of select="$element/node()"/>
+        </xsl:element>
     </xsl:template>
     <!-- A -->
     <xsl:template  match="xhtml:a">
-        <xsl:variable name="isExternal" as="xs:boolean"
+        <xsl:variable name="isExternal" as="xs:boolean?"
             select="matches(@href, '^[a-z]+:')"/>
         <xsl:choose>
             <xsl:when test="$isExternal">
                 <a>
-                    <xsl:call-template name="ATTRIBUTES.GENERIC"/>
+                    <xsl:call-template name="ATTRIBUTES.GENERIC.WITH_CLASS"/>
                     <xsl:copy-of select="@href"/>
                     <xsl:apply-templates/>
                 </a>
@@ -205,29 +273,47 @@
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
-    <xsl:template
-        match="xhtml:a[nota:has-classes(., 'noteref')]">
+    <xsl:template match="xhtml:a[nota:has-classes(., 'noteref')]">
         <noteref idref="{replace(@href, '^.*?#', '')}">
-        	<xsl:call-template name="ATTRIBUTES.GENERIC"/>
+        	<xsl:call-template name="ATTRIBUTES.GENERIC.WITH_CLASS">
+        	    <xsl:with-param name="classesToDiscard" as="xs:string"
+        	        select="'noteref'"/>
+        	</xsl:call-template>
             <xsl:apply-templates/>
         </noteref>
+    </xsl:template>
+    <!-- ABBR -->
+    <xsl:template match="xhtml:abbr">
+        <acronym>
+            <xsl:call-template name="ATTRIBUTES.GENERIC.WITH_CLASS"/>
+            <xsl:apply-templates/>
+        </acronym>
     </xsl:template>
     <!-- ASIDE -->
     <xsl:template match="xhtml:aside">
         <sidebar>
-            <xsl:call-template name="ATTRIBUTES.GENERIC"/>
+            <xsl:call-template name="ATTRIBUTES.GENERIC.WITH_CLASS"/>
             <xsl:apply-templates mode="GROUP_INLINE_CONTENT"/>
         </sidebar>
     </xsl:template>
     <xsl:template match="xhtml:figure/xhtml:aside">
-        <prodnote class="imgprodnote" render="required">
-            <xsl:call-template name="ATTRIBUTES.GENERIC"/>
+        <prodnote render="required">
+            <xsl:call-template name="ATTRIBUTES.GENERIC.WITH_CLASS">
+                <xsl:with-param name="classesToAdd" as="xs:string"
+                    select="'imgprodnote'"/>
+                <xsl:with-param name="classesToDiscard" as="xs:string+"
+                    select="('desc', 'prodnote')"/>
+            </xsl:call-template>
             <xsl:apply-templates mode="GROUP_INLINE_CONTENT"/>
         </prodnote>
     </xsl:template>
     <!-- BLOCKQUOTE -->
     <xsl:template match="xhtml:blockquote">
-        <div class="blockquote">
+        <div>
+            <xsl:call-template name="ATTRIBUTES.GENERIC.WITH_CLASS">
+                <xsl:with-param name="classesToAdd" as="xs:string"
+                    select="'blockquote'"/>
+            </xsl:call-template>
             <xsl:apply-templates/>
         </div>
     </xsl:template>
@@ -248,15 +334,18 @@
     </xsl:template>
     <!-- FIGCAPTION -->
     <xsl:template match="xhtml:figcaption">
-        <prodnote class="caption">
-            <xsl:call-template name="ATTRIBUTES.GENERIC"/>
+        <prodnote>
+            <xsl:call-template name="ATTRIBUTES.GENERIC.WITH_CLASS">
+                <xsl:with-param name="classesToAdd" as="xs:string"
+                    select="'caption'"/>
+            </xsl:call-template>
             <xsl:apply-templates mode="GROUP_INLINE_CONTENT"/>
         </prodnote>
     </xsl:template>
     <!-- FIGURE -->
     <xsl:template match="xhtml:figure">
         <imggroup>
-            <xsl:call-template name="ATTRIBUTES.GENERIC"/>
+            <xsl:call-template name="ATTRIBUTES.GENERIC.WITH_CLASS"/>
             <xsl:choose>
                 <xsl:when test="xhtml:figure">
                     <xsl:apply-templates select="xhtml:figure/xhtml:*"/>
@@ -271,7 +360,10 @@
     </xsl:template>
     <xsl:template match="xhtml:figure[nota:has-classes(., 'sidebar')]">
         <sidebar>
-            <xsl:call-template name="ATTRIBUTES.GENERIC"/>
+            <xsl:call-template name="ATTRIBUTES.GENERIC.WITH_CLASS">
+                <xsl:with-param name="classesToDiscard" as="xs:string"
+                    select="'sidebar'"/>
+            </xsl:call-template>
             <xsl:apply-templates/>
         </sidebar>
     </xsl:template>
@@ -285,21 +377,18 @@
         <xsl:choose>
             <xsl:when test="$demote">
                 <p class="bridgehead">
-                    <xsl:call-template name="ATTRIBUTES.GENERIC"/>
+                    <xsl:call-template name="ATTRIBUTES.GENERIC.WITH_CLASS"/>
                     <xsl:apply-templates/>
                 </p>
             </xsl:when>
             <xsl:otherwise>
                 <levelhd>
-                    <xsl:call-template name="ATTRIBUTES.GENERIC"/>
+                    <xsl:call-template name="ATTRIBUTES.GENERIC.WITH_CLASS"/>
                     <xsl:attribute name="depth" select="$depth"/>
                     <xsl:apply-templates/>
                 </levelhd>
             </xsl:otherwise>
         </xsl:choose>
-    </xsl:template>
-    <xsl:template match="xhtml:*[matches(local-name(), '^h\d$')]//xhtml:span">
-        <xsl:apply-templates/>
     </xsl:template>
     <!-- HR -->
     <xsl:template match="xhtml:hr"/>
@@ -318,7 +407,7 @@
     <xsl:template match="xhtml:li">
         <xsl:call-template name="ELEMENT.LIST_ITEM.PAGENUM.BEFORE"/>
         <li>
-            <xsl:call-template name="ATTRIBUTES.GENERIC"/>
+            <xsl:call-template name="ATTRIBUTES.GENERIC.WITH_CLASS"/>
             <xsl:apply-templates/>
         </li>
         <xsl:call-template name="ELEMENT.LIST_ITEM.PAGENUM.AFTER"/>
@@ -341,7 +430,7 @@
                     else concat($formattedNumber, '. ')"/>
         <xsl:call-template name="ELEMENT.LIST_ITEM.PAGENUM.BEFORE"/>
         <li>
-            <xsl:call-template name="ATTRIBUTES.GENERIC"/>
+            <xsl:call-template name="ATTRIBUTES.GENERIC.WITH_CLASS"/>
             <xsl:choose>
                 <xsl:when
                     test="node()[normalize-space() ne ''][1]/self::xhtml:p">
@@ -368,7 +457,7 @@
     </xsl:template>
     <!-- NOTES -->
     <xsl:template match="xhtml:*[nota:is-note(.)]" priority="1">
-        <xsl:variable name="class" as="xs:string*">
+        <xsl:variable name="class" as="xs:string">
             <xsl:variable name="types" as="xs:string*"
                 select="tokenize(@epub:type, '\s+')"/>
             <xsl:value-of
@@ -377,17 +466,22 @@
                         else ''"/>
         </xsl:variable>
         <note>
-            <xsl:call-template name="ATTRIBUTES.GENERIC"/>
-            <xsl:if test="$class">
-                <xsl:attribute name="class" select="$class"/>
-            </xsl:if>
+            <xsl:call-template name="ATTRIBUTES.GENERIC.WITH_CLASS">
+                <xsl:with-param name="classesToAdd" as="xs:string"
+                    select="$class"/>
+                <xsl:with-param name="classesToDiscard" as="xs:string"
+                    select="'notebody'"/>
+            </xsl:call-template>
             <xsl:apply-templates mode="GROUP_INLINE_CONTENT"/>
         </note>
     </xsl:template>
     <!-- OL -->
     <xsl:template match="xhtml:ol">
         <list type="ul" bullet="none">
-            <xsl:call-template name="ATTRIBUTES.GENERIC"/>
+            <xsl:call-template name="ATTRIBUTES.GENERIC.WITH_CLASS">
+                <xsl:with-param name="classesToDiscard" as="xs:string"
+                    select="'list-style-type-none'"/>
+            </xsl:call-template>
             <xsl:choose>
                 <xsl:when test="nota:has-classes(., 'list-style-type-none')">
                     <xsl:apply-templates/>
@@ -407,39 +501,49 @@
         </list>
     </xsl:template>
     <xsl:template match="xhtml:ol[xhtml:li[nota:is-note(.)]]">
-    	<xsl:apply-templates/>
+        <xsl:variable name="attributes" as="attribute()*">
+            <xsl:call-template name="ATTRIBUTES.GENERIC.WITH_CLASS">
+                <xsl:with-param name="classesToDiscard" as="xs:string"
+                    select="'list-style-type-none'"/>
+            </xsl:call-template>
+        </xsl:variable>
+        <xsl:for-each select="xhtml:*">
+            <xsl:apply-templates mode="DISSOLVED_PARENT" select=".">
+                <xsl:with-param name="attributes" as="attribute()*"
+                    select="$attributes[name() ne 'id']"/>
+            </xsl:apply-templates>
+        </xsl:for-each>
     </xsl:template>
     <!-- P -->
     <xsl:template match="xhtml:p[nota:has-classes(., 'line')]" priority="1">
         <line>
-            <xsl:call-template name="ATTRIBUTES.GENERIC"/>
+            <xsl:call-template name="ATTRIBUTES.GENERIC.WITH_CLASS">
+                <xsl:with-param name="classesToDiscard" as="xs:string"
+                    select="'line'"/>
+            </xsl:call-template>
             <xsl:apply-templates/>
         </line>
     </xsl:template>
     <xsl:template match="xhtml:p[nota:is-bridgehead(.)]" priority="1">
-        <p>
-            <xsl:call-template name="ATTRIBUTES.GENERIC"/>
-            <xsl:attribute name="class" select="'bridgehead'"/>
-            <xsl:apply-templates>
-                <xsl:with-param name="discardEmStrong" as="xs:boolean"
-                    tunnel="yes" select="true()"/>
-            </xsl:apply-templates>
-        </p>
+        <xsl:call-template name="ELEMENT.BRIDGEHEAD"/>
     </xsl:template>
     <xsl:template match="xhtml:p[preceding-sibling::*[1]/self::xhtml:hr]">
-        <xsl:variable name="class" as="xs:string*"
+        <xsl:variable name="class" as="xs:string"
             select="if (nota:has-classes(preceding-sibling::*[1],
                     'emptyline')) then 'precedingemptyline'
                     else if (nota:has-classes(preceding-sibling::*[1],
                     'separator')) then 'precedingseparator'
                     else ''"/>
         <p>
-            <xsl:call-template name="ATTRIBUTES.GENERIC"/>
-            <xsl:if test="$class">
-                <xsl:attribute name="class" select="$class"/>
-            </xsl:if>
+            <xsl:call-template name="ATTRIBUTES.GENERIC.WITH_CLASS">
+                <xsl:with-param name="classesToAdd" as="xs:string"
+                    select="$class"/>
+            </xsl:call-template>
             <xsl:apply-templates/>
         </p>
+    </xsl:template>
+    <xsl:template match="xhtml:p[parent::xhtml:caption]">
+        <xsl:call-template name="ELEMENT.BRIDGEHEAD"/>
     </xsl:template>
     <!-- PAGE BREAK -->
     <xsl:template
@@ -453,7 +557,7 @@
         <xsl:choose>
             <xsl:when test="$depth le 6">
                 <level depth="{$depth}">
-                    <xsl:call-template name="ATTRIBUTES.GENERIC"/>
+                    <xsl:call-template name="ATTRIBUTES.GENERIC.WITH_CLASS"/>
                     <xsl:apply-templates/>
                 </level>
             </xsl:when>
@@ -463,28 +567,44 @@
         </xsl:choose>
     </xsl:template>
     <xsl:template match="xhtml:section[nota:is-poem(.)]">
-        <div class="poem">
+        <div>
+            <xsl:call-template name="ATTRIBUTES.GENERIC.WITH_CLASS">
+                <xsl:with-param name="classesToAdd" as="xs:string"
+                    select="'poem'"/>
+            </xsl:call-template>
             <xsl:apply-templates/>
         </div>
     </xsl:template>
     <xsl:template
         match="xhtml:section[nota:is-poem(.)]/xhtml:div[nota:is-stanza(.)]">
         <div class="stanza">
-            <xsl:call-template name="ATTRIBUTES.GENERIC"/>
+            <xsl:call-template name="ATTRIBUTES.GENERIC.WITH_CLASS">
+                <xsl:with-param name="classesToAdd" as="xs:string"
+                    select="'stanza'"/>
+                <xsl:with-param name="classesToDiscard" as="xs:string"
+                    select="'linegroup'"/>
+            </xsl:call-template>
             <xsl:apply-templates/>
         </div>
     </xsl:template>
     <!-- SPAN -->
     <xsl:template match="xhtml:span[nota:has-classes(., 'lic')]">
-        <lic class="pageref">
-            <xsl:call-template name="ATTRIBUTES.GENERIC"/>
+        <lic>
+            <xsl:call-template name="ATTRIBUTES.GENERIC.WITH_CLASS">
+                <xsl:with-param name="classesToAdd" as="xs:string"
+                    select="'pageref'"/>
+                <xsl:with-param name="classesToDiscard" as="xs:string"
+                    select="'lic'"/>
+            </xsl:call-template>
             <xsl:apply-templates/>
         </lic>
     </xsl:template>
-    <xsl:template 
-        match="xhtml:span[nota:has-classes(., 'linenum')]">
+    <xsl:template match="xhtml:span[nota:has-classes(., 'linenum')]">
         <linenum>
-            <xsl:call-template name="ATTRIBUTES.GENERIC"/>
+            <xsl:call-template name="ATTRIBUTES.GENERIC.WITH_CLASS">
+                <xsl:with-param name="classesToDiscard" as="xs:string"
+                    select="'linenum'"/>
+            </xsl:call-template>
             <xsl:apply-templates/>
         </linenum>
     </xsl:template>
@@ -497,10 +617,9 @@
         </table>
     </xsl:template>
     <xsl:template match="xhtml:table[nota:get-page-breaks(.)]">
-        <xsl:variable name="attributes" as="attribute()*"
-            select="@class|@lang"/>
-        <xsl:variable name="attributesWithId" as="attribute()*"
-            select="$attributes|@id"/>
+        <xsl:variable name="attributes" as="attribute()*">
+            <xsl:call-template name="ATTRIBUTES.GENERIC.WITH_CLASS"/>
+        </xsl:variable>
         <xsl:call-template name="ELEMENT.TABLE.CAPTION"/>
         <xsl:variable name="firstPass" as="node()">
             <table>
@@ -526,8 +645,8 @@
             <xsl:copy-of select="current-group()[self::pagenum]"/>
             <table>
                 <xsl:copy-of
-                    select="if (position() eq 1) then $attributesWithId
-                            else $attributes"/>
+                    select="if (position() eq 1) then $attributes
+                            else $attributes[name() ne 'id']"/>
                 <xsl:copy-of select="current-group()[self::tr]"/>
             </table>
         </xsl:for-each-group>
@@ -536,7 +655,15 @@
     <xsl:template match="xhtml:table//xhtml:*[nota:is-page-break(.)]"
         priority="1"/>
     <xsl:template match="xhtml:tbody|xhtml:tfoot|xhtml:thead">
-        <xsl:apply-templates/>
+        <xsl:variable name="attributes" as="attribute()*">
+            <xsl:call-template name="ATTRIBUTES.GENERIC.WITH_CLASS"/>
+        </xsl:variable>
+        <xsl:for-each select="xhtml:*">
+            <xsl:apply-templates mode="DISSOLVED_PARENT" select=".">
+                <xsl:with-param name="attributes" as="attribute()*"
+                    select="$attributes[name() ne 'id']"/>
+            </xsl:apply-templates>
+        </xsl:for-each>
     </xsl:template>
     <!-- TABLE CELLS -->
     <xsl:template match="xhtml:td">
@@ -554,7 +681,10 @@
     <!-- UL -->
     <xsl:template match="xhtml:ul">
         <list type="ul">
-            <xsl:call-template name="ATTRIBUTES.GENERIC"/>
+            <xsl:call-template name="ATTRIBUTES.GENERIC.WITH_CLASS">
+                <xsl:with-param name="classesToDiscard" as="xs:string"
+                    select="'list-style-type-none'"/>
+            </xsl:call-template>
             <xsl:attribute name="bullet"
                 select="if (nota:has-classes(., 'list-style-type-none'))
                         then 'none' else 'yes'"/>
@@ -599,17 +729,17 @@
                     following::xhtml:tr))"/>
     </xsl:function>
     <xsl:function name="nota:has-classes" as="xs:boolean">
-        <xsl:param name="n" as="node()"/>
+        <xsl:param name="n" as="element()"/>
         <xsl:param name="classes" as="xs:string+"/>
         <xsl:value-of select="tokenize($n/@class, '\s+') = $classes"/>
     </xsl:function>
     <xsl:function name="nota:has-epub-types" as="xs:boolean">
-        <xsl:param name="n" as="node()"/>
+        <xsl:param name="n" as="element()"/>
         <xsl:param name="types" as="xs:string+"/>
         <xsl:value-of select="tokenize($n/@epub:type, '\s+') = $types"/>
     </xsl:function>
     <xsl:function name="nota:is-bridgehead" as="xs:boolean">
-        <xsl:param name="n" as="node()"/>
+        <xsl:param name="n" as="element()"/>
         <xsl:value-of
             select="$n/(nota:has-classes(., 'bridgehead') or
                     nota:has-epub-types(., 'bridgehead'))"/>
@@ -617,25 +747,38 @@
     <xsl:function name="nota:is-inline" as="xs:boolean">
         <xsl:param name="n" as="node()"/>
         <xsl:value-of
-            select="$n/(self::text() or local-name() = $INLINE_ELEMENT_NAMES)"/>
+            select="$n/(self::text()[normalize-space() ne ''] or local-name() =
+                    $INLINE_ELEMENT_NAMES)"/>
     </xsl:function>
     <xsl:function name="nota:is-note" as="xs:boolean">
-        <xsl:param name="n" as="node()"/>
+        <xsl:param name="n" as="element()"/>
         <xsl:value-of
             select="nota:has-epub-types($n, ('note', 'footnote', 'rearnote'))"/>
     </xsl:function>
     <xsl:function name="nota:is-page-break" as="xs:boolean">
-        <xsl:param name="n" as="node()"/>
+        <xsl:param name="n" as="element()"/>
         <xsl:value-of select="nota:has-epub-types($n, 'pagebreak')"/>
     </xsl:function>
     <xsl:function name="nota:is-poem" as="xs:boolean">
-        <xsl:param name="n" as="node()"/>
+        <xsl:param name="n" as="element()"/>
         <xsl:value-of
-            select="nota:has-epub-types($n, ('z3998:poem', 'z3998:verse'))"/>
+            select="nota:has-epub-types($n, ('z3998:poem', 'z3998:verse'))
+                    or nota:has-classes($n, 'poem')"/>
     </xsl:function>
     <xsl:function name="nota:is-stanza" as="xs:boolean">
-        <xsl:param name="n" as="node()"/>
+        <xsl:param name="n" as="element()"/>
         <xsl:value-of select="nota:has-classes($n, 'linegroup')"/>
+    </xsl:function>
+    <xsl:function name="nota:starts-sequence" as="xs:boolean">
+        <xsl:param name="n" as="node()"/>
+        <xsl:value-of
+            select="not($n/preceding-sibling::node()[normalize-space() ne ''])"/>
+    </xsl:function>
+    <xsl:function name="nota:starts-inline" as="xs:boolean">
+        <xsl:param name="n" as="node()"/>
+        <xsl:value-of
+            select="$n/(nota:is-inline(.) and (nota:starts-sequence(.) or
+                    preceding-sibling::node()[1]/not(nota:is-inline(.))))"/>
     </xsl:function>
     <xsl:function name="nota:starts-list-item" as="xs:boolean">
         <xsl:param name="n" as="node()"/>

@@ -24,6 +24,7 @@ public class ConcatWorker extends SwingWorker<Object,Object> {
 	private EditorAccess editorAccess;
 	private EpubAccess epubAccess;
 	private ConsoleListener messageListener;
+	private boolean success = false;
 	
 	public ConcatWorker(EditorAccess editorAccess, EpubAccess epubAccess,
 			ConsoleWindow consoleWindow) {
@@ -36,7 +37,7 @@ public class ConcatWorker extends SwingWorker<Object,Object> {
 	protected Object doInBackground() throws Exception {
 		XsltTransformer concatTransformer = epubAccess.getConcatTransformer(
 				messageListener, messageListener);
-		concatTransformer.setParameter(new QName("UPDATE_OPF"),
+		concatTransformer.setParameter(new QName("UPDATE_EPUB"),
 				new XdmAtomicValue(true));
 		XsltTransformer outputTransformer = epubAccess.getOutputTransformer(
 				messageListener, messageListener);
@@ -48,12 +49,13 @@ public class ConcatWorker extends SwingWorker<Object,Object> {
 			editorAccess.getWorkspace().delete(new URL(epubAccess
 					.getContentFolderUrl(), documentPath));
 		}
+		success = true;
 		return null;
 	}
 	
 	@Override
 	protected void done() {
-		messageListener.writeToConsole("DONE");
+		if (success) messageListener.writeToConsole("DONE");
 	}
 	
 	private class DocumentListener extends ConsoleListener {

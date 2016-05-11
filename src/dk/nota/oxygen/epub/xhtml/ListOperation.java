@@ -14,25 +14,27 @@ public class ListOperation extends XhtmlEpubAuthorOperation {
 	
 	private OperationType operationType;
 	
-	private void convert(LinkedList<AuthorElement> blocks)
+	private void create(LinkedList<AuthorElement> blocks)
 			throws AuthorOperationException {
 		int start = blocks.getFirst().getStartOffset();
 		int end = blocks.getLast().getEndOffset();
 		for (AuthorElement block : blocks) {
 			if (block.getName().equals("p"))
 				getDocumentController().renameElement(block, "li");
-			else if (block.getName().matches("^(ol|ul)$"))
+			else if (block.getName().matches("^(ol|ul)$")) {
 				wrapInFragment(operationType.getListItemFragment(),
 						block.getStartOffset(), block.getEndOffset());
+				end += 2;
+			}
 		}
 		wrapInFragment(operationType.getListFragment(), start, end);
 	}
 	
 	private void dissolve(LinkedList<AuthorElement> listItems)
 			throws AuthorOperationException, BadLocationException {
-		int start = listItems.getFirst().getStartOffset();
-		int end = listItems.getLast().getEndOffset();
-		floatInterval(start, end);
+		for (AuthorElement listItem : listItems) {
+			floatNode(listItem);
+		}
 	}
 	
 	@Override
@@ -40,15 +42,13 @@ public class ListOperation extends XhtmlEpubAuthorOperation {
 		try {
 			LinkedList<AuthorElement> blocks = new LinkedList<AuthorElement>();
 			for (AuthorNode node : getSelectedNodes()) {
-				AuthorElement block = getFirstElementByXpath(
-						operationType.isConversion() ? "(ancestor-or-self::ol|" +
-						"ancestor-or-self::p|ancestor-or-self::ul)[1]" :
-						"ancestor-or-self::li[1]", node);
+				AuthorElement block = getFirstElementByXpath(operationType
+						.getXpathForBlocks(), node);
 				if (block != null && !blocks.contains(block)) blocks.add(block);
 			}
 			switch (operationType) {
-			case CONVERT_OL: case CONVERT_UL:
-				convert(blocks);
+			case CREATE_OL: case CREATE_UL:
+				create(blocks);
 				return;
 			case INDENT_OL: case INDENT_UL:
 				indent(blocks);
@@ -67,9 +67,8 @@ public class ListOperation extends XhtmlEpubAuthorOperation {
 		return new ArgumentDescriptor[] {
 				new ArgumentDescriptor("operationType", ArgumentDescriptor
 						.TYPE_CONSTANT_LIST, "The desired operation type",
-						new String[] {"convertOrdered", "convertUnordered",
-								"indentOrdered", "indentUnordered",
-								"dissolve"},
+						new String[] {"createOrdered", "createUnordered",
+						"indentOrdered", "indentUnordered", "dissolve"},
 						"convertOrdered")
 		};
 	}
@@ -92,11 +91,11 @@ public class ListOperation extends XhtmlEpubAuthorOperation {
 			throws IllegalArgumentException {
 		String typeString = (String)arguments.getArgumentValue("operationType");
 		switch (typeString) {
-		case "convertOrdered":
-			operationType = OperationType.CONVERT_OL;
+		case "createOrdered":
+			operationType = OperationType.CREATE_OL;
 			break;
-		case "convertUnordered":
-			operationType = OperationType.CONVERT_UL;
+		case "createUnordered":
+			operationType = OperationType.CREATE_UL;
 			break;
 		case "indentOrdered":
 			operationType = OperationType.INDENT_OL;
@@ -112,17 +111,17 @@ public class ListOperation extends XhtmlEpubAuthorOperation {
 	
 	public enum OperationType {
 		
-		CONVERT_OL, CONVERT_UL, INDENT_OL, INDENT_UL, DISSOLVE;
+		CREATE_OL, CREATE_UL, INDENT_OL, INDENT_UL, DISSOLVE;
 		
-		public boolean isConversion() {
-			return (this == CONVERT_OL || this == CONVERT_UL);
+		public boolean createList() {
+			return (this == CREATE_OL || this == CREATE_UL);
 		}
 		
 		public String getListFragment() {
 			switch (this) {
-			case CONVERT_OL: case INDENT_OL:
+			case CREATE_OL: case INDENT_OL:
 				return "<ol xmlns='http://www.w3.org/1999/xhtml'/>";
-			case CONVERT_UL: case INDENT_UL:
+			case CREATE_UL: case INDENT_UL:
 				return "<ul xmlns='http://www.w3.org/1999/xhtml'/>";
 			default:
 				return null;
@@ -135,9 +134,18 @@ public class ListOperation extends XhtmlEpubAuthorOperation {
 		
 		public String getName() {
 			switch (this) {
-			case CONVERT_OL: case INDENT_OL: return "ol";
-			case CONVERT_UL: case INDENT_UL: return "ul";
+			case CREATE_OL: case INDENT_OL: return "ol";
+			case CREATE_UL: case INDENT_UL: return "ul";
 			default: return null;
+			}
+		}
+		
+		public String getXpathForBlocks() {
+			switch (this) {
+			case CREATE_OL: case CREATE_UL:
+				return "(ancestor-or-self::ol|ancestor-or-self::p|" +
+				    	"ancestor-or-self::ul)[1]";
+			default: return "ancestor-or-self::li[last()]";
 			}
 		}
 		

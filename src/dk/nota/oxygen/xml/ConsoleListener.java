@@ -5,6 +5,7 @@ import javax.xml.transform.SourceLocator;
 import javax.xml.transform.TransformerException;
 
 import dk.nota.oxygen.common.ConsoleWindow;
+import net.sf.saxon.expr.instruct.TerminationException;
 import net.sf.saxon.s9api.Axis;
 import net.sf.saxon.s9api.MessageListener;
 import net.sf.saxon.s9api.QName;
@@ -27,6 +28,7 @@ public class ConsoleListener implements ErrorListener, MessageListener {
 	@Override
 	public void fatalError(TransformerException exception)
 			throws TransformerException {
+		if (exception instanceof TerminationException) return;
 		writeToConsole("ERROR: " + exception);
 	}
 	

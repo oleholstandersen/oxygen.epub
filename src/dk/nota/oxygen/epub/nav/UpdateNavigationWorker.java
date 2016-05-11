@@ -11,6 +11,7 @@ public class UpdateNavigationWorker extends SwingWorker<Object,Object> {
 	
 	private EpubAccess epubAccess;
 	private ConsoleListener messageListener;
+	private boolean success = false;
 	
 	public UpdateNavigationWorker(EpubAccess epubAccess,
 			ConsoleWindow consoleWindow) {
@@ -26,12 +27,13 @@ public class UpdateNavigationWorker extends SwingWorker<Object,Object> {
 				messageListener, messageListener);
 		navigationTransformer.setDestination(outputTransformer);
 		navigationTransformer.transform();
+		success = true;
 		return null;
 	}
 	
 	@Override
 	protected void done() {
-		messageListener.writeToConsole("DONE");
+		if (success) messageListener.writeToConsole("DONE");
 	}
 
 }

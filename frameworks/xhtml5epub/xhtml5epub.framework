@@ -2187,13 +2187,13 @@ ancestor-or-self::node()[self::*:tbody | self::*:tfoot | self::*:thead | self::*
 									</action>
 									<action>
 										<field name="id">
-											<String>list.convert.ordered</String>
+											<String>list.create.ordered</String>
 										</field>
 										<field name="name">
-											<String>Convert to ordered list</String>
+											<String>Create ordered list</String>
 										</field>
 										<field name="description">
-											<String>Converts selected paragraphs to items in an ordered list</String>
+											<String>Create an ordered list from selected paragraphs and/or lists</String>
 										</field>
 										<field name="largeIconPath">
 											<String>/images/OrderedList20.gif</String>
@@ -2221,7 +2221,7 @@ ancestor-or-self::node()[self::*:tbody | self::*:tfoot | self::*:thead | self::*
 															</entry>
 															<entry>
 																<String>operationType</String>
-																<String>convertOrdered</String>
+																<String>createOrdered</String>
 															</entry>
 														</serializableOrderedMap>
 													</field>
@@ -2234,13 +2234,13 @@ ancestor-or-self::node()[self::*:tbody | self::*:tfoot | self::*:thead | self::*
 									</action>
 									<action>
 										<field name="id">
-											<String>list.convert.unordered</String>
+											<String>list.create.unordered</String>
 										</field>
 										<field name="name">
-											<String>Convert to unordered list</String>
+											<String>Create unordered list</String>
 										</field>
 										<field name="description">
-											<String>Converts selected paragraphs to items in an unordered list</String>
+											<String>Create an unordered list from selected paragraphs and/or lists</String>
 										</field>
 										<field name="largeIconPath">
 											<String>/images/UnorderedList20.png</String>
@@ -2268,7 +2268,7 @@ ancestor-or-self::node()[self::*:tbody | self::*:tfoot | self::*:thead | self::*
 															</entry>
 															<entry>
 																<String>operationType</String>
-																<String>convertUnordered</String>
+																<String>ccreateUnordered</String>
 															</entry>
 														</serializableOrderedMap>
 													</field>
@@ -3103,12 +3103,12 @@ ancestor-or-self::node()[self::*:tbody | self::*:tfoot | self::*:thead | self::*
 														<menuSeparator/>
 														<menuItem>
 															<field name="actionID">
-																<String>list.convert.ordered</String>
+																<String>list.create.ordered</String>
 															</field>
 														</menuItem>
 														<menuItem>
 															<field name="actionID">
-																<String>list.convert.unordered</String>
+																<String>list.create.unordered</String>
 															</field>
 														</menuItem>
 														<menuSeparator/>
@@ -3632,12 +3632,12 @@ ancestor-or-self::node()[self::*:tbody | self::*:tfoot | self::*:thead | self::*
 														<toolbarSeparator/>
 														<toolbarItem>
 															<field name="actionID">
-																<String>list.convert.ordered</String>
+																<String>list.create.ordered</String>
 															</field>
 														</toolbarItem>
 														<toolbarItem>
 															<field name="actionID">
-																<String>list.convert.unordered</String>
+																<String>list.create.unordered</String>
 															</field>
 														</toolbarItem>
 														<toolbarSeparator/>
