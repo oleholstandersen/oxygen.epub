@@ -19,6 +19,11 @@ public class ImportDocxAction extends AbstractAction {
 	@Override
 	public void actionPerformed(ActionEvent event) {
 		EditorAccess editorAccess = EpubPluginExtension.getEditorAccess();
+		if (editorAccess.getCurrentEditor().isModified()) {
+			editorAccess.showErrorMessage("Unsaved changes in document: "
+					+ "please review and save before trying again");
+			return;
+		}
 		EpubAccess epubAccess = editorAccess.getEpubAccess();
 		java.io.File[] docxFiles = editorAccess.getWorkspace().chooseFiles(
 				null, "Import", new String[] {"docx"}, "Word documents");

@@ -30,7 +30,7 @@ public class HeadingOperation extends XhtmlEpubAuthorOperation {
 		AuthorElement precedingSection = getFirstElementByXpath(
 				"preceding-sibling::*[1]/self::section", section);
 		normaliseToDepth(section, --depth);
-		if (precedingSection == null) dissolveNode(section);
+		if (precedingSection == null) dissolveElement(section);
 		else {
 			AuthorDocumentFragment sectionContent = getDocumentController().
 					createDocumentFragment(section.getStartOffset() + 1,
@@ -83,7 +83,8 @@ public class HeadingOperation extends XhtmlEpubAuthorOperation {
 			if (section.getContentNodes().get(0).getStartOffset() == start)
 				return section;
 		}
-		wrapInFragment(sectionFragment, start++, section.getEndOffset() - 1);
+		getDocumentController().surroundInFragment(sectionFragment, start++,
+				section.getEndOffset() - 1);
 		newDepth--;
 		return (AuthorElement)getDocumentController().getNodeAtOffset(start);
 	}
@@ -125,8 +126,9 @@ public class HeadingOperation extends XhtmlEpubAuthorOperation {
 		}
 		int start = section.getStartOffset();
 		int end = section.getEndOffset();
-		for (int i = 1; i <= iterations; i++) wrapInFragment(sectionFragment,
-				start, end++);
+		for (int i = 1; i <= iterations; i++)
+			getDocumentController().surroundInFragment(sectionFragment, start,
+					end++);
 	}
 
 	@Override

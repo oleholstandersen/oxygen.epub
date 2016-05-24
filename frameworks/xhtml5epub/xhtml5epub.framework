@@ -2211,7 +2211,7 @@ ancestor-or-self::node()[self::*:tbody | self::*:tfoot | self::*:thead | self::*
 											<actionMode-array>
 												<actionMode>
 													<field name="xpathCondition">
-														<String>ancestor-or-self::p|ancestor-or-self::li</String>
+														<String>ancestor-or-self::ol|ancestor-or-self::p|ancestor-or-self::ul</String>
 													</field>
 													<field name="argValues">
 														<serializableOrderedMap>
@@ -2258,7 +2258,7 @@ ancestor-or-self::node()[self::*:tbody | self::*:tfoot | self::*:thead | self::*
 											<actionMode-array>
 												<actionMode>
 													<field name="xpathCondition">
-														<String>ancestor-or-self::p|ancestor-or-self::li</String>
+														<String>ancestor-or-self::ol|ancestor-or-self::p|ancestor-or-self::ul</String>
 													</field>
 													<field name="argValues">
 														<serializableOrderedMap>
@@ -2268,7 +2268,7 @@ ancestor-or-self::node()[self::*:tbody | self::*:tfoot | self::*:thead | self::*
 															</entry>
 															<entry>
 																<String>operationType</String>
-																<String>ccreateUnordered</String>
+																<String>createUnordered</String>
 															</entry>
 														</serializableOrderedMap>
 													</field>

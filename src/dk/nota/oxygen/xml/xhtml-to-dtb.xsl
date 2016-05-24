@@ -345,15 +345,16 @@
     <!-- FIGURE -->
     <xsl:template match="xhtml:figure">
         <imggroup>
-            <xsl:call-template name="ATTRIBUTES.GENERIC.WITH_CLASS"/>
+            <xsl:call-template name="ATTRIBUTES.GENERIC.WITH_CLASS">
+                <xsl:with-param name="classesToDiscard" as="xs:string+"
+                    select="('image', 'image-series')"/>
+            </xsl:call-template>
             <xsl:choose>
                 <xsl:when test="xhtml:figure">
                     <xsl:apply-templates select="xhtml:figure/xhtml:*"/>
                 </xsl:when>
                 <xsl:otherwise>
-                    <xsl:apply-templates select="xhtml:img"/>
-                    <xsl:apply-templates select="xhtml:figcaption"/>
-                    <xsl:apply-templates select="xhtml:aside"/>
+                    <xsl:apply-templates select="xhtml:*"/>
                 </xsl:otherwise>
             </xsl:choose>
         </imggroup>

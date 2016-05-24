@@ -16,8 +16,11 @@
     exclude-result-prefixes="a dc epub nota opf pic r rel w wp xhtml xs"
     version="2.0">
     <xsl:output method="xml" indent="yes"/>
+    <xsl:param name="IMPORT_TO_CONCAT" as="xs:boolean"
+        select="matches(document-uri(/), 'concat\.xhtml$')"/>
     <xsl:param name="SPLIT_DOCUMENTS" as="xs:boolean" select="false()"/>
-    <xsl:param name="WORD_FOLDER_URLS" as="xs:string*"/>
+    <xsl:param name="WORD_FOLDER_URLS" as="xs:string*"
+        select="'zip:file:C:/Users/ssp.DBBINT/Documents/Temp/w2dtbtest.docx!/word/'"/>
     <xsl:variable name="OPF_LANGUAGE" as="xs:string*"
         select="/opf:package/opf:metadata/dc:language/text()"/>
     <xsl:variable name="OPF_PID" as="xs:string*"
@@ -40,7 +43,8 @@
                     select="$numbering"/>
                 <xsl:with-param name="relationships" tunnel="yes"
                     select="$relationships"/>
-                <xsl:with-param name="styles" tunnel="yes" select="$styles"/>
+                <xsl:with-param name="styles" tunnel="yes"
+                    select="$styles"/>
             </xsl:apply-templates>
         </xsl:for-each>
     </xsl:variable>
@@ -51,9 +55,21 @@
                     <xsl:copy-of select="@*"/>
                     <xsl:copy-of select="xhtml:head"/>
                     <body>
-                        <xsl:copy-of select="xhtml:body/@*"/>
-                        <xsl:apply-templates mode="SECOND_PASS"
-                            select="$FIRST_PASS"/>
+                        <xsl:copy-of select="xhtml:body/@*|xhtml:body/node()"/>
+                        <xsl:choose>
+                            <xsl:when test="$IMPORT_TO_CONCAT">
+                                <xsl:for-each select="$FIRST_PASS">
+                                    <section epub:type="chapter bodymatter">
+                                        <xsl:apply-templates
+                                            mode="SECOND_PASS"/>
+                                    </section>
+                                </xsl:for-each>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <xsl:apply-templates mode="SECOND_PASS"
+                                    select="$FIRST_PASS"/>
+                            </xsl:otherwise>
+                        </xsl:choose>
                     </body>
                 </xsl:copy>
             </nota:document>
@@ -63,7 +79,7 @@
         <xsl:variable name="id" as="xs:string">
             <xsl:variable name="count" as="xs:integer"
                 select="opf:manifest/
-                        count(opf:item[matches(@id, '^import_\d$')])"/>
+                        count(opf:item[matches(@id, '^import_\d+$')])"/>
             <xsl:value-of select="concat('import_', $count + 1)"/>
         </xsl:variable>
         <xsl:variable name="fileName" as="xs:string">
@@ -98,7 +114,7 @@
                                 href="{@href}"/>
                         </xsl:for-each>
                     </head>
-                    <body epub:type="bodymatter chapter">
+                    <body epub:type="chapter bodymatter">
                         <xsl:apply-templates mode="SECOND_PASS"
                             select="$FIRST_PASS"/>
                     </body>
@@ -161,7 +177,7 @@
                                     href="{@href}"/>
                             </xsl:for-each>
                         </head>
-                        <body epub:type="bodymatter chapter">
+                        <body epub:type="chapter bodymatter">
                             <xsl:apply-templates mode="SECOND_PASS"
                                 select="@*|xhtml:p
                                         [not(preceding-sibling::nota:hd)]|
@@ -200,6 +216,16 @@
         <body>
             <xsl:apply-templates/>
         </body>
+    </xsl:template>
+    <xsl:template match="w:br">
+        <xsl:param name="properties" as="node()*"/>
+        <xsl:call-template name="CONVERT_FORMATTING">
+            <xsl:with-param name="content" as="node()">
+                <br/>
+            </xsl:with-param>
+            <xsl:with-param name="properties" as="node()*"
+                select="$properties"/>
+        </xsl:call-template>
     </xsl:template>
     <xsl:template match="w:p">
         <xsl:param name="numbering" as="document-node()*" tunnel="yes"/>
@@ -246,12 +272,19 @@
     <xsl:template match="w:p[not(w:r/w:t)]"/>
     <xsl:template match="w:r">
         <xsl:variable name="properties" as="node()*"
-            select="w:rPr/(w:b|w:i)"/>
-        <xsl:for-each select="w:t/text()">
-            <xsl:call-template name="CONVERT_RUN">
-                <xsl:with-param name="properties" select="$properties"/>
-            </xsl:call-template>
-        </xsl:for-each>
+            select="w:rPr/(w:b|w:i|w:vertAlign)"/>
+        <xsl:apply-templates select="w:t|w:br">
+            <xsl:with-param name="properties" as="node()*"
+                select="$properties"/>
+        </xsl:apply-templates>
+    </xsl:template>
+    <xsl:template match="w:t">
+        <xsl:param name="properties" as="node()*"/>
+        <xsl:call-template name="CONVERT_FORMATTING">
+            <xsl:with-param name="content" as="node()" select="text()"/>
+            <xsl:with-param name="properties" as="node()*"
+                select="$properties"/>
+        </xsl:call-template>
     </xsl:template>
     <xsl:template match="w:tbl">
         <table>
@@ -307,7 +340,7 @@
     <xsl:template mode="SECOND_PASS NEST_SECTIONS" match="nota:hd">
         <xsl:variable name="depth" as="xs:integer"
             select="xs:integer(@depth)"/>
-        <section>
+        <xsl:variable name="content" as="node()+">
             <xsl:element name="{concat('h', $depth)}">
                 <xsl:apply-templates mode="SECOND_PASS"
                     select="@*|node()"/>
@@ -320,7 +353,17 @@
                 select="following-sibling::nota:hd[@depth - $depth = 1] except
                         following-sibling::nota:hd[@depth &lt;= $depth][1]/
                         (self::nota:hd|following-sibling::*)"/>
-        </section>
+        </xsl:variable>
+        <xsl:choose>
+            <xsl:when test="$depth = 1">
+                <xsl:copy-of select="$content"/>
+            </xsl:when>
+            <xsl:otherwise>
+                <section>
+                    <xsl:copy-of select="$content"/>
+                </section>
+            </xsl:otherwise>
+        </xsl:choose>
     </xsl:template>
     <xsl:template mode="SECOND_PASS"
         match="nota:hd[@depth &gt; preceding-sibling::nota:hd/@depth]"/>
@@ -367,7 +410,7 @@
             </xsl:choose>
         </xsl:copy>
     </xsl:template>
-    <xsl:template name="CONVERT_RUN">
+    <xsl:template name="CONVERT_FORMATTING">
         <xsl:param name="content" as="node()" select="."/>
         <xsl:param name="properties" as="node()*"/>
         <xsl:variable name="property" as="node()*" select="$properties[1]"/>
@@ -392,7 +435,7 @@
         </xsl:variable>
         <xsl:choose>
             <xsl:when test="$properties[2]">
-                <xsl:call-template name="CONVERT_RUN">
+                <xsl:call-template name="CONVERT_FORMATTING">
                     <xsl:with-param name="content" select="$convertedRun"/>
                     <xsl:with-param name="properties"
                         select="$properties[position() gt 1]"/>

@@ -24,9 +24,9 @@ public abstract class AbstractAuthorOperation implements AuthorOperation {
 	
 	private AuthorAccess authorAccess;
 	
-	public void dissolveNode(AuthorNode node)
+	public void dissolveElement(AuthorElement element)
 			throws AuthorOperationException, BadLocationException {
-		floatInterval(node.getStartOffset() + 1, node.getEndOffset() - 1);
+		floatInterval(element.getStartOffset() + 1, element.getEndOffset() - 1);
 	}
 	
 	protected abstract void doOperation() throws AuthorOperationException;
@@ -56,8 +56,9 @@ public abstract class AbstractAuthorOperation implements AuthorOperation {
 			return;
 		}
 		splitNodeAtOffset(parentNode, start, true);
-		switch (getDocumentController().getContentInformationAtOffset(start)
-				.getPositionType()) {
+		OffsetInformation offsetInformation = getDocumentController()
+				.getContentInformationAtOffset(start);
+		switch (offsetInformation.getPositionType()) {
 		case OffsetInformation.ON_START_MARKER:
 			getDocumentController().insertFragment(start - 1, content);
 			break;
@@ -91,12 +92,6 @@ public abstract class AbstractAuthorOperation implements AuthorOperation {
 	
 	public AuthorEditorAccess getAuthorEditor() {
 		return getAuthorAccess().getEditorAccess();
-	}
-	
-	public AuthorNode getCommonParent(int start, int end)
-			throws BadLocationException {
-		return getDocumentController().getCommonParentNode(
-				getDocumentController().getAuthorDocumentNode(), start, end);
 	}
 	
 	@Override
@@ -256,13 +251,8 @@ public abstract class AbstractAuthorOperation implements AuthorOperation {
 				}
 			}
 			stripElements(childElement, elementNames);
-			if (matches) dissolveNode(childElement);
+			if (matches) dissolveElement(childElement);
 		}
-	}
-	
-	public void wrapInFragment(String fragment, int start, int end)
-			throws AuthorOperationException {
-		getDocumentController().surroundInFragment(fragment, start, end);
 	}
 
 }

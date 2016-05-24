@@ -32,7 +32,7 @@ public abstract class XhtmlEpubAuthorOperation extends AbstractAuthorOperation {
 		for (AuthorElement childElement : getElementsByXpath("*", element))
 			normaliseToDepth(childElement, depth + 1);
 		if (element.getName().matches("section")) {
-			if (depth >= 6 && !hasEpubType(element)) dissolveNode(element);
+			if (depth >= 6 && !hasEpubType(element)) dissolveElement(element);
 		}
 	}
 	

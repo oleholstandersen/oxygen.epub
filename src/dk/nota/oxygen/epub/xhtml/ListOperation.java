@@ -7,33 +7,57 @@ import javax.swing.text.BadLocationException;
 import ro.sync.ecss.extensions.api.ArgumentDescriptor;
 import ro.sync.ecss.extensions.api.ArgumentsMap;
 import ro.sync.ecss.extensions.api.AuthorOperationException;
+import ro.sync.ecss.extensions.api.node.AuthorDocumentFragment;
 import ro.sync.ecss.extensions.api.node.AuthorElement;
 import ro.sync.ecss.extensions.api.node.AuthorNode;
 
 public class ListOperation extends XhtmlEpubAuthorOperation {
 	
-	private OperationType operationType;
+	private ListOperationType listOperationType;
 	
-	private void create(LinkedList<AuthorElement> blocks)
-			throws AuthorOperationException {
-		int start = blocks.getFirst().getStartOffset();
-		int end = blocks.getLast().getEndOffset();
-		for (AuthorElement block : blocks) {
-			if (block.getName().equals("p"))
-				getDocumentController().renameElement(block, "li");
-			else if (block.getName().matches("^(ol|ul)$")) {
-				wrapInFragment(operationType.getListItemFragment(),
-						block.getStartOffset(), block.getEndOffset());
-				end += 2;
+	private void createList(LinkedList<AuthorElement> blocks, int start,
+			int end) throws AuthorOperationException, BadLocationException {
+		LinkedList<AuthorDocumentFragment> fragments =
+				new LinkedList<AuthorDocumentFragment>();
+		for (AuthorElement block : blocks)
+			fragments.addFirst(getDocumentController().createDocumentFragment(
+					block, true));
+		getDocumentController().delete(start, end);
+		getDocumentController().insertXMLFragment(listOperationType
+				.getListFragment(), start++);
+		for (AuthorDocumentFragment fragment : fragments) {
+			AuthorNode nodeInFragment = fragment.getContentNodes().get(0);
+			if (nodeInFragment.getName().equals("p")) {
+				((AuthorElement)nodeInFragment).setName("li");
+				getDocumentController().insertFragment(start, fragment);
+			} else {
+				getDocumentController().insertXMLFragment(listOperationType
+						.getListItemFragment(), start++);
+				getDocumentController().insertFragment(start--, fragment);
 			}
 		}
-		wrapInFragment(operationType.getListFragment(), start, end);
 	}
 	
-	private void dissolve(LinkedList<AuthorElement> listItems)
-			throws AuthorOperationException, BadLocationException {
-		for (AuthorElement listItem : listItems) {
-			floatNode(listItem);
+	private void dissolveList(LinkedList<AuthorElement> listItems, int start,
+			int end) throws AuthorOperationException, BadLocationException {
+		AuthorNode list = getDocumentController().getNodeAtOffset(start);
+		AuthorNode listParent = list.getParent();
+		if (listParent.getName().equals("li")) {
+			if (start - list.getStartOffset() == 1)
+				floatInterval(start--, end--);
+			else floatInterval(start++, end++);
+			floatInterval(start, end);
+			
+		} else {
+			for (AuthorElement listItem : listItems) {
+				if (hasBlockContent(listItem)) {
+					dissolveElement(listItem);
+					end -= 2;
+				} else {
+					getDocumentController().renameElement(listItem, "p");
+				}
+			}
+			floatInterval(start, end);
 		}
 	}
 	
@@ -42,20 +66,22 @@ public class ListOperation extends XhtmlEpubAuthorOperation {
 		try {
 			LinkedList<AuthorElement> blocks = new LinkedList<AuthorElement>();
 			for (AuthorNode node : getSelectedNodes()) {
-				AuthorElement block = getFirstElementByXpath(operationType
+				AuthorElement block = getFirstElementByXpath(listOperationType
 						.getXpathForBlocks(), node);
-				if (block != null && !blocks.contains(block)) blocks.add(block);
+				if (block != null && !blocks.contains(block))
+					blocks.add(block);
 			}
-			switch (operationType) {
-			case CREATE_OL: case CREATE_UL:
-				create(blocks);
-				return;
+			int start = blocks.getFirst().getStartOffset();
+			int end = blocks.getLast().getEndOffset();
+			switch (listOperationType) {
 			case INDENT_OL: case INDENT_UL:
-				indent(blocks);
+				indent(start, end);
+				return;
+			case CREATE_OL: case CREATE_UL:
+				createList(blocks, start, end);
 				return;
 			case DISSOLVE:
-				dissolve(blocks);
-				return;
+				dissolveList(blocks, start, end);
 			}
 		} catch (BadLocationException e) {
 			throw new AuthorOperationException(e.toString());
@@ -66,10 +92,10 @@ public class ListOperation extends XhtmlEpubAuthorOperation {
 	public ArgumentDescriptor[] getArguments() {
 		return new ArgumentDescriptor[] {
 				new ArgumentDescriptor("operationType", ArgumentDescriptor
-						.TYPE_CONSTANT_LIST, "The desired operation type",
+						.TYPE_CONSTANT_LIST, "The desired list operation type",
 						new String[] {"createOrdered", "createUnordered",
 						"indentOrdered", "indentUnordered", "dissolve"},
-						"convertOrdered")
+						"createOrdered")
 		};
 	}
 
@@ -78,12 +104,11 @@ public class ListOperation extends XhtmlEpubAuthorOperation {
 		return "Allows manipulation of lists and list items";
 	}
 	
-	private void indent(LinkedList<AuthorElement> blocks)
-			throws AuthorOperationException {
-		int start = blocks.getFirst().getStartOffset();
-		int end = blocks.getLast().getEndOffset();
-		wrapInFragment(operationType.getListFragment(), start, end);
-		wrapInFragment(operationType.getListItemFragment(), start, end);
+	private void indent(int start, int end) throws AuthorOperationException {
+		getDocumentController().surroundInFragment(listOperationType
+				.getListFragment(), start, end);
+		getDocumentController().surroundInFragment(listOperationType
+				.getListItemFragment(), start, end);
 	}
 
 	@Override
@@ -92,30 +117,25 @@ public class ListOperation extends XhtmlEpubAuthorOperation {
 		String typeString = (String)arguments.getArgumentValue("operationType");
 		switch (typeString) {
 		case "createOrdered":
-			operationType = OperationType.CREATE_OL;
+			listOperationType = ListOperationType.CREATE_OL;
 			break;
 		case "createUnordered":
-			operationType = OperationType.CREATE_UL;
+			listOperationType = ListOperationType.CREATE_UL;
 			break;
 		case "indentOrdered":
-			operationType = OperationType.INDENT_OL;
+			listOperationType = ListOperationType.INDENT_OL;
 			break;
 		case "indentUnordered":
-			operationType = OperationType.INDENT_UL;
+			listOperationType = ListOperationType.INDENT_UL;
 			break;
 		case "dissolve":
-			operationType = OperationType.DISSOLVE;
-			break;
+			listOperationType = ListOperationType.DISSOLVE;
 		}
 	}
 	
-	public enum OperationType {
+	public enum ListOperationType {
 		
 		CREATE_OL, CREATE_UL, INDENT_OL, INDENT_UL, DISSOLVE;
-		
-		public boolean createList() {
-			return (this == CREATE_OL || this == CREATE_UL);
-		}
 		
 		public String getListFragment() {
 			switch (this) {
@@ -123,8 +143,7 @@ public class ListOperation extends XhtmlEpubAuthorOperation {
 				return "<ol xmlns='http://www.w3.org/1999/xhtml'/>";
 			case CREATE_UL: case INDENT_UL:
 				return "<ul xmlns='http://www.w3.org/1999/xhtml'/>";
-			default:
-				return null;
+			default: return null;
 			}
 		}
 		
@@ -145,7 +164,7 @@ public class ListOperation extends XhtmlEpubAuthorOperation {
 			case CREATE_OL: case CREATE_UL:
 				return "(ancestor-or-self::ol|ancestor-or-self::p|" +
 				    	"ancestor-or-self::ul)[1]";
-			default: return "ancestor-or-self::li[last()]";
+			default: return "ancestor-or-self::li[1]";
 			}
 		}
 		
