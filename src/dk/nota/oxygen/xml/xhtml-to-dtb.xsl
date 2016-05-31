@@ -378,7 +378,7 @@
     <!-- H1, H2, H3 etc. -->
     <xsl:template match="xhtml:*[matches(local-name(), '^h\d$')]">
         <xsl:param name="depthModifier" as="xs:integer" tunnel="yes"
-            select="1"/>
+            select="0"/>
         <xsl:variable name="depth" as="xs:integer"
             select="count(ancestor::xhtml:section) + $depthModifier"/>
         <xsl:variable name="demote" as="xs:boolean"
@@ -563,7 +563,7 @@
     <!-- SECTION -->
     <xsl:template match="xhtml:section">
         <xsl:param name="depthModifier" as="xs:integer" tunnel="yes"
-            select="1"/>
+            select="0"/>
         <xsl:variable name="depth" as="xs:integer"
             select="count(ancestor-or-self::xhtml:section) + $depthModifier"/>
         <xsl:choose>
