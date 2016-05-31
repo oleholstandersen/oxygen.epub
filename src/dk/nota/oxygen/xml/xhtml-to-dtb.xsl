@@ -8,6 +8,9 @@
     xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns=""
     exclude-result-prefixes="dc epub nota opf xhtml xs" version="2.0">
     <xsl:output method="xml" indent="yes"/>
+    <xsl:param name="NAV_DOCUMENT" as="document-node()*"
+        select="document(replace(document-uri($OPF_DOCUMENT), '/[^/]+$',
+                '/nav.xhtml'))"/>
     <xsl:param name="OPF_DOCUMENT" as="document-node()*"
         select="document(replace(document-uri(/), '/[^/]+$', '/package.opf'))"/>
     <xsl:variable name="INLINE_ELEMENT_NAMES" as="xs:string+"
@@ -95,14 +98,14 @@
         </xsl:if>
     </xsl:template>
     <xsl:template name="ATTRIBUTES.GENERIC" as="attribute()*">
-        <xsl:param name="context" as="node()" select="."/>
+        <xsl:param name="context" as="element()" select="."/>
         <xsl:copy-of select="$context/@id"/>
         <xsl:call-template name="ATTRIBUTES.LANGUAGE">
             <xsl:with-param name="context" as="node()" select="$context"/>
         </xsl:call-template>
     </xsl:template>
     <xsl:template name="ATTRIBUTES.GENERIC.WITH_CLASS" as="attribute()*">
-        <xsl:param name="context" as="node()" select="."/>
+        <xsl:param name="context" as="element()" select="."/>
         <xsl:param name="classesToAdd" as="xs:string*"/>
         <xsl:param name="classesToDiscard" as="xs:string*"/>
         <xsl:variable name="classes" as="xs:string*"
@@ -116,7 +119,7 @@
         </xsl:if>
     </xsl:template>
     <xsl:template name="ATTRIBUTES.IMAGE" as="attribute()*">
-        <xsl:param name="context" as="node()" select="."/>
+        <xsl:param name="context" as="element()" select="."/>
         <xsl:call-template name="ATTRIBUTES.GENERIC">
             <xsl:with-param name="context" as="node()" select="$context"/>
         </xsl:call-template>
@@ -125,7 +128,7 @@
             select="nota:get-file-name-from-path($context/@src)"/>
     </xsl:template>
     <xsl:template name="ATTRIBUTES.LANGUAGE" as="attribute()*">
-        <xsl:param name="context" as="node()" select="."/>
+        <xsl:param name="context" as="element()" select="."/>
         <xsl:choose>
             <xsl:when test="not($context/@lang)">
                 <xsl:if test="$context/@xml:lang">
@@ -138,7 +141,7 @@
         </xsl:choose>
     </xsl:template>
     <xsl:template name="ATTRIBUTES.TABLE.CELL" as="attribute()*">
-        <xsl:param name="context" as="node()" select="."/>
+        <xsl:param name="context" as="element()" select="."/>
         <xsl:call-template name="ATTRIBUTES.GENERIC">
             <xsl:with-param name="context" as="node()" select="$context"/>
         </xsl:call-template>
@@ -191,30 +194,34 @@
     </xsl:template>
     <!-- Named template for table captions -->
     <xsl:template name="ELEMENT.TABLE.CAPTION" as="element()*">
-        <xsl:variable name="attributes" as="attribute()*">
-            <xsl:call-template name="ATTRIBUTES.GENERIC.WITH_CLASS">
-                <xsl:with-param name="classesToAdd" as="xs:string"
-                    select="'bridgehead'"/>
-                <xsl:with-param name="context" as="node()"
-                    select="xhtml:caption"/>
-            </xsl:call-template>
-        </xsl:variable>
-        <xsl:for-each select="xhtml:caption/node()">
-            <xsl:choose>
-                <xsl:when test="nota:starts-inline(.)">
-                    <xsl:apply-templates mode="GROUP_INLINE_CONTENT" select=".">
-                        <xsl:with-param name="attributes" as="attribute()*"
-                            select="$attributes[name() ne 'id']"/>
-                    </xsl:apply-templates>
-                </xsl:when>
-                <xsl:when test="self::xhtml:* and not(nota:is-inline(.))">
-                    <xsl:apply-templates mode="DISSOLVED_PARENT" select=".">
-                        <xsl:with-param name="attributes" as="attribute()*"
-                            select="$attributes[name() ne 'id']"/>
-                    </xsl:apply-templates>
-                </xsl:when>
-            </xsl:choose>
-        </xsl:for-each>
+        <xsl:if test="xhtml:caption">
+            <xsl:variable name="attributes" as="attribute()*">
+                <xsl:call-template name="ATTRIBUTES.GENERIC.WITH_CLASS">
+                    <xsl:with-param name="classesToAdd" as="xs:string"
+                        select="'bridgehead'"/>
+                    <xsl:with-param name="context" as="element()"
+                        select="xhtml:caption"/>
+                </xsl:call-template>
+            </xsl:variable>
+            <xsl:for-each select="xhtml:caption/node()">
+                <xsl:choose>
+                    <xsl:when test="nota:starts-inline(.)">
+                        <xsl:apply-templates mode="GROUP_INLINE_CONTENT"
+                            select=".">
+                            <xsl:with-param name="attributes" as="attribute()*"
+                                select="$attributes[name() ne 'id']"/>
+                        </xsl:apply-templates>
+                    </xsl:when>
+                    <xsl:when test="self::xhtml:* and not(nota:is-inline(.))">
+                        <xsl:apply-templates mode="DISSOLVED_PARENT"
+                            select=".">
+                            <xsl:with-param name="attributes" as="attribute()*"
+                                select="$attributes[name() ne 'id']"/>
+                        </xsl:apply-templates>
+                    </xsl:when>
+                </xsl:choose>
+            </xsl:for-each>
+        </xsl:if>
     </xsl:template>
     <!-- Generic template for XHTML elements -->
     <xsl:template match="xhtml:*">
@@ -370,8 +377,10 @@
     </xsl:template>
     <!-- H1, H2, H3 etc. -->
     <xsl:template match="xhtml:*[matches(local-name(), '^h\d$')]">
+        <xsl:param name="depthModifier" as="xs:integer" tunnel="yes"
+            select="1"/>
         <xsl:variable name="depth" as="xs:integer"
-            select="count(ancestor::xhtml:section)"/>
+            select="count(ancestor::xhtml:section) + $depthModifier"/>
         <xsl:variable name="demote" as="xs:boolean"
             select="$depth > 6 or parent::xhtml:aside or parent::xhtml:section
                     [nota:is-poem(.)]"/>
@@ -553,8 +562,10 @@
     </xsl:template>
     <!-- SECTION -->
     <xsl:template match="xhtml:section">
+        <xsl:param name="depthModifier" as="xs:integer" tunnel="yes"
+            select="1"/>
         <xsl:variable name="depth" as="xs:integer"
-            select="count(ancestor-or-self::xhtml:section)"/>
+            select="count(ancestor-or-self::xhtml:section) + $depthModifier"/>
         <xsl:choose>
             <xsl:when test="$depth le 6">
                 <level depth="{$depth}">
@@ -566,6 +577,30 @@
                 <xsl:apply-templates/>
             </xsl:otherwise>
         </xsl:choose>
+    </xsl:template>
+    <xsl:template match="xhtml:section[parent::xhtml:body]">
+        <xsl:if test="not(nota:is-subordinate-division(.))">
+            <level depth="1">
+                <xsl:call-template name="ATTRIBUTES.GENERIC.WITH_CLASS"/>
+                <xsl:apply-templates select="node()"/>
+                <xsl:for-each
+                    select="following-sibling::xhtml:section
+                            [nota:is-subordinate-division(.)] except
+                            following-sibling::xhtml:section
+                            [not(nota:is-subordinate-division(.))][1]/
+                            (self::xhtml:section|
+                            following-sibling::xhtml:section)">
+                    <level depth="2">
+                        <xsl:call-template
+                            name="ATTRIBUTES.GENERIC.WITH_CLASS"/>
+                        <xsl:apply-templates>
+                            <xsl:with-param name="depthModifier"
+                                as="xs:integer" tunnel="yes" select="1"/>
+                        </xsl:apply-templates>
+                    </level>
+                </xsl:for-each>
+            </level>
+        </xsl:if>
     </xsl:template>
     <xsl:template match="xhtml:section[nota:is-poem(.)]">
         <div>
@@ -729,6 +764,17 @@
                     [nota:get-page-breaks(.)][1]/(self::xhtml:tr|
                     following::xhtml:tr))"/>
     </xsl:function>
+    <xsl:function name="nota:get-navigation-depth" as="xs:integer">
+        <xsl:param name="n" as="element()"/>
+        <xsl:variable name="id" as="xs:string*"
+            select="$n/(@id|xhtml:*[matches(local-name(), '^h\d$')][1]/@id)"/>
+        <xsl:variable name="navigationItem" as="element()?"
+            select="$NAV_DOCUMENT//xhtml:nav[@epub:type eq 'toc']//(xhtml:a
+                    [substring-after(@href, '#') = $id])[1]"/>
+        <xsl:value-of
+            select="if ($navigationItem) then $navigationItem/count(ancestor::xhtml:li)
+                    else 1"/>
+    </xsl:function>
     <xsl:function name="nota:has-classes" as="xs:boolean">
         <xsl:param name="n" as="element()"/>
         <xsl:param name="classes" as="xs:string+"/>
@@ -769,6 +815,10 @@
     <xsl:function name="nota:is-stanza" as="xs:boolean">
         <xsl:param name="n" as="element()"/>
         <xsl:value-of select="nota:has-classes($n, 'linegroup')"/>
+    </xsl:function>
+    <xsl:function name="nota:is-subordinate-division" as="xs:boolean">
+        <xsl:param name="n" as="element()"/>
+        <xsl:value-of select="nota:get-navigation-depth($n) gt 1"/>
     </xsl:function>
     <xsl:function name="nota:starts-sequence" as="xs:boolean">
         <xsl:param name="n" as="node()"/>

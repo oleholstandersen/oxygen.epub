@@ -313,4 +313,21 @@
             <content src="{concat($documentName, '#', @id)}"/>
         </pageTarget>
     </xsl:template>
+    <xsl:function name="nota:has-epub-types" as="xs:boolean">
+        <xsl:param name="n" as="element()"/>
+        <xsl:param name="types" as="xs:string+"/>
+        <xsl:value-of select="tokenize($n/@epub:type, '\s+') = $types"/>
+    </xsl:function>
+    <xsl:function name="nota:is-notes" as="xs:boolean">
+        <xsl:param name="n" as="element()"/>
+        <xsl:value-of
+            select="nota:has-epub-types($n/descendant-or-self::xhtml:body,
+                    ('footnotes', 'rearnotes'))"/>
+    </xsl:function>
+    <xsl:function name="nota:is-part" as="xs:boolean">
+        <xsl:param name="n" as="element()"/>
+        <xsl:value-of
+            select="nota:has-epub-types($n/descendant-or-self::xhtml:body,
+                    'part')"/>
+    </xsl:function>
 </xsl:stylesheet>

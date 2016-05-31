@@ -3,6 +3,16 @@
 @namespace epub "http://www.idpf.org/2007/ops";
 @namespace nota "http://www.nota.dk/oxygen";
 
+a::after {
+    color: #000;
+    content: oxy_editor(type, text, edit, "@href");
+    font-family: sans-serif;
+    font-size: small;
+    font-weight: normal;
+    padding: 0 .25em 0 .25em;
+    text-decoration: none;
+}
+
 body::before, section::before {
     background-color: #BFB;
     content: oxy_xpath("upper-case(name())") " | depth: "

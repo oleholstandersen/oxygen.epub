@@ -28,6 +28,7 @@ public class EpubAccess {
 	private URL archiveFileUrl;
 	private URL contentFolderUrl;
 	private URL editorUrl;
+	private URL navigationUrl;
 	private URL opfUrl;
 	private XmlAccess xmlAccess = new XmlAccess();
 	
@@ -85,6 +86,7 @@ public class EpubAccess {
 		opfUrl = new URL(getArchiveContentUrl(), opfReferenceNode
 				.getAttributeValue(new QName("full-path")));
 		contentFolderUrl = new URL(opfUrl, "./");
+		navigationUrl = new URL(contentFolderUrl, "nav.xhtml");
 	}
 	
 	public URL getArchiveContentUrl() {
@@ -161,6 +163,10 @@ public class EpubAccess {
 				.getPath() + "/EPUB/" + filePath);
 	}
 	
+	public XdmNode getNavigationDocument() throws SaxonApiException {
+		return getXmlAccess().getDocument(navigationUrl);
+	}
+	
 	public XsltTransformer getNavigationTransformer()
 			throws SaxonApiException {
 		return getOpfTransformer("navigation-update.xsl");
@@ -170,6 +176,10 @@ public class EpubAccess {
 			MessageListener messageListener) throws SaxonApiException {
 		return getOpfTransformer("navigation-update.xsl", errorListener,
 				messageListener);
+	}
+	
+	public URL getNavigationUrl() {
+		return navigationUrl;
 	}
 	
 	public XsltTransformer getOpfTransformer(String xsltFileName)

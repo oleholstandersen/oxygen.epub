@@ -2969,6 +2969,44 @@ ancestor-or-self::node()[self::*:tbody | self::*:tfoot | self::*:thead | self::*
 											</actionMode-array>
 										</field>
 									</action>
+									<action>
+										<field name="id">
+											<String>anchor.convert</String>
+										</field>
+										<field name="name">
+											<String>Convert to link anchor</String>
+										</field>
+										<field name="description">
+											<String>Converts selected word or phrase to a link anchor</String>
+										</field>
+										<field name="largeIconPath">
+											<String>/images/Link16.png</String>
+										</field>
+										<field name="smallIconPath">
+											<String>/images/Link20.png</String>
+										</field>
+										<field name="accessKey">
+											<String></String>
+										</field>
+										<field name="accelerator">
+											<null/>
+										</field>
+										<field name="actionModes">
+											<actionMode-array>
+												<actionMode>
+													<field name="xpathCondition">
+														<String></String>
+													</field>
+													<field name="argValues">
+														<serializableOrderedMap/>
+													</field>
+													<field name="operationID">
+														<String>dk.nota.oxygen.epub.xhtml.AnchorOperation</String>
+													</field>
+												</actionMode>
+											</actionMode-array>
+										</field>
+									</action>
 								</action-array>
 							</field>
 							<field name="menubarDescriptor">
@@ -2997,6 +3035,11 @@ ancestor-or-self::node()[self::*:tbody | self::*:tfoot | self::*:thead | self::*
 											<menuItem>
 												<field name="actionID">
 													<String>underline</String>
+												</field>
+											</menuItem>
+											<menuItem>
+												<field name="actionID">
+													<String>anchor.convert</String>
 												</field>
 											</menuItem>
 											<menuSeparator/>
@@ -3131,7 +3174,6 @@ ancestor-or-self::node()[self::*:tbody | self::*:tfoot | self::*:thead | self::*
 													</menuEntry-array>
 												</field>
 											</menu>
-											<menuSeparator/>
 											<menu>
 												<field name="label">
 													<String>Images</String>
@@ -3297,6 +3339,11 @@ ancestor-or-self::node()[self::*:tbody | self::*:tfoot | self::*:thead | self::*
 													<String>underline</String>
 												</field>
 											</menuItem>
+											<menuItem>
+												<field name="actionID">
+													<String>anchor.convert</String>
+												</field>
+											</menuItem>
 											<menuSeparator/>
 											<menu>
 												<field name="label">
@@ -3360,6 +3407,75 @@ ancestor-or-self::node()[self::*:tbody | self::*:tfoot | self::*:thead | self::*
 													</menuEntry-array>
 												</field>
 											</menu>
+											<menuItem>
+												<field name="actionID">
+													<String>paragraph</String>
+												</field>
+											</menuItem>
+											<menu>
+												<field name="label">
+													<String>Lists</String>
+												</field>
+												<field name="accessKey">
+													<String></String>
+												</field>
+												<field name="iconPath">
+													<String>/images/ListItem16.gif</String>
+												</field>
+												<field name="menuEntriesDescriptorList">
+													<menuEntry-array>
+														<menuItem>
+															<field name="actionID">
+																<String>orderedList</String>
+															</field>
+														</menuItem>
+														<menuItem>
+															<field name="actionID">
+																<String>unorderedList</String>
+															</field>
+														</menuItem>
+														<menuItem>
+															<field name="actionID">
+																<String>definitionList</String>
+															</field>
+														</menuItem>
+														<menuSeparator/>
+														<menuItem>
+															<field name="actionID">
+																<String>listitem</String>
+															</field>
+														</menuItem>
+														<menuSeparator/>
+														<menuItem>
+															<field name="actionID">
+																<String>list.create.ordered</String>
+															</field>
+														</menuItem>
+														<menuItem>
+															<field name="actionID">
+																<String>list.create.unordered</String>
+															</field>
+														</menuItem>
+														<menuSeparator/>
+														<menuItem>
+															<field name="actionID">
+																<String>list.indent.ordered</String>
+															</field>
+														</menuItem>
+														<menuItem>
+															<field name="actionID">
+																<String>list.indent.unordered</String>
+															</field>
+														</menuItem>
+														<menuSeparator/>
+														<menuItem>
+															<field name="actionID">
+																<String>list.convert.paragraph</String>
+															</field>
+														</menuItem>
+													</menuEntry-array>
+												</field>
+											</menu>
 											<menu>
 												<field name="label">
 													<String>Images</String>
@@ -3391,7 +3507,6 @@ ancestor-or-self::node()[self::*:tbody | self::*:tfoot | self::*:thead | self::*
 													</menuEntry-array>
 												</field>
 											</menu>
-											<menuSeparator/>
 											<menu>
 												<field name="label">
 													<String>${i18n(table)}</String>
@@ -3520,6 +3635,11 @@ ancestor-or-self::node()[self::*:tbody | self::*:tfoot | self::*:thead | self::*
 											<toolbarItem>
 												<field name="actionID">
 													<String>underline</String>
+												</field>
+											</toolbarItem>
+											<toolbarItem>
+												<field name="actionID">
+													<String>anchor.convert</String>
 												</field>
 											</toolbarItem>
 											<toolbarSeparator/>
@@ -3793,17 +3913,6 @@ ancestor-or-self::node()[self::*:tbody | self::*:tfoot | self::*:thead | self::*
 											<toolbarItem>
 												<field name="actionID">
 													<String>table.convert</String>
-												</field>
-											</toolbarItem>
-											<toolbarSeparator/>
-											<toolbarItem>
-												<field name="actionID">
-													<String>operation.store</String>
-												</field>
-											</toolbarItem>
-											<toolbarItem>
-												<field name="actionID">
-													<String>operation.perform</String>
 												</field>
 											</toolbarItem>
 										</toolbarEntry-array>

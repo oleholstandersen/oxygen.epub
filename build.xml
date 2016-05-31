@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <project name="oxygen.epub" default="compile">
-	<property name="version-number" value="1.2" />
+	<property name="version-number" value="1.2.1" />
 	<target name="compile">
 		<copy tofile="./epub.old.jar" file="./epub.jar" />
 		<jar destfile="./epub.jar" basedir="bin/">

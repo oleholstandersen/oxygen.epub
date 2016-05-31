@@ -44,6 +44,8 @@ public class CreateDtbWorker extends SwingWorker<Object,Object> {
 				messageListener, messageListener);
 		dtbConverter.setDestination(epubAccess.getXmlAccess().getSerializer(
 				dtbFile));
+		dtbConverter.setParameter(new QName("NAV_DOCUMENT"), epubAccess
+				.getNavigationDocument());
 		concatTransformer.setDestination(dtbConverter);
 		concatTransformer.setParameter(new QName("UPDATE_EPUB"),
 				new XdmAtomicValue(false));
