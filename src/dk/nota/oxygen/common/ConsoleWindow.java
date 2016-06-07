@@ -39,9 +39,9 @@ public class ConsoleWindow extends JFrame {
 		Action copyAction = new DefaultEditorKit.CopyAction();
 		copyAction.putValue(Action.NAME, "Copy");
 		copyAction.putValue(Action.LARGE_ICON_KEY, new ImageIcon(getClass()
-				.getResource("/images/Copy20.png")));
+				.getResource("/images/Copy24.png")));
 		copyAction.putValue(Action.SMALL_ICON, new ImageIcon(getClass()
-				.getResource("/images/Copy16.gif")));
+				.getResource("/images/Copy16.png")));
 		contextMenu.add(copyAction);
 	}
 	
@@ -73,9 +73,9 @@ public class ConsoleWindow extends JFrame {
 			showContextMenu(event);
 		}
 		
-	     public void mouseReleased(MouseEvent event) {
-	         showContextMenu(event);
-	     }
+		public void mouseReleased(MouseEvent event) {
+			showContextMenu(event);
+		}
 		
 		private void showContextMenu(MouseEvent event) {
 			if (event.isPopupTrigger()) contextMenu.show(event.getComponent(),

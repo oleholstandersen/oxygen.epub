@@ -13,7 +13,7 @@ a::after {
     text-decoration: none;
 }
 
-body::before, section::before {
+/*body::before, section::before {
     background-color: #BFB;
     content: oxy_xpath("upper-case(name())") " | depth: "
         oxy_xpath("count(ancestor::section|ancestor::body) + (if (matches(document-uri(/), 'concat\.xhtml$')) then 0 else 1)")
@@ -24,13 +24,17 @@ body::before, section::before {
     font-weight: normal;
     padding: .25em;
     width: 100%;   
-}
+}*/
 
-body[nota|navigationDepth]::before, section[nota|navigationDepth]::before {
-    content: oxy_xpath("upper-case(name())") " | depth: "
-        oxy_xpath("count(ancestor::section|ancestor::body) + (if (matches(document-uri(/), '/concat.xhtml$')) then 0 else 1)")
-        " | navigation depth: " oxy_editor(type, text, edit, "@nota:navigationDepth", contentType, "text/plain")
-        " | @epub:type: " oxy_editor(type, text, edit, "@epub:type")  ;
+body[epub|type]::before, section[epub|type]::before {
+    background-color: #BFB;
+    content: "@epub:type: " oxy_editor(type, text, edit, "@epub:type");
+    display: block;
+    font-family: sans-serif;
+    font-size: small;
+    font-weight: normal;
+    padding: .25em;
+    width: 100%;   
 }
 
 div[epub|type~="pagebreak"] {
@@ -56,14 +60,14 @@ figure {
     padding: .5em;
 }
 
-h1::before, h2::before, h3::before, h4::before, h5::before, h6::before {
+/*h1::before, h2::before, h3::before, h4::before, h5::before, h6::before {
     color: #F00;
     content: oxy_xpath("upper-case(name())") " ";
     font-family: sans-serif;
     font-size: small;
     font-weight: normal;
     padding: 0 .25em 0 .25em;
-}
+}*/
 
 h6 {
     font-size: 100%;
@@ -84,7 +88,7 @@ figure img::before {
     width: 40%;
 }
 
-ol::before {
+/*ol::before {
     background-color: #CEC;
     content: oxy_xpath("upper-case(name())") " | @class: " oxy_editor(type, combo, edit, "@class", values,
         "list-style-type-none, ", selectionMode, "single") " @type: "
@@ -95,11 +99,35 @@ ol::before {
     font-weight: normal;
     padding: .25em;
     width: 100%;  
+}*/
+
+ol::before {
+    background-color: #CEC;
+    content: "@class: " oxy_editor(type, combo, edit, "@class", values,
+        "list-style-type-none, ", selectionMode, "single") " | @type: "
+        oxy_editor(type, combo, edit, "@type", values,
+        "1, a, A, i, I, ", selectionMode, "single");
+    display: block;
+    font-size: small;
+    font-weight: normal;
+    padding: .25em;
+    width: 100%;  
 }
+
+/*ul::before {
+    background-color: #CEC;
+    content: oxy_xpath("upper-case(name())") " | @class: " oxy_editor(type, combo, edit, "@class", values,
+        "list-style-type-none, ", selectionMode, "single");
+    display: block;
+    font-size: small;
+    font-weight: normal;
+    padding: .25em;
+    width: 100%;  
+}*/
 
 ul::before {
     background-color: #CEC;
-    content: oxy_xpath("upper-case(name())") " | @class: " oxy_editor(type, combo, edit, "@class", values,
+    content: "@class: " oxy_editor(type, combo, edit, "@class", values,
         "list-style-type-none, ", selectionMode, "single");
     display: block;
     font-size: small;
