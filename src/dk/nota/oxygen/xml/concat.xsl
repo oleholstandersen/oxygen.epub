@@ -13,18 +13,13 @@
     <xsl:strip-space elements="opf:*"/>
     <xsl:param name="CONTENT_FOLDER_URL" as="xs:string"
         select="replace(document-uri(/), '/[^/]*$', '/')"/>
-    <xsl:param name="NAVIGATION_DOCUMENT" as="document-node()*"
-        select="document(concat($CONTENT_FOLDER_URL, 'nav.xhtml'))"/>
     <xsl:param name="UPDATE_EPUB" as="xs:boolean" select="true()"/>
-    <xsl:variable name="NAVIGATION_LIST" as="node()*"
-        select="$NAVIGATION_DOCUMENT/xhtml:html/xhtml:body/xhtml:nav
-                [@epub:type eq 'toc']/xhtml:ol[1]"/>
-    <xsl:variable name="PID" as="xs:string*"
-        select="/opf:package/opf:metadata/dc:identifier/text()"/>
-    <xsl:variable name="LANGUAGE" as="xs:string*"
-        select="/opf:package/opf:metadata/dc:language/text()"/>
-    <xsl:variable name="TITLE" as="xs:string*"
-        select="/opf:package/opf:metadata/dc:title/text()"/>
+    <xsl:variable name="PID" as="xs:string?"
+        select="/opf:package/opf:metadata/dc:identifier[1]/text()"/>
+    <xsl:variable name="LANGUAGE" as="xs:string?"
+        select="/opf:package/opf:metadata/dc:language[1]/text()"/>
+    <xsl:variable name="TITLE" as="xs:string?"
+        select="/opf:package/opf:metadata/dc:title[1]/text()"/>
     <!-- Concat document template -->
     <xsl:template name="CONCAT_DOCUMENT">
         <html xmlns:epub="http://www.idpf.org/2007/ops"
@@ -68,17 +63,11 @@
             </xsl:if>
             <xsl:variable name="reference" as="xs:string?"
                 select="$item/@href"/>
-            <xsl:variable name="navigationDepth" as="xs:integer?"
-                select="($NAVIGATION_LIST//xhtml:a[matches(@href, concat('^',
-                        $reference))])[1]/count(ancestor::xhtml:ol)"/>
             <xsl:if test="$item/@media-type = 'application/xhtml+xml'">
                 <xsl:variable name="documentUrl" as="xs:string"
                     select="concat($CONTENT_FOLDER_URL, $reference)"/>
                 <xsl:apply-templates mode="XHTML_FIRST_PASS"
                     select="document($documentUrl)/xhtml:html/xhtml:body">
-                    <xsl:with-param name="navigationDepth" as="xs:integer*"
-                        select="if ($navigationDepth) then $navigationDepth
-                                else 1"/>
                     <xsl:with-param name="originalDocumentName" as="xs:string"
                         select="$reference"/>
                 </xsl:apply-templates>
@@ -101,6 +90,18 @@
                 </nota:out>
             </xsl:message>
             <xsl:attribute name="id" select="$id"/>
+        </xsl:if>
+    </xsl:template>
+    <xsl:template name="ATTRIBUTE.LANG">
+        <xsl:variable name="langAttribute" as="attribute()?"
+            select="ancestor-or-self::xhtml:*[@lang][1]/@lang"/>
+        <xsl:variable name="xmlLangAttribute" as="attribute()?"
+            select="ancestor-or-self::xhtml:*[@xml:lang][1]/@xml:lang"/>
+        <xsl:if test="not($langAttribute = $LANGUAGE)">
+            <xsl:copy-of select="$langAttribute"/>
+        </xsl:if>
+        <xsl:if test="not($xmlLangAttribute = $LANGUAGE)">
+            <xsl:copy-of select="$xmlLangAttribute"/>
         </xsl:if>
     </xsl:template>
     <xsl:template match="@*|node()" mode="#all">
@@ -135,7 +136,6 @@
     </xsl:template>
     <!-- XHTML first pass: Assign IDs and document names -->
     <xsl:template mode="XHTML_FIRST_PASS" match="xhtml:body">
-        <xsl:param name="navigationDepth" as="xs:integer" select="1"/>
         <xsl:param name="originalDocumentName" as="xs:string"/>
         <xsl:message>
             <nota:out>
@@ -144,12 +144,10 @@
             </nota:out>
         </xsl:message>
         <section nota:originalDocumentName="{$originalDocumentName}">
-        	<!--<xsl:if test="not(@nota:navigationDepth)">
-        	    <xsl:attribute name="nota:navigationDepth"
-        	        select="$navigationDepth"/>
-        	</xsl:if>-->
             <xsl:call-template name="ATTRIBUTE.ID"/>
-            <xsl:apply-templates mode="XHTML_FIRST_PASS" select="@*|node()"/>
+            <xsl:call-template name="ATTRIBUTE.LANG"/>
+            <xsl:apply-templates mode="XHTML_FIRST_PASS"
+                select="@*[not(local-name() eq 'lang')]|node()"/>
         </section>
     </xsl:template>
     <xsl:template mode="XHTML_FIRST_PASS"

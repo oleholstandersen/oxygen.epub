@@ -179,9 +179,9 @@
                         </head>
                         <body epub:type="chapter bodymatter">
                             <xsl:apply-templates mode="SECOND_PASS"
-                                select="@*|xhtml:p
-                                        [not(preceding-sibling::nota:hd)]|
-                                        nota:hd[@depth = 1]"/>
+                                select="@*|xhtml:p[not(
+                                        preceding-sibling::nota:hd)]|nota:hd
+                                        [@depth = 1]"/>
                         </body>
                     </html>
                 </nota:document>
@@ -233,8 +233,7 @@
         <xsl:variable name="styleName" as="xs:string*"
             select="w:pPr/w:pStyle/@w:val"/>
         <xsl:variable name="styleItem" as="node()*"
-            select="$styles/w:styles/w:style
-                        [@w:styleId eq $styleName]"/>
+            select="$styles/w:styles/w:style[@w:styleId eq $styleName]"/>
         <xsl:variable name="outlineLevel" as="xs:integer"
             select="if (w:pPr/w:outlineLvl)
                     then xs:integer(w:pPr/w:outlineLvl/@w:val)
@@ -413,7 +412,7 @@
     <xsl:template name="CONVERT_FORMATTING">
         <xsl:param name="content" as="node()" select="."/>
         <xsl:param name="properties" as="node()*"/>
-        <xsl:variable name="property" as="node()*" select="$properties[1]"/>
+        <xsl:variable name="property" as="node()?" select="$properties[1]"/>
         <xsl:variable name="convertedRun">
             <xsl:choose>
                 <xsl:when test="$property/self::w:i">
@@ -449,11 +448,11 @@
     <xsl:function name="nota:count-spanned-rows" as="xs:integer">
         <xsl:param name="row" as="element(w:tr)"/>
         <xsl:param name="position" as="xs:integer"/>
-        <xsl:variable name="nextRow" as="element(w:tr)*"
+        <xsl:variable name="nextRow" as="element(w:tr)?"
             select="$row/following-sibling::w:tr[1]"/>
         <xsl:variable name="mergedCellBelow" as="element(w:vMerge)*"
             select="$nextRow/w:tc[$position]/w:tcPr/w:vMerge
-                        [not(@w:val eq 'restart')]"/>
+                    [not(@w:val eq 'restart')]"/>
         <xsl:value-of
             select="if ($mergedCellBelow)
                     then 1 + nota:count-spanned-rows($nextRow, $position)
@@ -463,7 +462,7 @@
         <xsl:param name="element" as="element()"/>
         <xsl:variable name="elementName" as="xs:string"
             select="$element/name()"/>
-        <xsl:variable name="firstFollowingSibling" as="node()*"
+        <xsl:variable name="firstFollowingSibling" as="node()?"
             select="$element/following-sibling::node()[1]"/>
         <xsl:sequence
             select="if ($firstFollowingSibling/name() eq $elementName)

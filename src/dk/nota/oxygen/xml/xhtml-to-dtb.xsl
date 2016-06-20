@@ -26,21 +26,27 @@
         <xsl:message>
             <nota:out>CONVERTING TO DTBOOK...</nota:out>
         </xsl:message>
-        <xsl:variable name="frontmatter" as="node()*">
-            <xsl:apply-templates
-                select="//xhtml:html/xhtml:body/(xhtml:section
-                        [nota:has-epub-types(., 'cover')]|xhtml:section
-                        [nota:has-epub-types(., 'frontmatter')])"/>
+        <xsl:variable name="frontmatter" as="element()*">
+            <xsl:call-template name="LEVELS.GROUP">
+                <xsl:with-param name="sections" as="element()*"
+                    select="//xhtml:html/xhtml:body/(xhtml:section
+                            [nota:has-epub-types(., 'cover')]|xhtml:section
+                            [nota:has-epub-types(., 'frontmatter')])"/>
+            </xsl:call-template>
         </xsl:variable>
-        <xsl:variable name="bodymatter" as="node()*">
-            <xsl:apply-templates
-                select="//xhtml:html/xhtml:body/xhtml:section
-                        [nota:has-epub-types(., 'bodymatter')]"/>
+        <xsl:variable name="bodymatter" as="element()*">
+            <xsl:call-template name="LEVELS.GROUP">
+                <xsl:with-param name="sections" as="element()*"
+                    select="//xhtml:html/xhtml:body/xhtml:section
+                            [nota:has-epub-types(., 'bodymatter')]"/>
+            </xsl:call-template>
         </xsl:variable>
-        <xsl:variable name="rearmatter" as="node()*">
-            <xsl:apply-templates
-                select="//xhtml:html/xhtml:body/xhtml:section
-                        [nota:has-epub-types(., 'backmatter')]"/>
+        <xsl:variable name="rearmatter" as="element()*">
+            <xsl:call-template name="LEVELS.GROUP">
+                <xsl:with-param name="sections" as="element()*"
+                    select="//xhtml:html/xhtml:body/xhtml:section
+                            [nota:has-epub-types(., 'backmatter')]"/>
+            </xsl:call-template>
         </xsl:variable>
         <dtbook version="1.1.0">
             <head>
@@ -114,7 +120,7 @@
         <xsl:call-template name="ATTRIBUTES.GENERIC">
             <xsl:with-param name="context" as="node()" select="$context"/>
         </xsl:call-template>
-        <xsl:if test="count($classes) gt 0">
+        <xsl:if test="count($classes[normalize-space() ne '']) gt 0">
             <xsl:attribute name="class" select="distinct-values($classes)"/>
         </xsl:if>
     </xsl:template>
@@ -222,6 +228,32 @@
                 </xsl:choose>
             </xsl:for-each>
         </xsl:if>
+    </xsl:template>
+    <!-- Template for grouping levels according to navigation depth -->
+    <xsl:template name="LEVELS.GROUP">
+        <xsl:param name="sections" as="element()*"/>
+        <xsl:param name="level" as="xs:integer" select="1"/>
+        <xsl:for-each-group select="$sections"
+            group-starting-with="xhtml:section[nota:get-nav-depth(.) eq $level]">
+            <level depth="{$level}">
+                <xsl:call-template name="ATTRIBUTES.GENERIC.WITH_CLASS">
+                    <xsl:with-param name="context" as="element()"
+                        select="current-group()[1]"/>
+                    <xsl:with-param name="classesToAdd" as="xs:string"
+                        select="nota:map-type-to-class(current-group()[1])"/>
+                </xsl:call-template>
+                <xsl:apply-templates select="current-group()[1]/node()">
+                    <xsl:with-param name="depthModifier" as="xs:integer"
+                        tunnel="yes" select="$level - 1"/>
+                </xsl:apply-templates>
+                <xsl:call-template name="LEVELS.GROUP">
+                    <xsl:with-param name="sections" as="element()*"
+                        select="current-group()[position() gt 1]"/>
+                    <xsl:with-param name="level" as="xs:integer"
+                        select="$level + 1"/>
+                </xsl:call-template>
+            </level>
+        </xsl:for-each-group>
     </xsl:template>
     <!-- Generic template for XHTML elements -->
     <xsl:template match="xhtml:*">
@@ -415,12 +447,16 @@
     </xsl:template>
     <!-- LI -->
     <xsl:template match="xhtml:li">
-        <xsl:call-template name="ELEMENT.LIST_ITEM.PAGENUM.BEFORE"/>
+        <xsl:if test="not(ancestor::xhtml:tr)">
+            <xsl:call-template name="ELEMENT.LIST_ITEM.PAGENUM.BEFORE"/>
+        </xsl:if>
         <li>
             <xsl:call-template name="ATTRIBUTES.GENERIC.WITH_CLASS"/>
             <xsl:apply-templates/>
         </li>
-        <xsl:call-template name="ELEMENT.LIST_ITEM.PAGENUM.AFTER"/>
+        <xsl:if test="not(ancestor::xhtml:tr)">
+            <xsl:call-template name="ELEMENT.LIST_ITEM.PAGENUM.AFTER"/>
+        </xsl:if>
     </xsl:template>
     <xsl:template mode="NUMBER_LIST_ITEMS" match="xhtml:li">
         <xsl:param name="type" as="xs:string" select="'1'"/>
@@ -467,14 +503,8 @@
     </xsl:template>
     <!-- NOTES -->
     <xsl:template match="xhtml:*[nota:is-note(.)]" priority="1">
-        <xsl:variable name="class" as="xs:string">
-            <xsl:variable name="types" as="xs:string*"
-                select="tokenize(@epub:type, '\s+')"/>
-            <xsl:value-of
-                select="if ($types = 'footnote') then 'footnote required'
-                        else if ($types = 'rearnote') then 'endnote required'
-                        else ''"/>
-        </xsl:variable>
+        <xsl:variable name="class" as="xs:string"
+            select="nota:map-type-to-class(.)"/>
         <note>
             <xsl:call-template name="ATTRIBUTES.GENERIC.WITH_CLASS">
                 <xsl:with-param name="classesToAdd" as="xs:string"
@@ -578,7 +608,7 @@
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
-    <xsl:template match="xhtml:section[parent::xhtml:body]">
+    <!--<xsl:template match="xhtml:section[parent::xhtml:body]">
         <xsl:if test="not(nota:is-subordinate-division(.))">
             <level depth="1">
                 <xsl:call-template name="ATTRIBUTES.GENERIC.WITH_CLASS"/>
@@ -601,7 +631,7 @@
                 </xsl:for-each>
             </level>
         </xsl:if>
-    </xsl:template>
+    </xsl:template>-->
     <xsl:template match="xhtml:section[nota:is-poem(.)]">
         <div>
             <xsl:call-template name="ATTRIBUTES.GENERIC.WITH_CLASS">
@@ -764,15 +794,15 @@
                     [nota:get-page-breaks(.)][1]/(self::xhtml:tr|
                     following::xhtml:tr))"/>
     </xsl:function>
-    <xsl:function name="nota:get-navigation-depth" as="xs:integer">
+    <xsl:function name="nota:get-nav-depth" as="xs:integer">
         <xsl:param name="n" as="element()"/>
         <xsl:variable name="id" as="xs:string*"
             select="$n/(@id|xhtml:*[matches(local-name(), '^h\d$')][1]/@id)"/>
-        <xsl:variable name="navigationItem" as="element()?"
+        <xsl:variable name="navItem" as="element()?"
             select="$NAV_DOCUMENT//xhtml:nav[@epub:type eq 'toc']//(xhtml:a
                     [substring-after(@href, '#') = $id])[1]"/>
         <xsl:value-of
-            select="if ($navigationItem) then $navigationItem/count(ancestor::xhtml:li)
+            select="if ($navItem) then $navItem/count(ancestor::xhtml:li)
                     else 1"/>
     </xsl:function>
     <xsl:function name="nota:has-classes" as="xs:boolean">
@@ -818,7 +848,18 @@
     </xsl:function>
     <xsl:function name="nota:is-subordinate-division" as="xs:boolean">
         <xsl:param name="n" as="element()"/>
-        <xsl:value-of select="nota:get-navigation-depth($n) gt 1"/>
+        <xsl:value-of select="nota:get-nav-depth($n) gt 1"/>
+    </xsl:function>
+    <xsl:function name="nota:map-type-to-class" as="xs:string">
+        <xsl:param name="n" as="element()"/>
+        <xsl:variable name="types" as="xs:string*"
+            select="$n/tokenize(@epub:type, '\s+')"/>
+        <xsl:value-of
+            select="if ($types = 'part') then 'part'
+                    else if ($types = ('footnotes', 'rearnotes')) then 'notes'
+                    else if ($types = 'footnote') then 'footnote required'
+                    else if ($types = 'rearnote') then 'endnote required'
+                    else ''"/>
     </xsl:function>
     <xsl:function name="nota:starts-sequence" as="xs:boolean">
         <xsl:param name="n" as="node()"/>
@@ -843,4 +884,5 @@
             select="not(exists($n/(preceding::node() intersect ancestor::xhtml:tr
                     [1]/descendant::node())[normalize-space() ne '']))"/>
     </xsl:function>
+    
 </xsl:stylesheet>

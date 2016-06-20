@@ -20,39 +20,69 @@
     <xsl:variable name="TITLE" as="xs:string"
         select="/opf:package/opf:metadata/dc:title/text()"/>
     <!-- Content documents after first pass -->
-    <xsl:variable name="CONTENT_DOCUMENTS" as="node()">
-        <nota:documents>
-            <xsl:for-each select="/opf:package/opf:spine/opf:itemref">
-                <xsl:variable name="item"
-                    select="//opf:item[@id eq current()/@idref]"/>
-                <xsl:variable name="reference" as="xs:string"
-                    select="$item/@href"/>
-                <xsl:variable name="isXHTMLDocument" as="xs:boolean"
-                    select="if ($item/@media-type eq 'application/xhtml+xml')
-                            then true() else false()"/>
-                <xsl:if test="$isXHTMLDocument">
-                    <xsl:message>
-                        <nota:out>
-                            <xsl:value-of
-                                select="concat('Generating ids for document ',
-                                        $reference)"/>
-                        </nota:out>
-                    </xsl:message>
-                    <xsl:variable name="documentUrl" as="xs:string"
-                        select="concat($CONTENT_FOLDER_URL, $reference)"/>
-                    <xsl:variable name="document" as="document-node()"
-                        select="document($documentUrl)"/>
-                    <xsl:variable name="depth" as="xs:integer*"
-                        select="$document/xhtml:html/xhtml:body/xs:integer(
-                                @nota:navigationDepth)"/>
-                    <nota:document depth="{if ($depth) then $depth else 1}"
-                        name="{$reference}" url="{$documentUrl}">
-                        <xsl:apply-templates mode="GENERATE_IDS"
-                            select="$document"/>
-                    </nota:document>
-                </xsl:if>
-            </xsl:for-each> 
-        </nota:documents>
+    <xsl:variable name="CONTENT_DOCUMENTS" as="node()*">
+        <xsl:for-each select="/opf:package/opf:spine/opf:itemref">
+            <xsl:variable name="item"
+                select="//opf:item[@id eq current()/@idref]"/>
+            <xsl:variable name="reference" as="xs:string"
+                select="$item/@href"/>
+            <xsl:variable name="isXHTMLDocument" as="xs:boolean"
+                select="if ($item/@media-type eq 'application/xhtml+xml')
+                        then true() else false()"/>
+            <xsl:if test="$isXHTMLDocument">
+                <xsl:message>
+                    <nota:out>
+                        <xsl:value-of
+                            select="concat('Generating ids for document ',
+                                    $reference)"/>
+                    </nota:out>
+                </xsl:message>
+                <xsl:variable name="documentUrl" as="xs:string"
+                    select="concat($CONTENT_FOLDER_URL, $reference)"/>
+                <xsl:variable name="document" as="document-node()"
+                    select="document($documentUrl)"/>
+                <xsl:variable name="type" as="xs:string"
+                    select="nota:get-primary-type($document/xhtml:html/
+                            xhtml:body)"/>
+                <nota:document name="{$reference}" url="{$documentUrl}"
+                    type="{$type}" position="{position()}">
+                    <xsl:apply-templates mode="GENERATE_IDS"
+                        select="$document"/>
+                </nota:document>
+            </xsl:if>
+        </xsl:for-each> 
+    </xsl:variable>
+    <xsl:variable name="NAVIGATION" as="node()">
+        <nota:navigation>
+            <xsl:for-each-group select="$CONTENT_DOCUMENTS"
+                group-adjacent="nota:get-document-placement(.)">
+                <xsl:element name="{concat('nota:', current-grouping-key())}">
+                    <xsl:variable name="documents" as="node()*">
+                        <xsl:copy-of
+                            select="nota:group-notes(current-group())"/>
+                    </xsl:variable>
+                    <xsl:for-each-group select="$documents"
+                        group-starting-with="nota:document[@type eq 'part']">
+                        <xsl:choose>
+                            <xsl:when
+                                test="current-group()[1]/@type eq 'part'">
+                                <nota:document>
+                                    <xsl:copy-of
+                                        select="current-group()[1]/(@position|
+                                                @type|nota:document)"/>
+                                    <xsl:copy-of
+                                        select="current-group()
+                                                [position() gt 1]"/>
+                                </nota:document>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <xsl:copy-of select="current-group()"/>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                    </xsl:for-each-group>
+                </xsl:element>
+            </xsl:for-each-group>
+        </nota:navigation>
     </xsl:variable>
     <!-- NCX navigation document: Based on XHTML ditto -->
     <xsl:variable name="NCX_NAVIGATION_DOCUMENT" as="node()">
@@ -130,8 +160,7 @@
                     <h1 lang="da" xml:lang="da">Indhold</h1>
                     <ol class="list-style-type-none">
                         <xsl:apply-templates mode="GENERATE_NAV_HEADINGS"
-                            select="$CONTENT_DOCUMENTS/nota:document
-                                    [@depth = 1]"/>
+                            select="$NAVIGATION/nota:*/nota:document"/>
                     </ol>
                 </nav>
                 <xsl:if test="$PAGE_NUMBERS">
@@ -151,8 +180,7 @@
             <nota:out>UPDATING NAVIGATION DOCUMENTS...</nota:out>
         </xsl:message>
         <nota:documents>
-            <xsl:copy-of
-                select="$CONTENT_DOCUMENTS/nota:document"/>
+            <xsl:copy-of select="$CONTENT_DOCUMENTS"/>
             <nota:document
                 url="{concat($CONTENT_FOLDER_URL, 'nav.xhtml')}">
                 <xsl:copy-of select="$XHTML_NAVIGATION_DOCUMENT"/>
@@ -186,88 +214,60 @@
             <xsl:apply-templates mode="GENERATE_IDS" select="node()|@*"/>
         </xsl:copy>
     </xsl:template>
-    <xsl:template mode="GENERATE_IDS" match="@nota:navigationDepth"/>
     <!-- XHTML navigation -->
     <xsl:template mode="GENERATE_NAV_HEADINGS" match="nota:document">
-        <xsl:variable name="currentDocumentEntry" as="node()">
+        <xsl:variable name="position" as="xs:integer"
+            select="xs:integer(@position)"/>
+        <xsl:variable name="documentNav" as="element()+">
             <xsl:apply-templates mode="GENERATE_NAV_HEADINGS"
-                select="xhtml:html/xhtml:body"/>
+                select="$CONTENT_DOCUMENTS[$position]/xhtml:html/xhtml:body"/>
         </xsl:variable>
-        <xsl:variable name="depth" as="xs:integer" select="xs:integer(@depth)"/>
-        <xsl:variable name="containedDocuments" as="node()*"
-            select="following-sibling::nota:document[@depth &gt; $depth] except
-                    following-sibling::nota:document[@depth &lt;= $depth][1]/
-                    (self::nota:document|following-sibling::nota:document)"/>
         <li>
-            <xsl:copy-of select="$currentDocumentEntry/node()"/>
-            <xsl:if test="$containedDocuments">
+            <xsl:copy-of select="$documentNav[self::xhtml:a]"/>
+            <xsl:if test="$documentNav[self::xhtml:ol]|nota:document">
                 <ol class="list-style-type-none">
+                    <xsl:copy-of
+                        select="$documentNav[self::xhtml:ol]/xhtml:li"/>
                     <xsl:apply-templates mode="GENERATE_NAV_HEADINGS"
-                        select="$containedDocuments"/>
+                        select="nota:document"/>
                 </ol>
             </xsl:if>
         </li>
-    </xsl:template>
-    <xsl:template mode="GENERATE_NAV_HEADINGS"
-        match="nota:document[@name eq 'concat.xhtml']">
-        <xsl:apply-templates mode="GENERATE_NAV_HEADINGS"
-            select="xhtml:html/xhtml:body/xhtml:section
-                    [@nota:navigationDepth = 1 or not(@nota:navigationDepth)]">
-            <xsl:with-param name="concatContext" as="xs:boolean" select="true()"/>
-        </xsl:apply-templates>
     </xsl:template>
     <xsl:template mode="GENERATE_NAV_HEADINGS"
         match="xhtml:body|xhtml:section">
-        <xsl:param name="concatContext" as="xs:boolean" select="false()"/>
         <xsl:variable name="heading" as="node()*"
             select="xhtml:*[matches(local-name(), 'h\d')]"/>
         <xsl:variable name="headingText" as="xs:string"
-            select="if ($heading)
-                    then normalize-space(string-join($heading//text(), ''))
-                    else '[***]'"/>
+            select="if ($heading) then normalize-space(string-join($heading
+                    //text()[not(ancestor::xhtml:a)], ''))
+                    else nota:get-heading(.)"/>
         <xsl:variable name="documentName" as="xs:string"
-            select="ancestor::nota:document/@name"/>
+            select="ancestor::nota:document[1]/@name"/>
         <xsl:variable name="id" as="xs:string"
             select="if ($heading) then $heading/@id
                     else @id"/>
-        <li>
-            <a href="{concat($documentName, '#', $id)}">
-                <xsl:value-of select="$headingText"/>
-            </a>
-            <xsl:variable name="subSections" as="node()*"
-                select="xhtml:section[not(matches(@epub:type,
-                        '^z3998:(poem|verse)$'))]"/>
-            <xsl:if test="$subSections">
-                <ol class="list-style-type-none">
-                    <xsl:apply-templates mode="GENERATE_NAV_HEADINGS"
-                        select="$subSections"/>
-                </ol>
-            </xsl:if>
-            <xsl:if test="$concatContext">
-                <xsl:variable name="depth" as="xs:integer"
-                    select="if (@nota:navigationDepth)
-                            then xs:integer(@nota:navigationDepth)
-                            else 1"/>
-                <xsl:variable name="containedSections" as="node()*"
-                    select="following-sibling::xhtml:section
-                            [@nota:navigationDepth &gt; $depth] except
-                            following-sibling::xhtml:section
-                            [@nota:navigationDepth &lt;= $depth or not(
-                            @nota:navigationDepth)][1]/(self::xhtml:section|
-                            following-sibling::xhtml:section)"/>
-                <xsl:if test="$containedSections">
-                    <ol class="list-style-type-none">
+        <a href="{concat($documentName, '#', $id)}">
+            <xsl:value-of select="normalize-space($headingText)"/>
+        </a>
+        <xsl:variable name="subSections" as="node()*"
+            select="xhtml:section[not(matches(@epub:type,
+                    '^z3998:(poem|verse)$'))]"/>
+        <xsl:if test="$subSections">
+            <ol class="list-style-type-none">
+                <xsl:for-each select="$subSections">
+                    <li>
                         <xsl:apply-templates mode="GENERATE_NAV_HEADINGS"
-                            select="$containedSections"/>
-                    </ol>
-                </xsl:if>
-            </xsl:if>
-        </li>
+                            select="."/>
+                    </li>
+                </xsl:for-each>
+            </ol>
+        </xsl:if>
     </xsl:template>
     <xsl:template mode="GENERATE_NAV_PAGES"
         match="xhtml:*[@epub:type = 'pagebreak']">
         <xsl:variable name="documentName" as="xs:string"
-            select="ancestor::nota:document/@name"/>
+            select="ancestor::nota:document[1]/@name"/>
         <li>
             <a href="{concat($documentName, '#', @id)}">
                 <xsl:value-of select="@title"/>
@@ -301,7 +301,7 @@
                     else if (@class = 'page-special') then 'special'
                     else 'normal'"/>
         <xsl:variable name="documentName" as="xs:string"
-            select="ancestor::nota:document/@name"/>
+            select="ancestor::nota:document[1]/@name"/>
         <pageTarget xmlns="http://www.daisy.org/z3986/2005/ncx/"
             id="{concat('pageTarget-', $count)}"
             playOrder="{$TOC_ENTRY_COUNT + $count}" type="{$type}">
@@ -313,21 +313,97 @@
             <content src="{concat($documentName, '#', @id)}"/>
         </pageTarget>
     </xsl:template>
+    <xsl:function name="nota:get-heading" as="xs:string">
+        <xsl:param name="n" as="element()"/>
+        <xsl:variable name="types" as="xs:string*"
+            select="tokenize($n/@epub:type, '\s+')"/>
+        <xsl:variable name="classes" as="xs:string*"
+            select="tokenize($n/@class, '\s+')"/>
+        <xsl:value-of
+            select="if ($types = 'cover') then 'Omslag'
+                    else if ($types = 'colophon') then 'Kolofon'
+                    else if ($types = 'footnotes') then 'Fodnoter'
+                    else if ($types = 'rearnotes') then 'Slutnoter'
+                    else if ($classes = 'frontcover') then 'Forside'
+                    else if ($classes = 'rearcover') then 'Bagside'
+                    else if ($classes = 'leftflap') then 'Venstre flap'
+                    else if ($classes = 'rightflap') then 'Højre flap'
+                    else '[***]'"/>
+    </xsl:function>
+    <xsl:function name="nota:get-note-ids" as="xs:string*">
+        <xsl:param name="n" as="element()"/>
+        <xsl:sequence
+            select="$n//xhtml:*[nota:has-epub-types(., ('footnote',
+                    'rearnote'))]/@id"/>
+    </xsl:function>
+    <xsl:function name="nota:get-primary-type" as="xs:string">
+        <xsl:param name="n" as="element()"/>
+        <xsl:value-of
+            select="(tokenize($n/@epub:type, '\s+')[not(. = ('frontmatter',
+                    'bodymatter', 'backmatter'))], 'none')[1]"/>
+    </xsl:function>
+    <xsl:function name="nota:get-document-placement" as="xs:string">
+        <xsl:param name="n" as="element()"/>
+        <xsl:value-of
+            select="(tokenize($n/xhtml:html/xhtml:body/@epub:type, '\s+')[. =
+                    ('cover', 'frontmatter', 'bodymatter', 'backmatter')],
+                    'other')[1]"/>
+    </xsl:function>
+    <xsl:function name="nota:group-notes" as="element()*">
+        <xsl:param name="n" as="element()+"/>
+        <xsl:variable name="currentDocument" as="element()" select="$n[1]"/>
+        <xsl:variable name="notesDocuments" as="element()*">
+            <xsl:if test="$n[2][nota:is-notes-document(.)]">
+                <xsl:sequence select="$n[2]|$n[3][nota:is-notes-document(.)]"/>
+            </xsl:if>
+        </xsl:variable>
+        <xsl:variable name="referringDocuments" as="xs:string*">
+            <xsl:variable name="noteIds" as="xs:string*"
+                select="for $i in $notesDocuments return
+                        (for $j in nota:get-note-ids($i)
+                        return concat($i/@name, '#', $j))"/>
+            <xsl:value-of
+                select="$CONTENT_DOCUMENTS[.//xhtml:a[@href = $noteIds]]/
+                        @name"/>
+        </xsl:variable>
+        <xsl:variable name="notesBelongToCurrentDocument" as="xs:boolean"
+            select="count($referringDocuments) eq 1 and
+                    $referringDocuments = $currentDocument/@name"/>
+        <xsl:variable name="group" as="element()">
+            <xsl:choose>
+                <xsl:when test="$notesBelongToCurrentDocument">
+                    <nota:document position="{$currentDocument/@position}"
+                        type="{$currentDocument/@type}">
+                        <xsl:for-each select="$notesDocuments">
+                            <xsl:message select="@name"/>
+                            <nota:document position="{@position}"
+                                type="{@type}"/>
+                        </xsl:for-each>
+                    </nota:document>
+                </xsl:when>
+                <xsl:otherwise>
+                    <nota:document position="{$currentDocument/@position}"
+                        type="{$currentDocument/@type}"/>
+                </xsl:otherwise>
+            </xsl:choose>
+        </xsl:variable>
+        <xsl:variable name="nextSequence" as="element()*"
+            select="$n[position() gt 1 + $group/count(nota:document)]"/>
+        <xsl:sequence
+            select="if ($nextSequence)
+                    then $group|nota:group-notes($nextSequence)
+                    else $group"/>
+    </xsl:function>
     <xsl:function name="nota:has-epub-types" as="xs:boolean">
         <xsl:param name="n" as="element()"/>
         <xsl:param name="types" as="xs:string+"/>
-        <xsl:value-of select="tokenize($n/@epub:type, '\s+') = $types"/>
+        <xsl:value-of
+            select="tokenize($n/@epub:type, '\s+') = $types"/>
     </xsl:function>
-    <xsl:function name="nota:is-notes" as="xs:boolean">
+    <xsl:function name="nota:is-notes-document" as="xs:boolean">
         <xsl:param name="n" as="element()"/>
         <xsl:value-of
-            select="nota:has-epub-types($n/descendant-or-self::xhtml:body,
-                    ('footnotes', 'rearnotes'))"/>
-    </xsl:function>
-    <xsl:function name="nota:is-part" as="xs:boolean">
-        <xsl:param name="n" as="element()"/>
-        <xsl:value-of
-            select="nota:has-epub-types($n/descendant-or-self::xhtml:body,
-                    'part')"/>
+            select="nota:has-epub-types($n/xhtml:html/xhtml:body, ('footnotes',
+                    'rearnotes'))"/>
     </xsl:function>
 </xsl:stylesheet>
