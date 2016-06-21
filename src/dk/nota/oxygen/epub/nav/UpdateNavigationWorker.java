@@ -1,13 +1,12 @@
 package dk.nota.oxygen.epub.nav;
 
-import javax.swing.SwingWorker;
-
+import dk.nota.oxygen.common.AbstractConsoleWorker;
 import dk.nota.oxygen.common.ConsoleWindow;
 import dk.nota.oxygen.epub.common.EpubAccess;
 import dk.nota.oxygen.xml.ConsoleListener;
 import net.sf.saxon.s9api.XsltTransformer;
 
-public class UpdateNavigationWorker extends SwingWorker<Object,Object> {
+public class UpdateNavigationWorker extends AbstractConsoleWorker {
 	
 	private EpubAccess epubAccess;
 	private ConsoleListener messageListener;
@@ -15,6 +14,7 @@ public class UpdateNavigationWorker extends SwingWorker<Object,Object> {
 	
 	public UpdateNavigationWorker(EpubAccess epubAccess,
 			ConsoleWindow consoleWindow) {
+		super(consoleWindow);
 		this.epubAccess = epubAccess;
 		this.messageListener = new ConsoleListener(consoleWindow);
 	}

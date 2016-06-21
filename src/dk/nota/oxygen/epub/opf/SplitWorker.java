@@ -1,19 +1,19 @@
 package dk.nota.oxygen.epub.opf;
 
-import javax.swing.SwingWorker;
-
+import dk.nota.oxygen.common.AbstractConsoleWorker;
 import dk.nota.oxygen.common.ConsoleWindow;
 import dk.nota.oxygen.epub.common.EpubAccess;
 import dk.nota.oxygen.xml.ConsoleListener;
 import net.sf.saxon.s9api.XsltTransformer;
 
-public class SplitWorker extends SwingWorker<Object,Object> {
+public class SplitWorker extends AbstractConsoleWorker {
 	
 	private EpubAccess epubAccess;
 	private ConsoleListener messageListener;
 	private boolean success = false;
 	
 	public SplitWorker(EpubAccess epubAccess, ConsoleWindow consoleWindow) {
+		super(consoleWindow);
 		this.epubAccess = epubAccess;
 		this.messageListener = new ConsoleListener(consoleWindow);
 	}

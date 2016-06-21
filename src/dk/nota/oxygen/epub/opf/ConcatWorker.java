@@ -3,9 +3,9 @@ package dk.nota.oxygen.epub.opf;
 import java.net.URL;
 import java.util.LinkedList;
 
-import javax.swing.SwingWorker;
 import javax.xml.transform.SourceLocator;
 
+import dk.nota.oxygen.common.AbstractConsoleWorker;
 import dk.nota.oxygen.common.ConsoleWindow;
 import dk.nota.oxygen.common.EditorAccess;
 import dk.nota.oxygen.epub.common.EpubAccess;
@@ -18,7 +18,7 @@ import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmSequenceIterator;
 import net.sf.saxon.s9api.XsltTransformer;
 
-public class ConcatWorker extends SwingWorker<Object,Object> {
+public class ConcatWorker extends AbstractConsoleWorker {
 	
 	private LinkedList<String> documentPaths = new LinkedList<String>();
 	private EditorAccess editorAccess;
@@ -28,6 +28,7 @@ public class ConcatWorker extends SwingWorker<Object,Object> {
 	
 	public ConcatWorker(EditorAccess editorAccess, EpubAccess epubAccess,
 			ConsoleWindow consoleWindow) {
+		super(consoleWindow);
 		this.editorAccess = editorAccess;
 		this.epubAccess = epubAccess;
 		this.messageListener = new DocumentListener(consoleWindow);

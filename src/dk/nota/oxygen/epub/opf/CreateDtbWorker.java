@@ -3,10 +3,10 @@ package dk.nota.oxygen.epub.opf;
 import java.net.MalformedURLException;
 import java.util.LinkedList;
 
-import javax.swing.SwingWorker;
 import javax.xml.transform.SourceLocator;
 
 import de.schlichtherle.io.File;
+import dk.nota.oxygen.common.AbstractConsoleWorker;
 import dk.nota.oxygen.common.ConsoleWindow;
 import dk.nota.oxygen.common.EditorAccess;
 import dk.nota.oxygen.epub.common.EpubAccess;
@@ -19,7 +19,7 @@ import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmSequenceIterator;
 import net.sf.saxon.s9api.XsltTransformer;
 
-public class CreateDtbWorker extends SwingWorker<Object,Object> {
+public class CreateDtbWorker extends AbstractConsoleWorker {
 	
 	private EditorAccess editorAccess;
 	private EpubAccess epubAccess;
@@ -30,10 +30,11 @@ public class CreateDtbWorker extends SwingWorker<Object,Object> {
 	
 	public CreateDtbWorker(EditorAccess editorAccess, EpubAccess epubAccess,
 			ConsoleWindow consoleWindow, java.io.File dtbFile) {
+		super(consoleWindow);
+		this.dtbFile = dtbFile;
 		this.editorAccess = editorAccess;
 		this.epubAccess = epubAccess;
 		this.messageListener = new ImageListener(consoleWindow);
-		this.dtbFile = dtbFile;
 	}
 
 	@Override
