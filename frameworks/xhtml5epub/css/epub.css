@@ -170,10 +170,14 @@ span {
     background-color: #BBF;
 }
 
+span[lang] {
+    background-color: #FBB;
+}
+
 span[lang]::before {
+    background-color: #FBB;
     content: "@lang: " oxy_editor(type, combo, edit, "@lang", values,
-        oxy_xpath("string-join(('da', 'en', 'se', 'fr', 'de', //@lang), ', ')"),
-        selectionMode, "single");
+        "da, de, en, es, fr, no, se, xx", selectionMode, "single");
     font-family: sans-serif;
     font-size: small;
     font-weight: normal;
