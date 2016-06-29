@@ -53,7 +53,7 @@
                 <title>
                     <xsl:value-of select="$TITLE"/>
                 </title>
-                <meta name="prod:AutoBrailleReady" content="yes"/>
+                <meta name="prod:AutoBrailleReady" content="no"/>
                 <xsl:apply-templates
                     select="$OPF_DOCUMENT/opf:package/opf:metadata/dc:*"/>
             </head>
