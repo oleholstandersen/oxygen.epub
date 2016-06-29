@@ -36,6 +36,9 @@ public abstract class AbstractConsoleWorker extends SwingWorker<Object,Object> {
 				okCancelDialog.add(new JLabel("Process not done:"
 						+ " close the window and end the process?"));
 				okCancelDialog.pack();
+				okCancelDialog.setLocation(consoleWindow.getWidth() / 2 -
+						okCancelDialog.getWidth() / 2, consoleWindow.getHeight()
+						/ 2 - okCancelDialog.getHeight() / 2);
 				okCancelDialog.setVisible(true);
 				int result = okCancelDialog.getResult();
 				if (result == OKCancelDialog.RESULT_OK) {

@@ -3,7 +3,6 @@ package dk.nota.oxygen.epub.plugin;
 import javax.swing.JComponent;
 
 import dk.nota.oxygen.common.EditorAccess;
-import dk.nota.oxygen.common.TreeTestAction;
 import dk.nota.oxygen.epub.common.ImportDocxAction;
 import dk.nota.oxygen.epub.nav.UpdateNavigationAction;
 import dk.nota.oxygen.epub.opf.ConcatAction;

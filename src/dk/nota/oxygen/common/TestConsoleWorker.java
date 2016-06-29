@@ -14,7 +14,7 @@ public class TestConsoleWorker extends AbstractConsoleWorker {
 
 	@Override
 	protected Object doInBackground() throws Exception {
-		for (int i = 1; i <= 5000; i++) {
+		for (int i = 1; i <= 50000; i++) {
 			getConsoleWorker().writeToConsole("Test");
 		}
 		return null;
