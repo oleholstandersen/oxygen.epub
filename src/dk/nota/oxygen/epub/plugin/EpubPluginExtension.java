@@ -8,6 +8,7 @@ import dk.nota.oxygen.epub.nav.UpdateNavigationAction;
 import dk.nota.oxygen.epub.opf.ConcatAction;
 import dk.nota.oxygen.epub.opf.CreateDtbAction;
 import dk.nota.oxygen.epub.opf.SplitAction;
+import dk.nota.oxygen.epub.xhtml.ImportCatListAction;
 import ro.sync.exml.plugin.workspace.WorkspaceAccessPluginExtension;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.editor.WSEditor;
@@ -59,7 +60,8 @@ public class EpubPluginExtension implements WorkspaceAccessPluginExtension {
 		};
 		private JComponent[] xhtmlComponents = new JComponent[] {
 				new ToolbarButton(new UpdateNavigationAction(), true),
-				new ToolbarButton(new ImportDocxAction(false), true)
+				new ToolbarButton(new ImportDocxAction(false), true),
+				new ToolbarButton(new ImportCatListAction(), true)
 		};
 
 		@Override
