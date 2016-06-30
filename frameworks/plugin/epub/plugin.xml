@@ -3,7 +3,7 @@
 <plugin id="dk.nota.oxygen.epub.plugin"
     name="EPUB Plugin"
 	description="Various extensions to aid in the editing and creation of EPUB books"
-    version="1.3.3"
+    version="1.3.4"
     vendor="Nota"
     class="dk.nota.oxygen.epub.plugin.EpubPlugin">
     <runtime>
