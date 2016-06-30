@@ -60,14 +60,37 @@ figure {
     padding: .5em;
 }
 
-/*h1::before, h2::before, h3::before, h4::before, h5::before, h6::before {
+h1::before, h2::before, h3::before, h4::before, h5::before, h6::before {
     color: #F00;
-    content: oxy_xpath("upper-case(name())") " ";
     font-family: sans-serif;
     font-size: small;
     font-weight: normal;
     padding: 0 .25em 0 .25em;
-}*/
+}
+
+h1::before {
+    content: "h1";
+}
+
+h2::before {
+    content: "h2";
+}
+
+h3::before {
+    content: "h3";
+}
+
+h4::before {
+    content: "h4";
+}
+
+h5::before {
+    content: "h5";
+}
+
+h6::before {
+    content: "h6";
+}
 
 h6 {
     font-size: 100%;
