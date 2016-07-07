@@ -1,6 +1,7 @@
 package dk.nota.oxygen.xml;
 
 import java.io.File;
+import java.io.Writer;
 import java.net.URL;
 
 import javax.xml.transform.Source;
@@ -49,8 +50,12 @@ public class XmlAccess {
 	}
 	
 	public XdmNode getDocument(URL documentUrl) throws SaxonApiException {
-		DocumentBuilder documentBuilder = processor.newDocumentBuilder();
+		DocumentBuilder documentBuilder = getDocumentBuilder();
 		return documentBuilder.build(getStreamSource(documentUrl));
+	}
+	
+	public DocumentBuilder getDocumentBuilder() {
+		return processor.newDocumentBuilder();
 	}
 	
 	public XdmNode getFirstNodeByXpath(String xpath, XdmItem context)
@@ -79,6 +84,12 @@ public class XmlAccess {
 	public Serializer getSerializer(File file) {
 		Serializer serializer = getSerializer();
 		serializer.setOutputFile(file);
+		return serializer;
+	}
+	
+	public Serializer getSerializer(Writer writer) {
+		Serializer serializer = getSerializer();
+		serializer.setOutputWriter(writer);
 		return serializer;
 	}
 	
