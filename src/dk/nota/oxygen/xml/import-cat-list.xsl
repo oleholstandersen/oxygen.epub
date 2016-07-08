@@ -40,8 +40,35 @@
    		</xsl:element>
     </xsl:template>
     <xsl:template match="@id"/>
-    <xsl:template match="span[@class eq 'DK5']"/>
-    <xsl:template match="br[preceding-sibling::*[1]/self::span/@class eq 'DK5']"/>
+    <xsl:template match="span[@class eq 'typedescription']">
+        <xsl:variable name="id" as="xs:string?"
+            select="following-sibling::*[1]/self::span
+                    [@class eq 'masternummer']/text()"/>
+    	<span class="typedescription">
+    		<xsl:choose>
+    		    <xsl:when test="$id">
+    		        <a href="{concat('http://www.e17.dk/bog/', $id)}"
+    		            class="link">
+    		            <xsl:value-of select="concat(., $id)"/>
+    		        </a>
+    		    </xsl:when>
+    		    <xsl:otherwise>
+    		        <xsl:value-of select="."/>
+    		    </xsl:otherwise>
+    		</xsl:choose>
+    	</span>
+    </xsl:template>
+    <xsl:template match="span[@class = ('OEE', 'OEL', 'OEP')]">
+        <xsl:variable name="id" as="xs:string"
+            select="replace(text(), '.+?(\d+)$', '$1')"/>
+        <span>
+            <xsl:copy-of select="@class"/>
+            <a href="{concat('http://www.e17.dk/bog/', $id)}" class="link">
+                <xsl:value-of select="."/>
+            </a>
+        </span>
+    </xsl:template>
+    <xsl:template match="span[@class eq 'masternummer'][nota:follows-type(.)]"/>
     <xsl:template mode="CONVERT_TO_LIST" match="div[@class eq 'katalogpost']">
         <li>
             <xsl:apply-templates select="p/node()"/>
@@ -54,5 +81,11 @@
                     then 'Erindringer og biografier'
                     else if ($n/p/span[@class eq 'DK5']) then 'Faglitteratur'
                     else 'Skønlitteratur'"/>
+    </xsl:function>
+    <xsl:function name="nota:follows-type" as="xs:boolean">
+        <xsl:param name="n" as="element()"/>
+        <xsl:value-of
+            select="$n/preceding-sibling::*[1]/self::span/@class eq
+                    'typedescription'"/>
     </xsl:function>
 </xsl:stylesheet>
