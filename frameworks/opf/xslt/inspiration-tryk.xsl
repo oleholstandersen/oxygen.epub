@@ -53,8 +53,8 @@
         </docroot>
     </xsl:variable>
     <xsl:template match="/opf:package">
-        <xsl:result-document href="{concat($OUTPUT_FOLDER_URL, 'All.xml')}">
-            <xsl:text>&#xa;</xsl:text>
+        <xsl:result-document href="{concat($OUTPUT_FOLDER_URL, 'All.xml')}"
+            omit-xml-declaration="yes">
             <xsl:value-of disable-output-escaping="yes"
                 select="replace(saxon:serialize($COMPLETE, 'default'),
                         '&lt;katalogpost&gt;\s+&lt;/katalogpost&gt;',
@@ -71,8 +71,8 @@
                 select="concat('fil_', format-number(position(), '000'),
                         '.xml')"/>
             <xsl:result-document
-                href="{concat($OUTPUT_FOLDER_URL, $fileName)}">
-                <xsl:text>&#xa;</xsl:text>
+                href="{concat($OUTPUT_FOLDER_URL, $fileName)}"
+                omit-xml-declaration="yes">
                 <xsl:value-of disable-output-escaping="yes"
                     select="replace(saxon:serialize($group, 'default'),
                             '&lt;/katalogpost&gt;\s+&lt;katalogpost&gt;',
