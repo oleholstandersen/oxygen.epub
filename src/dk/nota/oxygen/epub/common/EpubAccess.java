@@ -122,19 +122,6 @@ public class EpubAccess {
 		return contentFolderUrl;
 	}
 	
-	public XsltTransformer getDocxImporter(java.io.File[] files, boolean split)
-			throws SaxonApiException {
-		XsltTransformer docxImporter = getEditorTransformer("docx-import.xsl");
-		LinkedList<XdmItem> wordFolderUrls = new LinkedList<XdmItem>();
-		for (java.io.File file : files) wordFolderUrls.add(new XdmAtomicValue(
-				"zip:" + file.toURI().toString() + "!/word/"));
-		docxImporter.setParameter(new QName("WORD_FOLDER_URLS"),
-				new XdmValue(wordFolderUrls));
-		docxImporter.setParameter(new QName("SPLIT_DOCUMENTS"),
-				new XdmAtomicValue(split));
-		return docxImporter;
-	}
-	
 	public XsltTransformer getDtbConverter(ErrorListener errorListener,
 			MessageListener messageListener) throws SaxonApiException {
 		XsltTransformer dtbConverter = getXmlAccess().getXsltTransformer(
