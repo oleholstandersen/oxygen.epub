@@ -438,10 +438,8 @@
     	<xsl:choose>
             <xsl:when
                 test="book/frontmatter/doctitle/matches(., '^Top 10')">
-                <ol>
-                    <xsl:apply-templates mode="CAT_LIST.CONVERT_TO_LIST"
-                        select="book/frontmatter/level/div"/>
-                </ol>
+                <xsl:apply-templates mode="CAT_LIST.CONVERT_TO_LIST"
+                    select="book/frontmatter/level/div"/>
             </xsl:when>
             <xsl:otherwise>
                 <xsl:for-each-group group-by="nota:get-classification(.)"
