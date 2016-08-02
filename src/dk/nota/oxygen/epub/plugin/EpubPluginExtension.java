@@ -57,7 +57,6 @@ public class EpubPluginExtension implements WorkspaceAccessPluginExtension {
 				new ToolbarButton(new ConcatAction(), true),
 				new ToolbarButton(new SplitAction(), true),
 				new ToolbarButton(new ImportDocxAction(), true),
-				new ToolbarButton(new ImportInspirationAction(), true),
 				new ToolbarButton(new CreateDtbAction(), true)
 		};
 		private JComponent[] xhtmlComponents = new JComponent[] {
