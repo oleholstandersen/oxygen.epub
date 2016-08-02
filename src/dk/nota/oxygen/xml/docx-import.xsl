@@ -493,8 +493,32 @@
             </a>
         </span>
     </xsl:template>
-    <xsl:template mode="CAT_LIST" match="span[@class eq 'masternummer'][nota:follows-type(.)]"/>
-    <xsl:template mode="CAT_LIST.CONVERT_TO_LIST" match="div[@class eq 'katalogpost']">
+    <xsl:template mode="CAT_LIST"
+        match="span[@class eq 'masternummer'][nota:follows-type(.)]"/>
+    <xsl:template mode="CAT_LIST" match="span[@class eq 'playingtime']">
+        <xsl:variable name="hoursString" as="xs:string"
+            select="replace(text(), '^Spilletid: (\d+).*?$', '$1')"/>
+        <xsl:variable name="minutesString" as="xs:string"
+            select="replace(text(), '^.*?(\d+) minutter\. $', '$1')"/>
+        <xsl:variable name="hours" as="xs:integer"
+            select="if (matches($hoursString, '^[0-9]+$'))
+                    then xs:integer($hoursString)
+                    else -1"/>
+        <xsl:variable name="minutes" as="xs:integer"
+            select="if (matches($minutesString, '^[0-9]+$'))
+                    then xs:integer($minutesString)
+                    else -1"/>
+        <span class="playingtime">
+            <xsl:value-of
+                select="if ($hours gt -1 and $minutes gt -1) then
+                        concat('Spilletid: ', $hours, if ($hours eq 1) then
+                        ' time, ' else ' timer, ', $minutes, if ($minutes eq 1)
+                        then ' minut.' else ' minutter.')
+                        else text()"/>
+        </span>
+    </xsl:template>
+    <xsl:template mode="CAT_LIST.CONVERT_TO_LIST"
+        match="div[@class eq 'katalogpost']">
         <li>
             <xsl:apply-templates mode="CAT_LIST" select="p/node()"/>
         </li>
