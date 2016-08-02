@@ -4199,7 +4199,6 @@ ancestor-or-self::node()[self::*:tbody | self::*:tfoot | self::*:thead | self::*
 							<String>${frameworks}/xhtml11/dtd/xhtmlcatalog.xml</String>
 							<String>${frameworks}/xhtml11/schema/xhtmlcatalog.xml</String>
 							<String>${framework}/xhtml5%20(epub3)/catalog-compat.xml</String>
-							<String>${framework}/dtd/dtbookcatalog.xml</String>
 						</String-array>
 					</field>
 					<field name="description">
