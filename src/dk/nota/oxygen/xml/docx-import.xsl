@@ -18,8 +18,7 @@
     <xsl:output method="xml" indent="yes"/>
     <xsl:param name="IMPORT_TO_CONCAT" as="xs:boolean"
         select="matches(document-uri(/), 'concat\.xhtml$')"/>
-    <xsl:param name="INSPIRATION_SOURCE_URLS" as="xs:string*"/>
-    <xsl:param name="WORD_FOLDER_URLS" as="xs:string*"/>
+    <xsl:param name="SOURCE_URLS" as="xs:string*"/>
     <xsl:variable name="OPF_LANGUAGE" as="xs:string*"
         select="/opf:package/opf:metadata/dc:language/text()"/>
     <xsl:variable name="OPF_PID" as="xs:string*"
@@ -29,7 +28,7 @@
     <xsl:variable name="ROOT" as="node()" select="/"/>
     <xsl:variable name="FIRST_PASS" as="node()*">
         <xsl:variable name="inputReferences" as="element()*">
-            <xsl:for-each select="$INSPIRATION_SOURCE_URLS">
+            <xsl:for-each select="$SOURCE_URLS">
                 <xsl:choose>
                     <xsl:when test="matches(., '\.docx!/word/$')">
                         <nota:docx url="{.}"/>

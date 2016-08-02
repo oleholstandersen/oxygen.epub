@@ -22,25 +22,28 @@ public class ImportDocxAction extends AbstractAction {
 	@Override
 	public void actionPerformed(ActionEvent event) {
 		EditorAccess editorAccess = EpubPluginExtension.getEditorAccess();
-		if (editorAccess.getCurrentEditor().isModified()) {
-			editorAccess.showErrorMessage("Unsaved changes in document: "
-					+ "please review and save before trying again");
-			return;
-		}
 		EpubAccess epubAccess = editorAccess.getEpubAccess();
-		java.io.File[] docxFiles = editorAccess.getWorkspace().chooseFiles(
-				null, "Import", new String[] {"docx"}, "Word documents");
+		java.io.File[] sourceFiles = editorAccess.getWorkspace().chooseFiles(
+				null, "Import", new String[] {"docx", "kat"},
+				"Word documents, cat lists");
 		try {
-			XsltTransformer docxImporter = epubAccess.getEditorTransformer(
-					"docx-import.xsl");
-			LinkedList<XdmItem> wordFolderUrls = new LinkedList<XdmItem>();
-			for (java.io.File file : docxFiles) wordFolderUrls.add(
-					new XdmAtomicValue("zip:" + file.toURI().toString() +
-							"!/word/"));
-			docxImporter.setParameter(new QName("WORD_FOLDER_URLS"),
-					new XdmValue(wordFolderUrls));
-			docxImporter.setDestination(epubAccess.getOutputTransformer());
-			docxImporter.transform();
+			XsltTransformer inspirationImporter = epubAccess
+					.getEditorTransformer("docx-import.xsl");
+			LinkedList<XdmItem> sourceFileUrls = new LinkedList<XdmItem>();
+			for (java.io.File sourceFile : sourceFiles) {
+				String url = sourceFile.getName().endsWith(".docx") ?
+						"zip:" + sourceFile.toURI().toString() + "!/word/" :
+						// ASCII encoding is for some reason required for
+						// resolving DTD references in .kat files with
+						// non-ASCII URIs
+						sourceFile.toURI().toASCIIString();
+				sourceFileUrls.add(new XdmAtomicValue(url));
+			}
+			inspirationImporter.setParameter(new QName("SOURCE_URLS"),
+					new XdmValue(sourceFileUrls));
+			inspirationImporter.setDestination(
+					epubAccess.getOutputTransformer());
+			inspirationImporter.transform();
 		} catch (SaxonApiException e) {
 			editorAccess.showErrorMessage(e.toString());
 		}
