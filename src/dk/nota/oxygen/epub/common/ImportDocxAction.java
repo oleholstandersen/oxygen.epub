@@ -15,11 +15,8 @@ import net.sf.saxon.s9api.XsltTransformer;
 
 public class ImportDocxAction extends AbstractAction {
 	
-	private boolean split;
-	
-	public ImportDocxAction(boolean createNewDocument) {
+	public ImportDocxAction() {
 		super("Import Docx");
-		this.split = createNewDocument;
 	}
 	
 	@Override
@@ -42,8 +39,6 @@ public class ImportDocxAction extends AbstractAction {
 							"!/word/"));
 			docxImporter.setParameter(new QName("WORD_FOLDER_URLS"),
 					new XdmValue(wordFolderUrls));
-			docxImporter.setParameter(new QName("SPLIT_DOCUMENTS"),
-					new XdmAtomicValue(split));
 			docxImporter.setDestination(epubAccess.getOutputTransformer());
 			docxImporter.transform();
 		} catch (SaxonApiException e) {

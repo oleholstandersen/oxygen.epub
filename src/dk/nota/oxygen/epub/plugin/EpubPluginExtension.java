@@ -4,6 +4,7 @@ import javax.swing.JComponent;
 
 import dk.nota.oxygen.common.EditorAccess;
 import dk.nota.oxygen.epub.common.ImportDocxAction;
+import dk.nota.oxygen.epub.common.ImportInspirationAction;
 import dk.nota.oxygen.epub.nav.UpdateNavigationAction;
 import dk.nota.oxygen.epub.opf.ConcatAction;
 import dk.nota.oxygen.epub.opf.CreateDtbAction;
@@ -55,12 +56,13 @@ public class EpubPluginExtension implements WorkspaceAccessPluginExtension {
 		private JComponent[] opfComponents = new JComponent[] {
 				new ToolbarButton(new ConcatAction(), true),
 				new ToolbarButton(new SplitAction(), true),
-				new ToolbarButton(new ImportDocxAction(true), true),
+				new ToolbarButton(new ImportDocxAction(), true),
+				new ToolbarButton(new ImportInspirationAction(), true),
 				new ToolbarButton(new CreateDtbAction(), true)
 		};
 		private JComponent[] xhtmlComponents = new JComponent[] {
 				new ToolbarButton(new UpdateNavigationAction(), true),
-				new ToolbarButton(new ImportDocxAction(false), true),
+				new ToolbarButton(new ImportDocxAction(), true),
 				new ToolbarButton(new ImportCatListAction(), true)
 		};
 
