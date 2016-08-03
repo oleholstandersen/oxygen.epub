@@ -51,7 +51,7 @@
     <xsl:template match="xhtml:section">
         <xsl:choose>
             <xsl:when
-                test="matches(xhtml:h1/text(), '^Mest læste (e-|lyd)bøger$')"/>
+                test="matches(xhtml:h1/text(), '^Nye (e-|lyd)bøger$')"/>
             <xsl:otherwise>
                 <xsl:next-match/>
             </xsl:otherwise>
