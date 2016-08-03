@@ -121,7 +121,8 @@
             <xsl:with-param name="context" as="node()" select="$context"/>
         </xsl:call-template>
         <xsl:if test="count($classes[normalize-space() ne '']) gt 0">
-            <xsl:attribute name="class" select="distinct-values($classes)"/>
+            <xsl:attribute name="class"
+                select="distinct-values($classes[normalize-space() ne ''])"/>
         </xsl:if>
     </xsl:template>
     <xsl:template name="ATTRIBUTES.IMAGE" as="attribute()*">
@@ -599,7 +600,10 @@
         <xsl:choose>
             <xsl:when test="$depth le 6">
                 <level depth="{$depth}">
-                    <xsl:call-template name="ATTRIBUTES.GENERIC.WITH_CLASS"/>
+                    <xsl:call-template name="ATTRIBUTES.GENERIC.WITH_CLASS">
+                        <xsl:with-param name="classesToAdd" as="xs:string"
+                            select="nota:map-type-to-class(.)"/>
+                    </xsl:call-template>
                     <xsl:apply-templates/>
                 </level>
             </xsl:when>
@@ -859,6 +863,7 @@
                     else if ($types = ('footnotes', 'rearnotes')) then 'notes'
                     else if ($types = 'footnote') then 'footnote required'
                     else if ($types = 'rearnote') then 'endnote required'
+                    else if ($types = 'titlepage') then 'title'
                     else ''"/>
     </xsl:function>
     <xsl:function name="nota:starts-sequence" as="xs:boolean">
