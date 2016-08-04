@@ -12,7 +12,7 @@ import net.sf.saxon.s9api.SaxonApiException;
 public class CreateDtbAction extends ArchiveSensitiveAction {
 	
 	public CreateDtbAction() {
-		super("Create DTBook");
+		super("DTBook 1.1.0");
 	}
 
 	@Override

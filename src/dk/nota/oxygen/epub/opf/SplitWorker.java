@@ -32,7 +32,7 @@ public class SplitWorker extends AbstractConsoleWorker {
 	
 	@Override
 	protected void done() {
-		if (success) messageListener.writeToConsole("DONE");
+		if (success) messageListener.writeToConsole("SPLIT DONE");
 	}
 
 }

@@ -33,7 +33,7 @@ public class UpdateNavigationWorker extends AbstractConsoleWorker {
 	
 	@Override
 	protected void done() {
-		if (success) messageListener.writeToConsole("DONE");
+		if (success) messageListener.writeToConsole("NAVIGATION UPDATE DONE");
 	}
 
 }

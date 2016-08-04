@@ -56,7 +56,7 @@ public class ConcatWorker extends AbstractConsoleWorker {
 	
 	@Override
 	protected void done() {
-		if (success) messageListener.writeToConsole("DONE");
+		if (success) messageListener.writeToConsole("CONCAT DONE");
 	}
 	
 	private class DocumentListener extends ConsoleListener {

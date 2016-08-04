@@ -21,11 +21,11 @@ import net.sf.saxon.s9api.XsltTransformer;
 
 public class CreateDtbWorker extends AbstractConsoleWorker {
 	
+	private java.io.File dtbFile;
 	private EditorAccess editorAccess;
 	private EpubAccess epubAccess;
 	private LinkedList<String> imagePaths = new LinkedList<String>();
 	private ImageListener messageListener;
-	private java.io.File dtbFile;
 	private boolean success = false;
 	
 	public CreateDtbWorker(EditorAccess editorAccess, EpubAccess epubAccess,
@@ -51,7 +51,7 @@ public class CreateDtbWorker extends AbstractConsoleWorker {
 		concatTransformer.setParameter(new QName("UPDATE_EPUB"),
 				new XdmAtomicValue(false));
 		concatTransformer.transform();
-		messageListener.writeToConsole("MOVING IMAGE FILES...");
+		messageListener.writeToConsole("COPYING IMAGE FILES...");
 		for (String imagePath : imagePaths) {
 			messageListener.writeToConsole("Copying " + imagePath);
 			File imageFile = epubAccess.getFileFromContentFolder(imagePath);
@@ -66,7 +66,7 @@ public class CreateDtbWorker extends AbstractConsoleWorker {
 	@Override
 	protected void done() {
 		if (success) {
-			messageListener.writeToConsole("DONE");
+			messageListener.writeToConsole("DTB CONVERSION DONE");
 			try {
 				editorAccess.getWorkspace().open(dtbFile.toURI().toURL());
 			} catch (MalformedURLException e) {
