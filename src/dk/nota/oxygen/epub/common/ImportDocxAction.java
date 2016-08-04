@@ -26,6 +26,7 @@ public class ImportDocxAction extends AbstractAction {
 		java.io.File[] sourceFiles = editorAccess.getWorkspace().chooseFiles(
 				null, "Import", new String[] {"docx", "kat"},
 				"Word documents, cat lists");
+		if (sourceFiles == null) return;
 		try {
 			XsltTransformer inspirationImporter = epubAccess
 					.getEditorTransformer("docx-import.xsl");
