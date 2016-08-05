@@ -22,7 +22,7 @@ public class UpdateNavigationWorker extends AbstractConsoleWorker {
 	@Override
 	protected Object doInBackground() throws Exception {
 		XsltTransformer navigationTransformer = epubAccess
-				.getNavigationTransformer(messageListener, messageListener);
+				.getNavUpdateTransformer(messageListener, messageListener);
 		XsltTransformer outputTransformer = epubAccess.getOutputTransformer(
 				messageListener, messageListener);
 		navigationTransformer.setDestination(outputTransformer);

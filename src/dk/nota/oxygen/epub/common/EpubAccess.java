@@ -122,13 +122,18 @@ public class EpubAccess {
 		return contentFolderUrl;
 	}
 	
-	public XsltTransformer getDtbConverter(ErrorListener errorListener,
-			MessageListener messageListener) throws SaxonApiException {
+	public XsltTransformer getDtbConverter() throws SaxonApiException {
 		XsltTransformer dtbConverter = getXmlAccess().getXsltTransformer(
 				"xhtml-to-dtb.xsl");
+		dtbConverter.setParameter(new QName("OPF_DOCUMENT"), getOpfDocument());
+		return dtbConverter;
+	}
+	
+	public XsltTransformer getDtbConverter(ErrorListener errorListener,
+			MessageListener messageListener) throws SaxonApiException {
+		XsltTransformer dtbConverter = getDtbConverter();
 		dtbConverter.setErrorListener(errorListener);
 		dtbConverter.setMessageListener(messageListener);
-		dtbConverter.setParameter(new QName("OPF_DOCUMENT"), getOpfDocument());
 		return dtbConverter;
 	}
 	
@@ -159,7 +164,7 @@ public class EpubAccess {
 		return getOpfTransformer("navigation-update.xsl");
 	}
 	
-	public XsltTransformer getNavigationTransformer(ErrorListener errorListener,
+	public XsltTransformer getNavUpdateTransformer(ErrorListener errorListener,
 			MessageListener messageListener) throws SaxonApiException {
 		return getOpfTransformer("navigation-update.xsl", errorListener,
 				messageListener);
