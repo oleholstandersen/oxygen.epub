@@ -8,6 +8,8 @@
     xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns=""
     exclude-result-prefixes="dc epub nota opf xhtml xs" version="2.0">
     <xsl:output method="xml" indent="yes"/>
+    <xsl:param name="IDENTIFIER" as="xs:string?"
+        select="/opf:package/opf:metadata/dc:identifier[1]/text()"/>
     <xsl:param name="NAV_DOCUMENT" as="document-node()*"
         select="document(replace(document-uri($OPF_DOCUMENT), '/[^/]+$',
                 '/nav.xhtml'))"/>
@@ -54,6 +56,7 @@
                     <xsl:value-of select="$TITLE"/>
                 </title>
                 <meta name="prod:AutoBrailleReady" content="no"/>
+                <meta name="dc:identifier" content="{$IDENTIFIER}"/>
                 <xsl:apply-templates
                     select="$OPF_DOCUMENT/opf:package/opf:metadata/dc:*"/>
             </head>
@@ -86,6 +89,7 @@
     <xsl:template match="dc:*">
         <meta name="{name()}" content="{text()}"/>
     </xsl:template>
+    <xsl:template match="dc:identifier"/>
     <xsl:template match="dc:source">
         <meta name="{name()}" content="{replace(text(), '^urn:isbn:|-', '')}"/>
     </xsl:template>
