@@ -23,6 +23,7 @@ import net.sf.saxon.s9api.XsltTransformer;
 public class CreateDtbWorker extends AbstractConsoleWorker {
 	
 	private java.io.File dtbFile;
+	private String dtbIdentifier;
 	private EditorAccess editorAccess;
 	private EpubAccess epubAccess;
 	private ImageListener imageListener;
@@ -52,6 +53,8 @@ public class CreateDtbWorker extends AbstractConsoleWorker {
 					.toURI());
 		} else dtbConverter.setDestination(epubAccess.getXmlAccess()
 				.getSerializer(dtbFile));
+		if (dtbIdentifier != null) dtbConverter.setParameter(new QName(
+				"IDENTIFIER"), new XdmAtomicValue(dtbIdentifier));
 		dtbConverter.setParameter(new QName("NAV_DOCUMENT"), epubAccess
 				.getNavigationDocument());
 		concatTransformer.setDestination(dtbConverter);
@@ -70,6 +73,26 @@ public class CreateDtbWorker extends AbstractConsoleWorker {
 		if (returnDtbDocument) return ((XdmDestination)dtbConverter
 				.getDestination()).getXdmNode();
 		return null;
+	}
+	
+	public java.io.File getDtbFile() {
+		return dtbFile;
+	}
+	
+	public EditorAccess getEditorAccess() {
+		return editorAccess;
+	}
+	
+	public EpubAccess getEpubAccess() {
+		return epubAccess;
+	}
+	
+	public ImageListener getImageListener() {
+		return imageListener;
+	}
+	
+	public void setDtbIdentifier(String identifier) {
+		dtbIdentifier = identifier;
 	}
 	
 	@Override
