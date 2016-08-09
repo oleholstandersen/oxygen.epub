@@ -7,6 +7,8 @@ import dk.nota.oxygen.epub.common.ImportDocxAction;
 import dk.nota.oxygen.epub.nav.UpdateNavigationAction;
 import dk.nota.oxygen.epub.opf.ConcatAction;
 import dk.nota.oxygen.epub.opf.CreateDtbAction;
+import dk.nota.oxygen.epub.opf.CreateInspirationOutputAction;
+import dk.nota.oxygen.epub.opf.InspirationOutputType;
 import dk.nota.oxygen.epub.opf.SplitAction;
 import dk.nota.oxygen.epub.xhtml.ImportCatListAction;
 import ro.sync.exml.plugin.workspace.WorkspaceAccessPluginExtension;
@@ -15,6 +17,7 @@ import ro.sync.exml.workspace.api.editor.WSEditor;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.ToolbarComponentsCustomizer;
 import ro.sync.exml.workspace.api.standalone.ToolbarInfo;
+import ro.sync.exml.workspace.api.standalone.ui.Menu;
 import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
 
 public class EpubPluginExtension implements WorkspaceAccessPluginExtension {
@@ -49,34 +52,61 @@ public class EpubPluginExtension implements WorkspaceAccessPluginExtension {
 	
 	private class EpubToolbarCustomizer implements ToolbarComponentsCustomizer {
 		
-		private JComponent[] navComponents = new JComponent[] {
-				new ToolbarButton(new UpdateNavigationAction(), true)
-		};
-		private JComponent[] opfComponents = new JComponent[] {
-				new ToolbarButton(new ConcatAction(), true),
-				new ToolbarButton(new SplitAction(), true),
-				new ToolbarButton(new ImportDocxAction(), true),
-				new ToolbarButton(new CreateDtbAction(), true)
-		};
-		private JComponent[] xhtmlComponents = new JComponent[] {
-				new ToolbarButton(new UpdateNavigationAction(), true),
-				new ToolbarButton(new ImportDocxAction(), true),
-				new ToolbarButton(new ImportCatListAction(), true)
-		};
-
 		@Override
 		public void customizeToolbar(ToolbarInfo toolbar) {
 			if (!toolbar.getToolbarID().startsWith(TOOLBAR_PREFIX)) return;
-			if (toolbar.getToolbarID().equals(NAV_TOOLBAR)) {
-				toolbar.setTitle("EPUB Navigation");
-				toolbar.setComponents(navComponents);
-			} else if (toolbar.getToolbarID().equals(OPF_TOOLBAR)) {
-				toolbar.setTitle("EPUB OPF");
-				toolbar.setComponents(opfComponents);
-			} else if (toolbar.getToolbarID().equals(XHTML_TOOLBAR)) {
-				toolbar.setTitle("EPUB XHTML");
-				toolbar.setComponents(xhtmlComponents);
+			switch (toolbar.getToolbarID()) {
+			case NAV_TOOLBAR:
+				setupNavToolbar(toolbar);
+				return;
+			case OPF_TOOLBAR:
+				setupOpfToolbar(toolbar);
+				return;
+			case XHTML_TOOLBAR:
+				setupXhtmlToolbar(toolbar);
 			}
+		}
+		
+		private void setupNavToolbar(ToolbarInfo toolbar) {
+			JComponent[] navComponents = new JComponent[] {
+				new ToolbarButton(new UpdateNavigationAction(), true)
+			};
+			toolbar.setTitle("EPUB Navigation");
+			toolbar.setComponents(navComponents);
+		}
+		
+		private void setupOpfToolbar(ToolbarInfo toolbar) {
+			Menu outputMenu = new Menu("Export");
+			outputMenu.insertAction(new CreateDtbAction(), 0);
+			outputMenu.insertSeparator(1);
+			outputMenu.insertAction(new CreateInspirationOutputAction(
+					"Inspiration: E-tekst", InspirationOutputType.ETEXT), 2);
+			outputMenu.insertAction(new CreateInspirationOutputAction(
+					"Inspiration: Korrektur", InspirationOutputType.PROOF), 3);
+			outputMenu.insertAction(new CreateInspirationOutputAction(
+					"Inspiration: Lyd", InspirationOutputType.AUDIO), 4);
+			outputMenu.insertAction(new CreateInspirationOutputAction(
+					"Inspiration: Punkt", InspirationOutputType.BRAILLE), 5);
+			outputMenu.insertAction(new CreateInspirationOutputAction(
+					"Inspiration: Tryk", InspirationOutputType.PRINT), 6);
+			JComponent[] opfComponents = new JComponent[] {
+				new ToolbarButton(new ConcatAction(), true),
+				new ToolbarButton(new SplitAction(), true),
+				new ToolbarButton(new ImportDocxAction(), true),
+				outputMenu
+			};
+			toolbar.setTitle("EPUB OPF");
+			toolbar.setComponents(opfComponents);
+		}
+		
+		private void setupXhtmlToolbar(ToolbarInfo toolbar) {
+			JComponent[] xhtmlComponents = new JComponent[] {
+				new ToolbarButton(new UpdateNavigationAction(), true),
+				new ToolbarButton(new ImportDocxAction(), true),
+				new ToolbarButton(new ImportCatListAction(), true)
+			};
+			toolbar.setTitle("EPUB XHTML");
+			toolbar.setComponents(xhtmlComponents);
 		}
 		
 	}

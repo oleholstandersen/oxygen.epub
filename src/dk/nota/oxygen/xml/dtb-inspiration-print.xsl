@@ -1,67 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     xmlns:xs="http://www.w3.org/2001/XMLSchema"
-    xmlns:dc="http://purl.org/dc/elements/1.1/"
-    xmlns:epub="http://www.idpf.org/2007/ops"
     xmlns:nota="http://www.nota.dk/oxygen"
-    xmlns:opf="http://www.idpf.org/2007/opf"
     xmlns:saxon="http://saxon.sf.net/"
-    xmlns:xhtml="http://www.w3.org/1999/xhtml"
-    exclude-result-prefixes="dc epub nota opf saxon xhtml xs"
+    exclude-result-prefixes="nota saxon xs"
     version="2.0">
     <xsl:output name="default" method="xml" indent="yes"
-        saxon:indent-spaces="0" omit-xml-declaration="yes"/>
-    <xsl:strip-space elements="*"/>
-    <xsl:param name="CONTENT_FOLDER_URL" as="xs:string"
-        select="replace(document-uri(/), '/[^/]*?$', '/')"/>
-    <xsl:param name="NAVIGATION_DOCUMENT" as="document-node()?"
-        select="document(concat($CONTENT_FOLDER_URL, 'nav.xhtml'))"/>
-    <xsl:param name="OUTPUT_FOLDER_URL" as="xs:string"
-        select="concat(replace(document-uri(/), '^zip:|[^/]*!.*?$', ''),
-                'tryk/')"/>
-    <xsl:variable name="HEADINGS_TO_EXCLUDE" as="xs:string+"
+        omit-xml-declaration="yes"/>
+    <xsl:param name="HEADINGS_TO_EXCLUDE" as="xs:string+"
         select="('Nye lydbøger', 'Nye punktbøger')"/>
-    <xsl:variable name="CONTENT_DOCUMENTS_FIRST_PASS" as="node()*">
-        <xsl:for-each
-            select="/opf:package/opf:spine/opf:itemref[@idref ne 'concat']">
-            <xsl:variable name="item" as="node()?"
-                select="//opf:item[@id = current()/@idref]"/>
-            <xsl:variable name="reference" as="xs:string?"
-                select="$item/@href"/>
-            <xsl:variable name="navEntry" as="element()?"
-                select="($NAVIGATION_DOCUMENT/xhtml:html/xhtml:body/xhtml:nav
-                        [@epub:type eq 'toc']//xhtml:a[matches(@href, concat(
-                        '^', $reference))])[1]"/>
-            <xsl:variable name="depthModifier" as="xs:integer"
-                select="if ($navEntry)
-                        then $navEntry/count(ancestor::xhtml:li) - 1
-                        else 0"/>
-            <xsl:if test="$item/@media-type = 'application/xhtml+xml'">
-                <xsl:variable name="documentUrl" as="xs:string"
-                    select="concat($CONTENT_FOLDER_URL, $reference)"/>
-                <xsl:apply-templates
-                    select="document($documentUrl)/xhtml:html/xhtml:body">
-                    <xsl:with-param name="depthModifier" as="xs:integer"
-                        tunnel="yes" select="$depthModifier"/>
-                </xsl:apply-templates>
-            </xsl:if>
-        </xsl:for-each>
-    </xsl:variable>
-    <xsl:variable name="COMPLETE" as="element()">
-        <docroot>
-            <xsl:copy-of select="$CONTENT_DOCUMENTS_FIRST_PASS"/>
-        </docroot>
-    </xsl:variable>
-    <xsl:template match="/opf:package">
-        <xsl:result-document href="{concat($OUTPUT_FOLDER_URL, 'All.xml')}"
+    <xsl:param name="OUTPUT_FOLDER_URL" as="xs:string?"/>
+    <xsl:strip-space elements="*"/>
+    <xsl:template match="*">
+        <xsl:apply-templates/>
+    </xsl:template>
+    <xsl:template match="text()">
+        <xsl:value-of select="replace(., '\s+', ' ')"/>
+    </xsl:template>
+    <xsl:template match="/dtbook">
+    	<xsl:variable name="firstPass" as="element()">
+            <docroot>
+                <xsl:apply-templates/>
+            </docroot>
+        </xsl:variable>
+        <xsl:result-document href="{concat($OUTPUT_FOLDER_URL, 'all.xml')}"
             omit-xml-declaration="yes">
+            <!--<xsl:copy-of select="$firstPass"/>-->
             <xsl:value-of disable-output-escaping="yes"
-                select="replace(saxon:serialize($COMPLETE, 'default'),
+                select="replace(saxon:serialize($firstPass, 'default'),
                         '&lt;katalogpost&gt;\s+&lt;/katalogpost&gt;',
                         '&lt;katalogpost&gt;&lt;/katalogpost&gt;')"/>
         </xsl:result-document>
-        <xsl:for-each-group select="$COMPLETE/*"
-            group-starting-with="*[nota:starts-file(.)]">
+        <xsl:for-each-group group-starting-with="*[nota:starts-file(.)]"
+            select="$firstPass/*">
             <xsl:variable name="group" as="element()">
                 <docroot>
                     <xsl:copy-of select="current-group()"/>
@@ -73,6 +44,7 @@
             <xsl:result-document
                 href="{concat($OUTPUT_FOLDER_URL, $fileName)}"
                 omit-xml-declaration="yes">
+                <!--<xsl:copy-of select="$group"/>-->
                 <xsl:value-of disable-output-escaping="yes"
                     select="replace(saxon:serialize($group, 'default'),
                             '&lt;/katalogpost&gt;\s+&lt;katalogpost&gt;',
@@ -80,54 +52,40 @@
             </xsl:result-document>
         </xsl:for-each-group>
     </xsl:template>
-    <xsl:template match="xhtml:*">
-        <xsl:apply-templates/>
-    </xsl:template>
-    <xsl:template match="text()">
-        <xsl:value-of select="replace(., '\s+', ' ')"/>
-    </xsl:template>
-    <xsl:template match="xhtml:body">
-        <xsl:choose>
-            <xsl:when
-                test="normalize-space(xhtml:h1) = $HEADINGS_TO_EXCLUDE"/>
-            <xsl:otherwise>
-                <xsl:apply-templates/>
-            </xsl:otherwise>
-        </xsl:choose>
-    </xsl:template>
-    <xsl:template match="xhtml:br">
+    <xsl:template match="br">
         <xsl:text>&#xa;</xsl:text>
     </xsl:template>
-    <xsl:template match="xhtml:*[matches(local-name(), '^h\d$')]">
-        <xsl:param name="depthModifier" as="xs:integer" tunnel="yes"
-            select="0"/>
+    <xsl:template match="br[nota:preceded-by-dk5(.)]"/>
+    <xsl:template
+        match="level[normalize-space(levelhd) = $HEADINGS_TO_EXCLUDE]"/>
+    <xsl:template match="levelhd">
         <xsl:variable name="depth" as="xs:integer"
-            select="xs:integer(substring(local-name(), 2))"/>
-        <xsl:element name="{concat('overskrift', $depth + $depthModifier)}">
+            select="xs:integer(@depth)"/>
+        <xsl:element name="{concat('overskrift', $depth)}">
             <xsl:apply-templates/>
         </xsl:element>
     </xsl:template>
-    <xsl:template match="xhtml:li">
+    <xsl:template match="li">
         <listitem>
             <xsl:apply-templates/>
         </listitem>
     </xsl:template>
-    <xsl:template match="xhtml:ol|xhtml:ul">
+    <xsl:template match="list">
         <list>
             <xsl:apply-templates/>
         </list>
     </xsl:template>
-    <xsl:template match="xhtml:p">
+    <xsl:template match="p">
         <paranormal>
             <xsl:apply-templates/>
         </paranormal>
     </xsl:template>
-    <xsl:template match="xhtml:p[nota:has-classes(., 'kataloglinie')]">
+    <xsl:template match="p[nota:has-classes(., 'kataloglinie')]">
         <katalogpost>
             <xsl:apply-templates/>
         </katalogpost>
     </xsl:template>
-    <xsl:template match="xhtml:span[@class]">
+    <xsl:template match="span[@class]">
         <xsl:variable name="elementName" as="xs:string"
             select="nota:map-class-to-element-name(@class)"/>
         <xsl:choose>
@@ -141,7 +99,8 @@
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
-    <xsl:template match="xhtml:strong">
+    <xsl:template match="span[nota:has-classes(., 'DK5')]" priority="1"/>
+    <xsl:template match="strong">
         <bold>
             <xsl:apply-templates/>
         </bold>
@@ -176,6 +135,12 @@
                     else if ($classes = ('OEE', 'OEP', 'OEL'))
                     then 'othereditions'
                     else ''"/>
+    </xsl:function>
+    <xsl:function name="nota:preceded-by-dk5" as="xs:boolean">
+        <xsl:param name="n" as="node()"/>
+        <xsl:value-of
+            select="exists($n/preceding-sibling::node()[not(normalize-space()
+                    eq '')][1]/self::span[nota:has-classes(., 'DK5')])"/>
     </xsl:function>
     <xsl:function name="nota:starts-file" as="xs:boolean">
         <xsl:param name="n" as="element()"/>
