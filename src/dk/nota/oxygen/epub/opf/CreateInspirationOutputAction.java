@@ -24,7 +24,7 @@ public class CreateInspirationOutputAction extends ArchiveSensitiveAction {
 		try {
 			String identifier = outputType.getPrefix() + epubAccess.getPid()
 					.substring(4);
-			String processName = String.format("Create DTBook [%s]", outputType
+			String processName = String.format("Export [%s]", outputType
 					.getName());
 			File outputFile = null;
 			switch (outputType) {

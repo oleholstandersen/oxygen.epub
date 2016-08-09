@@ -26,7 +26,7 @@ public class CreateDtbAction extends ArchiveSensitiveAction {
 					true);
 			if (dtbFile == null) return;
 			CreateDtbWorker createDtbWorker = new CreateDtbWorker(editorAccess,
-					epubAccess, new ConsoleWindow("Create DTBook"), dtbFile,
+					epubAccess, new ConsoleWindow("Export [DTBook]"), dtbFile,
 					false);
 			createDtbWorker.execute();
 		} catch (URISyntaxException | SaxonApiException e) {
