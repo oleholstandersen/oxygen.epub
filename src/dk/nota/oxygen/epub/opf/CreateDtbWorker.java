@@ -22,7 +22,7 @@ import net.sf.saxon.s9api.XsltTransformer;
 
 public class CreateDtbWorker extends AbstractConsoleWorker {
 	
-	private java.io.File dtbFile;
+	private java.io.File outputFile;
 	private String dtbIdentifier;
 	private EditorAccess editorAccess;
 	private EpubAccess epubAccess;
@@ -31,10 +31,10 @@ public class CreateDtbWorker extends AbstractConsoleWorker {
 	private boolean success = false;
 	
 	public CreateDtbWorker(EditorAccess editorAccess, EpubAccess epubAccess,
-			ConsoleWindow consoleWindow, java.io.File dtbFile,
+			ConsoleWindow consoleWindow, java.io.File outputFile,
 			boolean returnDtbDocument) {
 		super(consoleWindow);
-		this.dtbFile = dtbFile;
+		this.outputFile = outputFile;
 		this.editorAccess = editorAccess;
 		this.epubAccess = epubAccess;
 		this.imageListener = new ImageListener(consoleWindow);
@@ -49,10 +49,10 @@ public class CreateDtbWorker extends AbstractConsoleWorker {
 				imageListener, imageListener);
 		if (returnDtbDocument) {
 			dtbConverter.setDestination(new XdmDestination());
-			((XdmDestination)dtbConverter.getDestination()).setBaseURI(dtbFile
+			((XdmDestination)dtbConverter.getDestination()).setBaseURI(outputFile
 					.toURI());
 		} else dtbConverter.setDestination(epubAccess.getXmlAccess()
-				.getSerializer(dtbFile));
+				.getSerializer(outputFile));
 		if (dtbIdentifier != null) dtbConverter.setParameter(new QName(
 				"IDENTIFIER"), new XdmAtomicValue(dtbIdentifier));
 		dtbConverter.setParameter(new QName("NAV_DOCUMENT"), epubAccess
@@ -65,7 +65,7 @@ public class CreateDtbWorker extends AbstractConsoleWorker {
 		for (String imagePath : imageListener.getImagePaths()) {
 			imageListener.writeToConsole("Copying " + imagePath);
 			File imageFile = epubAccess.getFileFromContentFolder(imagePath);
-			File newImageFile = new File(dtbFile.getParentFile(), imageFile
+			File newImageFile = new File(outputFile.getParentFile(), imageFile
 					.getName());
 			newImageFile.archiveCopyFrom(imageFile);
 		}
@@ -75,8 +75,8 @@ public class CreateDtbWorker extends AbstractConsoleWorker {
 		return null;
 	}
 	
-	public java.io.File getDtbFile() {
-		return dtbFile;
+	public java.io.File getOutputFile() {
+		return outputFile;
 	}
 	
 	public EditorAccess getEditorAccess() {
@@ -85,10 +85,6 @@ public class CreateDtbWorker extends AbstractConsoleWorker {
 	
 	public EpubAccess getEpubAccess() {
 		return epubAccess;
-	}
-	
-	public ImageListener getImageListener() {
-		return imageListener;
 	}
 	
 	public void setDtbIdentifier(String identifier) {
@@ -101,7 +97,7 @@ public class CreateDtbWorker extends AbstractConsoleWorker {
 			imageListener.writeToConsole("DTBOOK CONVERSION DONE");
 			try {
 				if (!returnDtbDocument) editorAccess.getWorkspace().open(
-						dtbFile.toURI().toURL());
+						outputFile.toURI().toURL());
 			} catch (MalformedURLException e) {
 				editorAccess.showErrorMessage(e.toString());
 			}

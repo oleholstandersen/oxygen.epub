@@ -23,7 +23,7 @@ public abstract class AbstractConsoleWorker extends SwingWorker<Object,Object> {
 	@Override
 	protected abstract Object doInBackground() throws Exception;
 	
-	public ConsoleWindow getConsoleWorker() {
+	public ConsoleWindow getConsoleWindow() {
 		return consoleWindow;
 	}
 	
