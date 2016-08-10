@@ -7,6 +7,7 @@ import java.net.URL;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
+import net.sf.saxon.Configuration;
 import net.sf.saxon.lib.FeatureKeys;
 import net.sf.saxon.s9api.DocumentBuilder;
 import net.sf.saxon.s9api.Processor;
@@ -38,11 +39,14 @@ public class XmlAccess {
 	public static final String XHTML_NAMESPACE = "http://www.w3.org/1999/xhtml";
 	public static final String XHTML_PREFIX = "xhtml"; 
 	
-	private Processor processor = new Processor(true);
+	private Processor processor;
 	private XPathCompiler xpathCompiler;
 	private XsltCompiler xsltCompiler;
 	
 	public XmlAccess() {
+		processor = new Processor(Configuration.makeLicensedConfiguration(this
+				.getClass().getClassLoader(),
+				"com.saxonica.config.EnterpriseConfiguration"));
 		processor.setConfigurationProperty(FeatureKeys.LINE_NUMBERING, true);
 		xpathCompiler = processor.newXPathCompiler();
 		xsltCompiler = processor.newXsltCompiler();
