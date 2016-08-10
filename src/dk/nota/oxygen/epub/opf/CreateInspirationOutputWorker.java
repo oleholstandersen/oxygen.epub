@@ -6,6 +6,7 @@ import java.net.MalformedURLException;
 import dk.nota.oxygen.common.ConsoleWindow;
 import dk.nota.oxygen.common.EditorAccess;
 import dk.nota.oxygen.epub.common.EpubAccess;
+import dk.nota.oxygen.xml.ConsoleListener;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmDestination;
 import net.sf.saxon.s9api.XdmNode;
@@ -43,17 +44,20 @@ public class CreateInspirationOutputWorker extends CreateDtbWorker {
 					.getXsltTransformer("dtb-inspiration-etext.xsl");
 			break;
 		case PRINT:
-			// FIXME: Make Saxon extension functions work in s9api or handle
-			// indent and other issues in some other way.
 			outputTransformer = getEpubAccess().getXmlAccess()
 						.getXsltTransformer("dtb-inspiration-print.xsl");
 			outputTransformer.setBaseOutputURI(getOutputFile().toURI()
 					.toString());
+			break;
 		case PROOF:
 			// TODO: Improve dtb-inspiration-proof.xsl
 			outputTransformer = getEpubAccess().getXmlAccess()
 					.getXsltTransformer("dtb-inspiration-proof.xsl");
 		}
+		outputTransformer.setErrorListener(new ConsoleListener(
+				getConsoleWindow()));
+		outputTransformer.setMessageListener(new ConsoleListener(
+				getConsoleWindow()));
 		outputTransformer.setInitialContextNode(dtbDocument);
 		outputTransformer.setDestination(
 				outputType != InspirationOutputType.PRINT ?
