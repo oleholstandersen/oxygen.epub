@@ -18,11 +18,16 @@
         <xsl:value-of select="replace(., '\s+', ' ')"/>
     </xsl:template>
     <xsl:template match="/dtbook">
-    	<xsl:variable name="firstPass" as="element()">
+        <xsl:variable name="firstPass" as="element()">
             <docroot>
                 <xsl:apply-templates/>
             </docroot>
         </xsl:variable>
+        <xsl:message>
+            <nota:out>
+                <xsl:value-of select="'Creating all.xml'"/>
+            </nota:out>
+        </xsl:message>
         <xsl:result-document href="{concat($OUTPUT_FOLDER_URL, 'all.xml')}"
             omit-xml-declaration="yes">
             <!--<xsl:copy-of select="$firstPass"/>-->
@@ -41,6 +46,11 @@
             <xsl:variable name="fileName" as="xs:string"
                 select="concat('fil_', format-number(position(), '000'),
                         '.xml')"/>
+            <xsl:message>
+	            <nota:out>
+	                <xsl:value-of select="concat('Creating ', $fileName)"/>
+	            </nota:out>
+            </xsl:message>
             <xsl:result-document
                 href="{concat($OUTPUT_FOLDER_URL, $fileName)}"
                 omit-xml-declaration="yes">
