@@ -77,6 +77,21 @@
                 </xsl:if>
             </book>
         </dtbook>
+        <xsl:variable name="text" as="xs:string"
+            select="string-join($frontmatter//text()|$bodymatter//text()|
+                    $rearmatter//text(), '')"/>
+        <xsl:for-each select="distinct-values(string-to-codepoints($text))">
+            <xsl:if test=". gt 256">
+                <xsl:message>
+                    <nota:out>
+                        <xsl:value-of
+                            select="concat('!!! WARNING: Character ',
+                                    codepoints-to-string(.),
+                                    ' is beyond Latin-1 Supplement')"/>
+                    </nota:out>
+                </xsl:message>
+            </xsl:if>
+        </xsl:for-each>
     </xsl:template>
     <xsl:template match="node()">
         <xsl:apply-templates/>
