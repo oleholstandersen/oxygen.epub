@@ -10,10 +10,10 @@ import net.sf.saxon.s9api.SaxonApiException;
 
 public class CreateInspirationOutputAction extends ArchiveSensitiveAction {
 	
-	private InspirationOutputType outputType;
+	private OutputType outputType;
 
 	public CreateInspirationOutputAction(String name,
-			InspirationOutputType outputType) {
+			OutputType outputType) {
 		super(name);
 		this.outputType = outputType;
 	}
@@ -28,10 +28,10 @@ public class CreateInspirationOutputAction extends ArchiveSensitiveAction {
 					.getName());
 			File outputFile = null;
 			switch (outputType) {
-			case PRINT:
+			case INSP_PRINT:
 				outputFile = editorAccess.getWorkspace().chooseDirectory();
 				break;
-			case PROOF:
+			case INSP_PROOF:
 				outputFile = editorAccess.getWorkspace().chooseFile(new File(
 						epubAccess.getArchiveFileUrl().toURI().resolve(
 						identifier + ".htm")), processName,

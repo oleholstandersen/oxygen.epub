@@ -7,19 +7,18 @@ import dk.nota.oxygen.common.ConsoleWindow;
 import dk.nota.oxygen.common.EditorAccess;
 import dk.nota.oxygen.epub.common.EpubAccess;
 import dk.nota.oxygen.xml.ConsoleListener;
-import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmDestination;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XsltTransformer;
 
 public class CreateInspirationOutputWorker extends CreateDtbWorker {
 	
-	private InspirationOutputType outputType;
+	private OutputType outputType;
 	private boolean success = false;
 
 	public CreateInspirationOutputWorker(EditorAccess editorAccess,
 			EpubAccess epubAccess, ConsoleWindow consoleWindow,
-			File outputFile, InspirationOutputType outputType) {
+			File outputFile, OutputType outputType) {
 		super(editorAccess, epubAccess, consoleWindow, outputFile, true);
 		this.outputType = outputType;
 	}
@@ -31,25 +30,25 @@ public class CreateInspirationOutputWorker extends CreateDtbWorker {
 				outputType.getName().toUpperCase()));
 		XsltTransformer outputTransformer = null;
 		switch (outputType) {
-		case AUDIO:
+		case INSP_AUDIO:
 			outputTransformer = getEpubAccess().getXmlAccess()
 					.getXsltTransformer("dtb-inspiration-audio.xsl");
 			break;
-		case BRAILLE:
+		case INSP_BRAILLE:
 			outputTransformer = getEpubAccess().getXmlAccess()
 					.getXsltTransformer("dtb-inspiration-braille.xsl");
 			break;
-		case ETEXT:
+		case INSP_ETEXT:
 			outputTransformer = getEpubAccess().getXmlAccess()
 					.getXsltTransformer("dtb-inspiration-etext.xsl");
 			break;
-		case PRINT:
+		case INSP_PRINT:
 			outputTransformer = getEpubAccess().getXmlAccess()
 						.getXsltTransformer("dtb-inspiration-print.xsl");
 			outputTransformer.setBaseOutputURI(getOutputFile().toURI()
 					.toString());
 			break;
-		case PROOF:
+		case INSP_PROOF:
 			// TODO: Improve dtb-inspiration-proof.xsl
 			outputTransformer = getEpubAccess().getXmlAccess()
 					.getXsltTransformer("dtb-inspiration-proof.xsl");
@@ -60,7 +59,7 @@ public class CreateInspirationOutputWorker extends CreateDtbWorker {
 				getConsoleWindow()));
 		outputTransformer.setInitialContextNode(dtbDocument);
 		outputTransformer.setDestination(
-				outputType != InspirationOutputType.PRINT ?
+				outputType != OutputType.INSP_PRINT ?
 				getEpubAccess().getXmlAccess().getSerializer(getOutputFile()) :
 				new XdmDestination());
 		outputTransformer.transform();
@@ -73,7 +72,7 @@ public class CreateInspirationOutputWorker extends CreateDtbWorker {
 		if (success) {
 			getConsoleWindow().writeToConsole("CONVERSION DONE");
 			try {
-				if (outputType != InspirationOutputType.PRINT)
+				if (outputType != OutputType.INSP_PRINT)
 					getEditorAccess().getWorkspace().open(getOutputFile().toURI()
 						.toURL());
 			} catch (MalformedURLException e) {

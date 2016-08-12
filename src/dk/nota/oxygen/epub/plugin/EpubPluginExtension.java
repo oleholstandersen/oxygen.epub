@@ -8,7 +8,7 @@ import dk.nota.oxygen.epub.nav.UpdateNavigationAction;
 import dk.nota.oxygen.epub.opf.ConcatAction;
 import dk.nota.oxygen.epub.opf.CreateDtbAction;
 import dk.nota.oxygen.epub.opf.CreateInspirationOutputAction;
-import dk.nota.oxygen.epub.opf.InspirationOutputType;
+import dk.nota.oxygen.epub.opf.OutputType;
 import dk.nota.oxygen.epub.opf.SplitAction;
 import dk.nota.oxygen.epub.xhtml.ImportCatListAction;
 import ro.sync.exml.plugin.workspace.WorkspaceAccessPluginExtension;
@@ -76,24 +76,24 @@ public class EpubPluginExtension implements WorkspaceAccessPluginExtension {
 		}
 		
 		private void setupOpfToolbar(ToolbarInfo toolbar) {
-			Menu outputMenu = new Menu("Export");
-			outputMenu.insertAction(new CreateDtbAction(), 0);
-			outputMenu.insertSeparator(1);
-			outputMenu.insertAction(new CreateInspirationOutputAction(
-					"Inspiration: E-tekst", InspirationOutputType.ETEXT), 2);
-			outputMenu.insertAction(new CreateInspirationOutputAction(
-					"Inspiration: Korrektur", InspirationOutputType.PROOF), 3);
-			outputMenu.insertAction(new CreateInspirationOutputAction(
-					"Inspiration: Lyd", InspirationOutputType.AUDIO), 4);
-			outputMenu.insertAction(new CreateInspirationOutputAction(
-					"Inspiration: Punkt", InspirationOutputType.BRAILLE), 5);
-			outputMenu.insertAction(new CreateInspirationOutputAction(
-					"Inspiration: Tryk", InspirationOutputType.PRINT), 6);
+			Menu exportMenu = new Menu("Export");
+			exportMenu.insertAction(new CreateDtbAction(), 0);
+			exportMenu.insertSeparator(1);
+			exportMenu.insertAction(new CreateInspirationOutputAction(
+					"Inspiration: E-tekst", OutputType.INSP_ETEXT), 2);
+			exportMenu.insertAction(new CreateInspirationOutputAction(
+					"Inspiration: Korrektur", OutputType.INSP_PROOF), 3);
+			exportMenu.insertAction(new CreateInspirationOutputAction(
+					"Inspiration: Lyd", OutputType.INSP_AUDIO), 4);
+			exportMenu.insertAction(new CreateInspirationOutputAction(
+					"Inspiration: Punkt", OutputType.INSP_BRAILLE), 5);
+			exportMenu.insertAction(new CreateInspirationOutputAction(
+					"Inspiration: Tryk", OutputType.INSP_PRINT), 6);
 			JComponent[] opfComponents = new JComponent[] {
 				new ToolbarButton(new ConcatAction(), true),
 				new ToolbarButton(new SplitAction(), true),
 				new ToolbarButton(new ImportDocxAction(), true),
-				outputMenu
+				exportMenu
 			};
 			toolbar.setTitle("EPUB OPF");
 			toolbar.setComponents(opfComponents);
