@@ -314,7 +314,7 @@
                         following-sibling::nota:hd[1]/
                         (self::nota:hd|following-sibling::*)"/>
             <xsl:apply-templates mode="NEST_SECTIONS"
-                select="following-sibling::nota:hd[@depth - $depth = 1] except
+                select="following-sibling::nota:hd[@depth &gt; $depth] except
                         following-sibling::nota:hd[@depth &lt;= $depth][1]/
                         (self::nota:hd|following-sibling::*)"/>
         </xsl:variable>
