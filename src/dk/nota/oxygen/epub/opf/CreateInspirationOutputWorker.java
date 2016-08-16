@@ -32,19 +32,19 @@ public class CreateInspirationOutputWorker extends CreateDtbWorker {
 		switch (outputType) {
 		case INSP_AUDIO:
 			outputTransformer = getEpubAccess().getXmlAccess()
-					.getXsltTransformer("dtb-inspiration-audio.xsl");
+					.getXsltTransformer("inspiration/inspiration-audio.xsl");
 			break;
 		case INSP_BRAILLE:
 			outputTransformer = getEpubAccess().getXmlAccess()
-					.getXsltTransformer("dtb-inspiration-braille.xsl");
+					.getXsltTransformer("inspiration/inspiration-braille.xsl");
 			break;
 		case INSP_ETEXT:
 			outputTransformer = getEpubAccess().getXmlAccess()
-					.getXsltTransformer("dtb-inspiration-etext.xsl");
+					.getXsltTransformer("inspiration/inspiration-etext.xsl");
 			break;
 		case INSP_PRINT:
 			outputTransformer = getEpubAccess().getXmlAccess()
-						.getXsltTransformer("dtb-inspiration-print.xsl");
+					.getXsltTransformer("inspiration/inspiration-print.xsl");
 			outputTransformer.setBaseOutputURI(getOutputFile().toURI()
 					.toString());
 			break;
