@@ -49,6 +49,17 @@ public class CreateDtbWorker extends AbstractConsoleWorker {
 				returnDtbDocument);
 		this.copyImages = copyImages;
 	}
+	
+	private void copyImages() {
+		imageListener.writeToConsole("COPYING IMAGE FILES...");
+		for (String imagePath : imageListener.getImagePaths()) {
+			File imageFile = epubAccess.getFileFromContentFolder(imagePath);
+			File newImageFile = new File(outputFile.getParentFile(), imageFile
+					.getName());
+			newImageFile.archiveCopyFrom(imageFile);
+		}
+		imageListener.writeToConsole("IMAGE FILES COPIED");
+	}
 
 	@Override
 	protected Object doInBackground() throws Exception {
@@ -70,16 +81,7 @@ public class CreateDtbWorker extends AbstractConsoleWorker {
 		concatTransformer.setParameter(new QName("UPDATE_EPUB"),
 				new XdmAtomicValue(false));
 		concatTransformer.transform();
-		if (copyImages) {
-			imageListener.writeToConsole("COPYING IMAGE FILES...");
-			for (String imagePath : imageListener.getImagePaths()) {
-				File imageFile = epubAccess.getFileFromContentFolder(imagePath);
-				File newImageFile = new File(outputFile.getParentFile(),
-						imageFile.getName());
-				newImageFile.archiveCopyFrom(imageFile);
-			}
-			imageListener.writeToConsole("IMAGE FILES COPIED");
-		}
+		if (copyImages) copyImages();
 		success = true;
 		if (returnDtbDocument) return ((XdmDestination)dtbConverter
 				.getDestination()).getXdmNode();
