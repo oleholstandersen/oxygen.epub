@@ -58,8 +58,7 @@ public class CreateInspirationOutputWorker extends CreateDtbWorker {
 		outputTransformer.setMessageListener(new ConsoleListener(
 				getConsoleWindow()));
 		outputTransformer.setInitialContextNode(dtbDocument);
-		outputTransformer.setDestination(
-				outputType != OutputType.INSP_PRINT ?
+		outputTransformer.setDestination(outputType != OutputType.INSP_PRINT ?
 				getEpubAccess().getXmlAccess().getSerializer(getOutputFile()) :
 				new XdmDestination());
 		outputTransformer.transform();
