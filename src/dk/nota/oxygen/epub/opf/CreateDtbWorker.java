@@ -22,6 +22,7 @@ import net.sf.saxon.s9api.XsltTransformer;
 
 public class CreateDtbWorker extends AbstractConsoleWorker {
 	
+	private boolean copyImages = true;
 	private java.io.File outputFile;
 	private String dtbIdentifier;
 	private EditorAccess editorAccess;
@@ -39,6 +40,14 @@ public class CreateDtbWorker extends AbstractConsoleWorker {
 		this.epubAccess = epubAccess;
 		this.imageListener = new ImageListener(consoleWindow);
 		this.returnDtbDocument = returnDtbDocument;
+	}
+	
+	public CreateDtbWorker(EditorAccess editorAccess, EpubAccess epubAccess,
+			ConsoleWindow consoleWindow, java.io.File outputFile,
+			boolean returnDtbDocument, boolean copyImages) {
+		this(editorAccess, epubAccess, consoleWindow, outputFile,
+				returnDtbDocument);
+		this.copyImages = copyImages;
 	}
 
 	@Override
@@ -61,14 +70,16 @@ public class CreateDtbWorker extends AbstractConsoleWorker {
 		concatTransformer.setParameter(new QName("UPDATE_EPUB"),
 				new XdmAtomicValue(false));
 		concatTransformer.transform();
-		imageListener.writeToConsole("COPYING IMAGE FILES...");
-		for (String imagePath : imageListener.getImagePaths()) {
-			File imageFile = epubAccess.getFileFromContentFolder(imagePath);
-			File newImageFile = new File(outputFile.getParentFile(), imageFile
-					.getName());
-			newImageFile.archiveCopyFrom(imageFile);
+		if (copyImages) {
+			imageListener.writeToConsole("COPYING IMAGE FILES...");
+			for (String imagePath : imageListener.getImagePaths()) {
+				File imageFile = epubAccess.getFileFromContentFolder(imagePath);
+				File newImageFile = new File(outputFile.getParentFile(),
+						imageFile.getName());
+				newImageFile.archiveCopyFrom(imageFile);
+			}
+			imageListener.writeToConsole("IMAGE FILES COPIED");
 		}
-		imageListener.writeToConsole("IMAGE FILES COPIED");
 		success = true;
 		if (returnDtbDocument) return ((XdmDestination)dtbConverter
 				.getDestination()).getXdmNode();
@@ -81,6 +92,10 @@ public class CreateDtbWorker extends AbstractConsoleWorker {
 	
 	public EditorAccess getEditorAccess() {
 		return editorAccess;
+	}
+	
+	public LinkedList<String> getImagePaths() {
+		return imageListener.getImagePaths();
 	}
 	
 	public EpubAccess getEpubAccess() {
