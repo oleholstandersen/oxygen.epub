@@ -6,6 +6,7 @@ import dk.nota.oxygen.common.EditorAccess;
 import dk.nota.oxygen.epub.common.ImportDocxAction;
 import dk.nota.oxygen.epub.nav.UpdateNavigationAction;
 import dk.nota.oxygen.epub.opf.ConcatAction;
+import dk.nota.oxygen.epub.opf.CreateDocxAction;
 import dk.nota.oxygen.epub.opf.CreateDtbAction;
 import dk.nota.oxygen.epub.opf.CreateInspirationOutputAction;
 import dk.nota.oxygen.epub.opf.OutputType;
@@ -89,6 +90,8 @@ public class EpubPluginExtension implements WorkspaceAccessPluginExtension {
 					"Inspiration: Punkt", OutputType.INSP_BRAILLE), 5);
 			exportMenu.insertAction(new CreateInspirationOutputAction(
 					"Inspiration: Tryk", OutputType.INSP_PRINT), 6);
+			exportMenu.insertSeparator(7);
+			exportMenu.insertAction(new CreateDocxAction(), 8);
 			JComponent[] opfComponents = new JComponent[] {
 				new ToolbarButton(new ConcatAction(), true),
 				new ToolbarButton(new SplitAction(), true),
