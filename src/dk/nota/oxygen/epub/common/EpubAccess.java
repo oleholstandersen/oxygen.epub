@@ -11,6 +11,7 @@ import javax.xml.transform.ErrorListener;
 
 import de.schlichtherle.io.DefaultArchiveDetector;
 import de.schlichtherle.io.File;
+import dk.nota.oxygen.common.ZipArchiveDetector;
 import dk.nota.oxygen.xml.XmlAccess;
 import net.sf.saxon.s9api.MessageListener;
 import net.sf.saxon.s9api.QName;
@@ -61,7 +62,7 @@ public class EpubAccess {
 	}
 	
 	public boolean copyFileToArchive(java.io.File file, String relativePath) {
-		File zipFile = new EpubArchiveDetector().createFile(
+		File zipFile = new ZipArchiveDetector().createFile(
 				getArchiveFileUrl().getPath() + "/" + relativePath);
 		return zipFile.archiveCopyFrom(file);
 	}
@@ -151,7 +152,7 @@ public class EpubAccess {
 	}
 	
 	public File getFileFromContentFolder(String filePath) {
-		return new EpubArchiveDetector().createFile(getArchiveFileUrl()
+		return new ZipArchiveDetector().createFile(getArchiveFileUrl()
 				.getPath() + "/EPUB/" + filePath);
 	}
 	
@@ -236,15 +237,6 @@ public class EpubAccess {
 	public URL makeArchiveBasedUrl(String relativePath)
 			throws MalformedURLException {
 		return new URL(getArchiveContentUrl(), relativePath);
-	}
-	
-	public class EpubArchiveDetector extends DefaultArchiveDetector {
-
-		public EpubArchiveDetector() {
-			super(DefaultArchiveDetector.ALL, "epub", DefaultArchiveDetector
-					.ALL.getArchiveDriver(".jar"));
-		}
-		
 	}
 	
 }
