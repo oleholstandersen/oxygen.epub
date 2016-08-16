@@ -63,12 +63,12 @@ public class CreateDtbWorker extends AbstractConsoleWorker {
 		concatTransformer.transform();
 		imageListener.writeToConsole("COPYING IMAGE FILES...");
 		for (String imagePath : imageListener.getImagePaths()) {
-			imageListener.writeToConsole("Copying " + imagePath);
 			File imageFile = epubAccess.getFileFromContentFolder(imagePath);
 			File newImageFile = new File(outputFile.getParentFile(), imageFile
 					.getName());
 			newImageFile.archiveCopyFrom(imageFile);
 		}
+		imageListener.writeToConsole("IMAGE FILES COPIED");
 		success = true;
 		if (returnDtbDocument) return ((XdmDestination)dtbConverter
 				.getDestination()).getXdmNode();
