@@ -51,7 +51,7 @@ public class CreateInspirationOutputWorker extends CreateDtbWorker {
 		case INSP_PROOF:
 			// TODO: Improve dtb-inspiration-proof.xsl
 			outputTransformer = getEpubAccess().getXmlAccess()
-					.getXsltTransformer("dtb-inspiration-proof.xsl");
+					.getXsltTransformer("inspiration/inspiration-proof.xsl");
 		}
 		outputTransformer.setErrorListener(new ConsoleListener(
 				getConsoleWindow()));
