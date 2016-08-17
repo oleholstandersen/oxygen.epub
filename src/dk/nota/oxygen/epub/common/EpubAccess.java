@@ -9,7 +9,6 @@ import java.util.Map;
 
 import javax.xml.transform.ErrorListener;
 
-import de.schlichtherle.io.DefaultArchiveDetector;
 import de.schlichtherle.io.File;
 import dk.nota.oxygen.common.ZipArchiveDetector;
 import dk.nota.oxygen.xml.XmlAccess;
@@ -37,8 +36,8 @@ public class EpubAccess {
 		determineUrls(editor.getEditorLocation());
 	}
 	
-	public void addItemReferencesToOpf(Map<String,String> fileTypes, String idBase,
-			boolean addToSpine) throws SaxonApiException {
+	public void addItemReferencesToOpf(Map<String,String> fileTypes,
+			String idBase, boolean addToSpine) throws SaxonApiException {
 		XsltTransformer opfUpdater = getOpfTransformer("opf-update.xsl");
 		LinkedList<XdmItem> hrefs = new LinkedList<XdmItem>();
 		LinkedList<XdmItem> types = new LinkedList<XdmItem>();
