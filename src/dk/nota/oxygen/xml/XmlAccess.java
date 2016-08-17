@@ -44,8 +44,8 @@ public class XmlAccess {
 	private XsltCompiler xsltCompiler;
 	
 	public XmlAccess() {
-		processor = new Processor(Configuration.makeLicensedConfiguration(this
-				.getClass().getClassLoader(),
+		processor = new Processor(Configuration.makeLicensedConfiguration(
+				getClass().getClassLoader(),
 				"com.saxonica.config.EnterpriseConfiguration"));
 		processor.setConfigurationProperty(FeatureKeys.LINE_NUMBERING, true);
 		xpathCompiler = processor.newXPathCompiler();
@@ -118,6 +118,10 @@ public class XmlAccess {
 	
 	public XsltTransformer getXsltTransformer(Source xsltSource)
 			throws SaxonApiException {
+		String xsltBase = xsltSource.getSystemId().replaceFirst("/[^/]+?$",
+				"/");
+		xsltCompiler.setURIResolver((href, base) -> getXsltStreamSource(
+				xsltBase + href));
 		XsltExecutable xsltExecutable = xsltCompiler.compile(xsltSource);
 		return xsltExecutable.load();
 	}
