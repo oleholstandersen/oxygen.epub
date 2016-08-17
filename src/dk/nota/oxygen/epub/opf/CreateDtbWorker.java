@@ -69,8 +69,6 @@ public class CreateDtbWorker extends AbstractConsoleWorker {
 				imageListener, imageListener);
 		if (returnDtbDocument) {
 			dtbConverter.setDestination(new XdmDestination());
-			((XdmDestination)dtbConverter.getDestination()).setBaseURI(outputFile
-					.toURI());
 		} else dtbConverter.setDestination(epubAccess.getXmlAccess()
 				.getSerializer(outputFile));
 		if (dtbIdentifier != null) dtbConverter.setParameter(new QName(
