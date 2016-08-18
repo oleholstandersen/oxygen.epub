@@ -2,7 +2,6 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     xmlns:xs="http://www.w3.org/2001/XMLSchema"
     xmlns:dtb="http://www.daisy.org/z3986/2005/dtbook/"
-    xmlns:file="http://expath.org/ns/file"
     xmlns:nota="http://www.nota.dk/dtbook2docx"
     xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"
     exclude-result-prefixes="#all"
