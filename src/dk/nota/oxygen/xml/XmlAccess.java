@@ -1,26 +1,36 @@
 package dk.nota.oxygen.xml;
 
-import java.io.File;
+import java.io.IOException;
 import java.io.Writer;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
-
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
+import dk.nota.oxygen.common.ZipArchiveDetector;
 import net.sf.saxon.Configuration;
 import net.sf.saxon.lib.FeatureKeys;
 import net.sf.saxon.s9api.DocumentBuilder;
+import net.sf.saxon.s9api.ExtensionFunction;
+import net.sf.saxon.s9api.ItemType;
+import net.sf.saxon.s9api.OccurrenceIndicator;
 import net.sf.saxon.s9api.Processor;
+import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.SaxonApiException;
+import net.sf.saxon.s9api.SequenceType;
 import net.sf.saxon.s9api.Serializer;
 import net.sf.saxon.s9api.XPathCompiler;
 import net.sf.saxon.s9api.XPathExecutable;
 import net.sf.saxon.s9api.XPathSelector;
+import net.sf.saxon.s9api.XdmAtomicValue;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
+import net.sf.saxon.s9api.XdmValue;
 import net.sf.saxon.s9api.XsltCompiler;
 import net.sf.saxon.s9api.XsltExecutable;
 import net.sf.saxon.s9api.XsltTransformer;
+import uk.co.jaimon.test.SimpleImageInfo;
 
 public class XmlAccess {
 
@@ -44,9 +54,10 @@ public class XmlAccess {
 	private XsltCompiler xsltCompiler;
 	
 	public XmlAccess() {
-		processor = new Processor(Configuration.makeLicensedConfiguration(this
-				.getClass().getClassLoader(),
+		processor = new Processor(Configuration.makeLicensedConfiguration(
+				getClass().getClassLoader(),
 				"com.saxonica.config.EnterpriseConfiguration"));
+		processor.registerExtensionFunction(new ImageSizeExtensionFunction());
 		processor.setConfigurationProperty(FeatureKeys.LINE_NUMBERING, true);
 		xpathCompiler = processor.newXPathCompiler();
 		xsltCompiler = processor.newXsltCompiler();
@@ -85,7 +96,7 @@ public class XmlAccess {
 		return processor.newSerializer();
 	}
 	
-	public Serializer getSerializer(File file) {
+	public Serializer getSerializer(java.io.File file) {
 		Serializer serializer = getSerializer();
 		serializer.setOutputFile(file);
 		return serializer;
@@ -118,6 +129,10 @@ public class XmlAccess {
 	
 	public XsltTransformer getXsltTransformer(Source xsltSource)
 			throws SaxonApiException {
+		String xsltBase = xsltSource.getSystemId().replaceFirst("/[^/]+?$",
+				"/");
+		xsltCompiler.setURIResolver((href, base) -> getXsltStreamSource(
+				xsltBase + href));
 		XsltExecutable xsltExecutable = xsltCompiler.compile(xsltSource);
 		return xsltExecutable.load();
 	}
@@ -141,6 +156,50 @@ public class XmlAccess {
 		xpathCompiler.declareNamespace(NOTA_PREFIX, NOTA_NAMESPACE);
 		xpathCompiler.declareNamespace(OPF_PREFIX, OPF_NAMESPACE);
 		xpathCompiler.declareNamespace(XHTML_PREFIX, XHTML_NAMESPACE);
+	}
+	
+	public class ImageSizeExtensionFunction implements ExtensionFunction {
+
+		@Override
+		public XdmValue call(XdmValue[] arguments) throws SaxonApiException {
+			try {
+				// TrueZip doesn't handle the zip protocol in URIs, so use jar
+				URI imageUri = new URI(arguments[0].toString().replaceFirst(
+						"^zip:", "jar:"));
+				// Make SimpleImageInfo work by creating a temporary "proper"
+				// instance of java.io.File and copying the file which may be
+				// zipped
+				java.io.File tempImageFile = java.io.File.createTempFile("image",
+						null);
+				new ZipArchiveDetector().createFile(imageUri).archiveCopyTo(
+						tempImageFile);
+				SimpleImageInfo imageInfo = new SimpleImageInfo(tempImageFile);
+				return new XdmValue(new XdmAtomicValue(imageInfo.getWidth()))
+						.append(new XdmAtomicValue(imageInfo.getHeight()));
+			} catch (IOException | URISyntaxException e) {
+				throw new SaxonApiException(e.toString());
+			}
+		}
+
+		@Override
+		public SequenceType[] getArgumentTypes() {
+			return new SequenceType[] {
+				SequenceType.makeSequenceType(ItemType.STRING,
+						OccurrenceIndicator.ONE)
+			};
+		}
+		
+		@Override
+		public QName getName() {
+			return new QName(NOTA_PREFIX, NOTA_NAMESPACE, "get-image-size");
+		}
+
+		@Override
+		public SequenceType getResultType() {
+			return SequenceType.makeSequenceType(ItemType.INTEGER,
+					OccurrenceIndicator.ONE_OR_MORE);
+		}
+		
 	}
 	
 }

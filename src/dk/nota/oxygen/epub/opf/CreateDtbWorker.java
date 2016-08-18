@@ -1,6 +1,8 @@
 package dk.nota.oxygen.epub.opf;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.util.LinkedList;
 
 import javax.xml.transform.SourceLocator;
@@ -50,12 +52,13 @@ public class CreateDtbWorker extends AbstractConsoleWorker {
 		this.copyImages = copyImages;
 	}
 	
-	private void copyImages() {
+	public void copyImages(URI outputFolderUri) throws IOException {
 		imageListener.writeToConsole("COPYING IMAGE FILES...");
-		for (String imagePath : imageListener.getImagePaths()) {
+		new File(outputFolderUri).mkdirs();
+		for (String imagePath : getImagePaths()) {
 			File imageFile = epubAccess.getFileFromContentFolder(imagePath);
-			File newImageFile = new File(outputFile.getParentFile(), imageFile
-					.getName());
+			File newImageFile = new File(outputFolderUri.resolve(imageFile
+					.getName()));
 			newImageFile.archiveCopyFrom(imageFile);
 		}
 		imageListener.writeToConsole("IMAGE FILES COPIED");
@@ -79,7 +82,7 @@ public class CreateDtbWorker extends AbstractConsoleWorker {
 		concatTransformer.setParameter(new QName("UPDATE_EPUB"),
 				new XdmAtomicValue(false));
 		concatTransformer.transform();
-		if (copyImages) copyImages();
+		if (copyImages) copyImages(outputFile.getParentFile().toURI());
 		success = true;
 		if (returnDtbDocument) return ((XdmDestination)dtbConverter
 				.getDestination()).getXdmNode();

@@ -157,6 +157,18 @@
             <xsl:apply-templates mode="XHTML_FIRST_PASS" select="node()|@*"/>
         </xsl:copy>
     </xsl:template>
+    <xsl:template mode="XHTML_FIRST_PASS"
+        match="xhtml:img[not(@height|@width)]">
+    	<xsl:variable name="height" as="xs:integer"
+    	    select="nota:get-image-size(concat($CONTENT_FOLDER_URL, @src))[2]"/>
+        <xsl:variable name="width" as="xs:integer"
+            select="nota:get-image-size(concat($CONTENT_FOLDER_URL, @src))[1]"/>
+    	<xsl:copy>
+    	    <xsl:copy-of select="@* except (@height|@width)"/>
+    	    <xsl:attribute name="height" select="$height"/>
+    	    <xsl:attribute name="width" select="$width"/>
+    	</xsl:copy>
+    </xsl:template>
     <!-- XHTML second pass: Update references -->
     <xsl:template mode="XHTML_SECOND_PASS" match="xhtml:a">
         <xsl:variable name="reference" as="xs:string"
