@@ -669,7 +669,7 @@
         parameter. This is somewhat messy: selecting only following siblings is
         insufficient due to <thead>, <tbody> and similar ancestors -->
         <xsl:apply-templates mode="DOCUMENT"
-            select="(following::tr intersect ancestor::table[1])[1]">
+            select="(following::tr intersect ancestor::table[1]//tr)[1]">
             <xsl:with-param name="previousRow" select="$currentRow"/>
         </xsl:apply-templates>
     </xsl:template>
