@@ -31,6 +31,18 @@
                     <w:sz w:val="24"/>
                 </w:rPr>
             </w:style>
+            <w:style w:type="paragraph" w:styleId="NormalPlusSpaceBefore">
+                <w:basedOn w:val="Normal"/>
+                <w:pPr>
+                    <w:spacing w:before="288"/>
+                </w:pPr>
+            </w:style>
+            <w:style w:type="paragraph" w:styleId="Bridgehead">
+                <w:basedOn w:val="Normal"/>
+                <w:rPr>
+                    <w:b/>
+                </w:rPr>
+            </w:style>
             <w:style w:type="paragraph" w:styleId="TOCEntry1">
                 <w:name w:val="Indholdsfortegnelse 1"/>
                 <w:basedOn w:val="Normal"/>

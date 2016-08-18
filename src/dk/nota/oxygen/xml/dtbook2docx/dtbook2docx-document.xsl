@@ -423,17 +423,18 @@
         <xsl:call-template name="PARAGRAPH">
             <xsl:with-param name="content" select="node()"/>
             <xsl:with-param name="properties" select="$properties"/>
-            <xsl:with-param name="wordContentBefore">
-                <xsl:if test="nota:has-class(., 'precedingemptyline')">
-                    <w:r>
-                        <w:br w:type="line"/>
-                    </w:r>
-                </xsl:if>
-            </xsl:with-param>
             <xsl:with-param name="paragraphStyle">
-                <xsl:if test="$paragraphStyle">
-                    <xsl:value-of select="$paragraphStyle"/>
-                </xsl:if>
+                <xsl:choose>
+                    <xsl:when test="$paragraphStyle">
+                        <xsl:value-of select="$paragraphStyle"/>
+                    </xsl:when>
+                    <xsl:when test="nota:has-class(., 'bridgehead')">
+                        <xsl:value-of select="'Bridgehead'"/>
+                    </xsl:when>
+                    <xsl:when test="nota:has-class(., 'precedingemptyline')">
+                        <xsl:value-of select="'NormalPlusSpaceBefore'"/>
+                    </xsl:when>
+                </xsl:choose>
             </xsl:with-param>
         </xsl:call-template>
     </xsl:template>
