@@ -5,7 +5,8 @@
     xmlns:epub="http://www.idpf.org/2007/ops"
     xmlns:nota="http://www.nota.dk/oxygen"
     xmlns:opf="http://www.idpf.org/2007/opf"
-    xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns=""
+    xmlns:xhtml="http://www.w3.org/1999/xhtml"
+    xmlns=""
     exclude-result-prefixes="dc epub nota opf xhtml xs" version="2.0">
     <xsl:output method="xml" indent="yes"/>
     <xsl:param name="IDENTIFIER" as="xs:string?"
@@ -712,32 +713,24 @@
         <xsl:call-template name="ELEMENT.TABLE.CAPTION"/>
         <xsl:variable name="firstPass" as="node()">
             <table>
-                <xsl:for-each
-                    select="descendant::xhtml:tr[nota:get-page-breaks(.)]">
-                    <xsl:apply-templates select="nota:get-preceding-rows(.)"/>
-                    <xsl:for-each
-                        select="nota:get-page-breaks(.)[nota:starts-row(.)]">
-                        <xsl:call-template name="ELEMENT.PAGENUM"/>
-                    </xsl:for-each>
-                    <xsl:apply-templates select="self::xhtml:tr"/>
-                    <xsl:for-each
-                        select="nota:get-page-breaks(.)[nota:ends-row(.)]">
-                        <xsl:call-template name="ELEMENT.PAGENUM"/>
-                    </xsl:for-each>
-                    <xsl:apply-templates select="nota:get-following-rows(.)"/>
-                </xsl:for-each>
+                <xsl:apply-templates
+                    select="nota:get-preceding-rows(descendant::xhtml:tr
+                            [nota:get-page-breaks(.)][1])"/>
+                <xsl:apply-templates mode="ISOLATE_PAGE_BREAKS"
+                    select="descendant::xhtml:tr[nota:get-page-breaks(.)][1]"/>
             </table>
         </xsl:variable>
-        <xsl:for-each-group
-            group-adjacent="generate-id(following-sibling::pagenum[1])"
+        <xsl:for-each-group group-starting-with="pagenum"
             select="$firstPass/*">
             <xsl:copy-of select="current-group()[self::pagenum]"/>
-            <table>
-                <xsl:copy-of
-                    select="if (position() eq 1) then $attributes
-                            else $attributes[name() ne 'id']"/>
-                <xsl:copy-of select="current-group()[self::tr]"/>
-            </table>
+            <xsl:if test="current-group()[self::tr]">
+                <table>
+                    <xsl:copy-of
+                        select="if (position() eq 1) then $attributes
+                                else $attributes[name() ne 'id']"/>
+                    <xsl:copy-of select="current-group()[self::tr]"/>
+                </table>
+            </xsl:if>
         </xsl:for-each-group>
     </xsl:template>
     <xsl:template match="xhtml:table/xhtml:caption"/>
@@ -758,14 +751,30 @@
     <xsl:template match="xhtml:td">
         <td>
             <xsl:call-template name="ATTRIBUTES.TABLE.CELL"/>
-            <xsl:apply-templates mode="GROUP_INLINE_CONTENT"/>
+            <xsl:apply-templates/>
         </td>
     </xsl:template>
     <xsl:template match="xhtml:th">
         <th>
             <xsl:call-template name="ATTRIBUTES.TABLE.CELL"/>
-            <xsl:apply-templates mode="GROUP_INLINE_CONTENT"/>
+            <xsl:apply-templates/>
         </th>
+    </xsl:template>
+    <!-- TABLE ROWS WITH PAGE BREAKS -->
+    <xsl:template mode="ISOLATE_PAGE_BREAKS"
+        match="xhtml:tr[nota:get-page-breaks(.)]">
+        <xsl:for-each
+            select="nota:get-page-breaks(.)[nota:starts-row(.)]">
+            <xsl:call-template name="ELEMENT.PAGENUM"/>
+        </xsl:for-each>
+        <xsl:apply-templates select="self::xhtml:tr"/>
+        <xsl:for-each
+            select="nota:get-page-breaks(.)[nota:ends-row(.)]">
+            <xsl:call-template name="ELEMENT.PAGENUM"/>
+        </xsl:for-each>
+        <xsl:apply-templates select="nota:get-following-rows(.)"/>
+        <xsl:apply-templates mode="ISOLATE_PAGE_BREAKS"
+            select="nota:get-next-row-with-page-break(.)"/>
     </xsl:template>
     <!-- UL -->
     <xsl:template match="xhtml:ul">
@@ -827,6 +836,12 @@
         <xsl:value-of
             select="if ($navItem) then $navItem/count(ancestor::xhtml:li)
                     else 1"/>
+    </xsl:function>
+    <xsl:function name="nota:get-next-row-with-page-break" as="element(xhtml:tr)?">
+        <xsl:param name="n" as="node()"/>
+        <xsl:sequence
+            select="$n/(following::xhtml:tr[nota:get-page-breaks(.)] intersect
+                    ancestor::xhtml:table[1]//descendant::xhtml:tr)[1]"/>
     </xsl:function>
     <xsl:function name="nota:has-classes" as="xs:boolean">
         <xsl:param name="n" as="element()"/>
