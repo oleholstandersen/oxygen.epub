@@ -114,14 +114,14 @@
     <xsl:template name="ATTRIBUTES.COMBINE" as="attribute()*">
         <xsl:param name="primarySet" as="attribute()*"/>
         <xsl:param name="secondarySet" as="attribute()*"/>
-        <xsl:copy-of
-            select="$primarySet[name() ne 'class']|$secondarySet[not(name() =
-                    ('class', $primarySet/name()))]"/>
         <xsl:if test="($primarySet|$secondarySet)[name() eq 'class']">
             <xsl:attribute name="class"
                 select="distinct-values(($primarySet|$secondarySet)
                         [name() eq 'class']/tokenize(., '\s+'))"/>
         </xsl:if>
+        <xsl:copy-of
+            select="$primarySet[name() ne 'class']|$secondarySet[not(name() =
+                    ('class', $primarySet/name()))]"/>
     </xsl:template>
     <xsl:template name="ATTRIBUTES.GENERIC" as="attribute()*">
         <xsl:param name="context" as="element()" select="."/>
@@ -137,13 +137,13 @@
         <xsl:variable name="classes" as="xs:string*"
             select="tokenize($context/@class, '\s+')[not(. = $classesToDiscard)],
                     $classesToAdd"/>
-        <xsl:call-template name="ATTRIBUTES.GENERIC">
-            <xsl:with-param name="context" as="node()" select="$context"/>
-        </xsl:call-template>
         <xsl:if test="count($classes[normalize-space() ne '']) gt 0">
             <xsl:attribute name="class"
                 select="distinct-values($classes[normalize-space() ne ''])"/>
         </xsl:if>
+        <xsl:call-template name="ATTRIBUTES.GENERIC">
+            <xsl:with-param name="context" as="node()" select="$context"/>
+        </xsl:call-template>
     </xsl:template>
     <xsl:template name="ATTRIBUTES.IMAGE" as="attribute()*">
         <xsl:param name="context" as="element()" select="."/>
