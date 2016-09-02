@@ -698,6 +698,15 @@
             <xsl:apply-templates/>
         </linenum>
     </xsl:template>
+    <xsl:template match="xhtml:span[nota:has-classes(., 'roman')]">
+        <span>
+            <xsl:call-template name="ATTRIBUTES.GENERIC.WITH_CLASS"/>
+            <xsl:if test="not(@id)">
+                <xsl:attribute name="id" select="generate-id()"/>
+            </xsl:if>
+            <xsl:apply-templates/>
+        </span>
+    </xsl:template>
     <!-- TABLE -->
     <xsl:template match="xhtml:table">
         <xsl:call-template name="ELEMENT.TABLE.CAPTION"/>
