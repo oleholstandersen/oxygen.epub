@@ -29,22 +29,26 @@
         <xsl:message>
             <nota:out>CONVERTING TO DTBOOK...</nota:out>
         </xsl:message>
-        <xsl:variable name="frontmatter" as="element()*">
+        <xsl:variable name="frontmatter" as="element(level)*">
+            <xsl:variable name="coverSection" as="element(xhtml:section)?"
+                select="//xhtml:html/xhtml:body/xhtml:section
+                        [nota:has-epub-types(., 'cover')]"/>
+            <xsl:apply-templates select="$coverSection"/>    
             <xsl:call-template name="LEVELS.GROUP">
                 <xsl:with-param name="sections" as="element()*"
-                    select="//xhtml:html/xhtml:body/(xhtml:section
-                            [nota:has-epub-types(., 'cover')]|xhtml:section
-                            [nota:has-epub-types(., 'frontmatter')])"/>
+                    select="//xhtml:html/xhtml:body/xhtml:section
+                            [nota:has-epub-types(., 'frontmatter')]
+                            except $coverSection"/>
             </xsl:call-template>
         </xsl:variable>
-        <xsl:variable name="bodymatter" as="element()*">
+        <xsl:variable name="bodymatter" as="element(level)*">
             <xsl:call-template name="LEVELS.GROUP">
                 <xsl:with-param name="sections" as="element()*"
                     select="//xhtml:html/xhtml:body/xhtml:section
                             [nota:has-epub-types(., 'bodymatter')]"/>
             </xsl:call-template>
         </xsl:variable>
-        <xsl:variable name="rearmatter" as="element()*">
+        <xsl:variable name="rearmatter" as="element(level)*">
             <xsl:call-template name="LEVELS.GROUP">
                 <xsl:with-param name="sections" as="element()*"
                     select="//xhtml:html/xhtml:body/xhtml:section
@@ -632,30 +636,12 @@
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
-    <!--<xsl:template match="xhtml:section[parent::xhtml:body]">
-        <xsl:if test="not(nota:is-subordinate-division(.))">
-            <level depth="1">
-                <xsl:call-template name="ATTRIBUTES.GENERIC.WITH_CLASS"/>
-                <xsl:apply-templates select="node()"/>
-                <xsl:for-each
-                    select="following-sibling::xhtml:section
-                            [nota:is-subordinate-division(.)] except
-                            following-sibling::xhtml:section
-                            [not(nota:is-subordinate-division(.))][1]/
-                            (self::xhtml:section|
-                            following-sibling::xhtml:section)">
-                    <level depth="2">
-                        <xsl:call-template
-                            name="ATTRIBUTES.GENERIC.WITH_CLASS"/>
-                        <xsl:apply-templates>
-                            <xsl:with-param name="depthModifier"
-                                as="xs:integer" tunnel="yes" select="1"/>
-                        </xsl:apply-templates>
-                    </level>
-                </xsl:for-each>
-            </level>
-        </xsl:if>
-    </xsl:template>-->
+    <xsl:template match="xhtml:section[nota:has-epub-types(., 'cover')]">
+        <xsl:apply-templates select="xhtml:*">
+            <xsl:with-param name="depthModifier" as="xs:integer"
+                tunnel="yes" select="-1"/>
+        </xsl:apply-templates>
+    </xsl:template>
     <xsl:template match="xhtml:section[nota:is-poem(.)]">
         <div>
             <xsl:call-template name="ATTRIBUTES.GENERIC.WITH_CLASS">
