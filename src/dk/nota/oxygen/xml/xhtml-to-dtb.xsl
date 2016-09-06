@@ -35,7 +35,7 @@
                         [nota:has-epub-types(., 'cover')]"/>
             <xsl:apply-templates select="$coverSection"/>    
             <xsl:call-template name="LEVELS.GROUP">
-                <xsl:with-param name="sections" as="element()*"
+                <xsl:with-param name="sections" as="element(xhtml:section)*"
                     select="//xhtml:html/xhtml:body/xhtml:section
                             [nota:has-epub-types(., 'frontmatter')]
                             except $coverSection"/>
@@ -43,14 +43,14 @@
         </xsl:variable>
         <xsl:variable name="bodymatter" as="element(level)*">
             <xsl:call-template name="LEVELS.GROUP">
-                <xsl:with-param name="sections" as="element()*"
+                <xsl:with-param name="sections" as="element(xhtml:section)*"
                     select="//xhtml:html/xhtml:body/xhtml:section
                             [nota:has-epub-types(., 'bodymatter')]"/>
             </xsl:call-template>
         </xsl:variable>
         <xsl:variable name="rearmatter" as="element(level)*">
             <xsl:call-template name="LEVELS.GROUP">
-                <xsl:with-param name="sections" as="element()*"
+                <xsl:with-param name="sections" as="element(xhtml:section)*"
                     select="//xhtml:html/xhtml:body/xhtml:section
                             [nota:has-epub-types(., 'backmatter')]"/>
             </xsl:call-template>
