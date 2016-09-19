@@ -2612,6 +2612,10 @@
                     <optional>
                         <ref name="caption.figure"/> <!-- figcaption -->
                     </optional>
+                    
+                    <optional>
+                        <ref name="prodnote"/> <!-- figcaption -->
+                    </optional>
                 </group>
                 
                 <group>
@@ -2645,6 +2649,10 @@
                             
                             <optional>
                                 <ref name="caption.figure"/> <!-- figcaption -->
+                            </optional>
+                            
+                            <optional>
+                                <ref name="prodnote"/> <!-- figcaption -->
                             </optional>
                         </element>
                         

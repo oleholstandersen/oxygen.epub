@@ -332,9 +332,7 @@
         <rule context="html:*[tokenize(@epub:type,' ')='z3998:production']">
             <report test="ancestor::html:*[tokenize(@epub:type,'\s+')='z3998:production']">[nordic96a] nested production notes are not allowed: <value-of
                     select="concat('&lt;',name(),string-join(for $a in (@*) return concat(' ',$a/name(),'=&quot;',$a,'&quot;'),''),'&gt;')"/></report>
-            <report test="parent::html:figure and ancestor::*/tokenize(@epub:type,'\s+') = 'cover'">[nordic96a] production notes are not allowed inside figures in the cover
-                    <value-of select="if (ancestor::html:body[tokenize(@epub:type,'\s+')='cover']) then 'document' else 'section'"/>: <value-of
-                    select="concat('&lt;',name(),string-join(for $a in (@*) return concat(' ',$a/name(),'=&quot;',$a,'&quot;'),''),'&gt;')"/></report>
+            
         </rule>
     </pattern>
 
