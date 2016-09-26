@@ -27,9 +27,7 @@
                 </w:pPrDefault>
             </w:docDefaults>
             <w:style w:type="paragraph" w:styleId="Normal">
-                <w:rPr>
-                    <w:sz w:val="24"/>
-                </w:rPr>
+                
             </w:style>
             <w:style w:type="paragraph" w:styleId="NormalPlusSpaceBefore">
                 <w:basedOn w:val="Normal"/>

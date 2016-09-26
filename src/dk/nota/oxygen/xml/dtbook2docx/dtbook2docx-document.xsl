@@ -166,15 +166,15 @@
                 select="concat('level_', $count)"/>
             <xsl:call-template name="PARAGRAPH">
                 <xsl:with-param name="paragraphStyle"
-                    select="concat('TOCEntry',
-                                if ($depth gt 6) then 6 else $depth)"/>
+                    select="concat('TOCEntry', if ($depth gt 6) then 6 else
+                    		$depth)"/>
                 <xsl:with-param name="wordContentBefore">
                     <w:fldSimple
                         w:instr="REF {$bookmarkName} \h">
                         <xsl:call-template name="RUN">
                             <xsl:with-param name="text"
-                                select="if (levelhd) then string-join(
-                                            levelhd/text(), ' ')
+                                select="if (levelhd) then normalize-space(
+                                		string-join(levelhd/text(), ' '))
                                         else '[...]'"/>
                         </xsl:call-template>
                     </w:fldSimple>
