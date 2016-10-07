@@ -6,16 +6,24 @@
     exclude-result-prefixes="nota saxon xs"
     version="2.0">
     <xsl:output name="default" method="xml" indent="yes"
-        omit-xml-declaration="yes"/>
+        saxon:indent-spaces="0" omit-xml-declaration="yes"/>
     <xsl:param name="HEADINGS_TO_EXCLUDE" as="xs:string+"
         select="('Nye lydbøger', 'Nye punktbøger')"/>
     <xsl:param name="OUTPUT_FOLDER_URL" as="xs:string?"/>
+    <xsl:param name="PRICE" as="xs:string" select="'25'"/>
+    <xsl:param name="RATE" as="xs:string" select="'6'"/>
     <xsl:strip-space elements="*"/>
     <xsl:template match="*">
         <xsl:apply-templates/>
     </xsl:template>
     <xsl:template match="text()">
         <xsl:value-of select="replace(., '\s+', ' ')"/>
+    </xsl:template>
+    <xsl:template
+        match="text()[ancestor::frontmatter][matches(., '^Udkommer \d gange')]">
+        <xsl:value-of
+            select="concat('Udkommer ', $RATE, ' gange årligt og koster ',
+                    $PRICE, ' kroner.')"/>
     </xsl:template>
     <xsl:template match="/dtbook">
         <xsl:variable name="firstPass" as="element()">
@@ -28,8 +36,8 @@
                 <xsl:value-of select="'Creating all.xml'"/>
             </nota:out>
         </xsl:message>
-        <xsl:result-document href="{concat($OUTPUT_FOLDER_URL, 'all.xml')}"
-            omit-xml-declaration="yes">
+        <xsl:result-document format="default"
+            href="{concat($OUTPUT_FOLDER_URL, 'all.xml')}">
             <!--<xsl:copy-of select="$firstPass"/>-->
             <xsl:value-of disable-output-escaping="yes"
                 select="replace(saxon:serialize($firstPass, 'default'),
@@ -51,9 +59,8 @@
 	                <xsl:value-of select="concat('Creating ', $fileName)"/>
 	            </nota:out>
             </xsl:message>
-            <xsl:result-document
-                href="{concat($OUTPUT_FOLDER_URL, $fileName)}"
-                omit-xml-declaration="yes">
+            <xsl:result-document format="default"
+                href="{concat($OUTPUT_FOLDER_URL, $fileName)}">
                 <!--<xsl:copy-of select="$group"/>-->
                 <xsl:value-of disable-output-escaping="yes"
                     select="replace(saxon:serialize($group, 'default'),
