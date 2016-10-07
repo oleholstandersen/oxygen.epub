@@ -66,7 +66,8 @@
         <xsl:apply-templates mode="STRIP_LEADING_WHITESPACE"
             select="$firstPass"/>
     </xsl:template>
-    <xsl:template match="div[nota:has-classes(., 'katalogpost')]//a">
+    <xsl:template
+        match="span[nota:has-classes(., ('OEE', 'OEL', 'OEP', 'typedescription'))]//a">
         <xsl:apply-templates/>
     </xsl:template>
     <xsl:template match="level">
