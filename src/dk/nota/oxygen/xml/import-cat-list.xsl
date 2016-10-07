@@ -101,6 +101,8 @@
         <xsl:value-of
             select="if ($n/p/span[@class eq 'DK5']/matches(text(), '^99'))
                     then 'Erindringer og biografier'
+                    else if ($n/p/span[@class eq 'DK5']/matches(text(),
+                    '^8[2-5,7-8]')) then 'Skønlitteratur'
                     else if ($n/p/span[@class eq 'DK5']) then 'Faglitteratur'
                     else 'Skønlitteratur'"/>
     </xsl:function>
