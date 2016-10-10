@@ -170,7 +170,7 @@
     	</xsl:copy>
     </xsl:template>
     <!-- XHTML second pass: Update references -->
-    <xsl:template mode="XHTML_SECOND_PASS" match="xhtml:a">
+    <xsl:template mode="XHTML_SECOND_PASS" match="xhtml:a[@href]">
         <xsl:variable name="reference" as="xs:string"
             select="if (not(contains(@href, ':'))) then (
                     if (matches(@href, '#.+$'))
