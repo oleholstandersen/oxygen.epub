@@ -99,7 +99,7 @@ h6 {
 img::before {
     background-color: #FBB;
     content: "@alt: " oxy_editor(type, combo, edit, "@alt", values,
-        "Illustration, Kort, Foto, Tegning, Maleri, Diagram, Søjlediagram, Flowdiagram, Cirkeldiagram, Rutediagram, ", selectionMode, "single");
+        "Illustration, Kort, Foto, Tegning, Maleri, Diagram, Søjlediagram, Flowdiagram, Cirkeldiagram, Rutediagram, Formel, ", selectionMode, "single");
     font-family: sans-serif;
     font-size: small;
     font-weight: normal;
