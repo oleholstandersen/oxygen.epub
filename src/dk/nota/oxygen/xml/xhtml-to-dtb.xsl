@@ -415,6 +415,7 @@
             </xsl:call-template>
             <xsl:choose>
                 <xsl:when test="xhtml:figure">
+                    <xsl:apply-templates select="xhtml:figcaption"/>
                     <xsl:apply-templates select="xhtml:figure/xhtml:*"/>
                 </xsl:when>
                 <xsl:otherwise>
