@@ -8,7 +8,7 @@
     xmlns:xhtml="http://www.w3.org/1999/xhtml"
     exclude-result-prefixes="dc epub nota opf xhtml xs"
     version="2.0">
-    <xsl:output method="xml" indent="yes"/>
+    <xsl:output method="xml" indent="no"/>
     <xsl:param name="CONTENT_FOLDER_URL" as="xs:string"
         select="replace(document-uri(/), '[^/]*$', '')"/>
     <xsl:param name="ID_BASE" as="xs:string" select="'split'"/>
