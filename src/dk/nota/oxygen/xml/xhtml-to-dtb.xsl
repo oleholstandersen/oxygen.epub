@@ -285,8 +285,8 @@
         <xsl:call-template name="ELEMENT.COPY.GENERIC"/>
     </xsl:template>
     <!-- Special mode for grouping inline content in paragraphs -->
-    <xsl:template mode="GROUP_INLINE_CONTENT"
-        match="node()[nota:starts-inline(.)]" priority="1">
+    <xsl:template mode="GROUP_INLINE_CONTENT" priority="1"
+        match="node()[nota:starts-inline(.)]">
         <xsl:param name="attributes" as="attribute()*"/>
         <xsl:variable name="group" as="node()*"
             select="self::node()|following-sibling::node() except
@@ -858,8 +858,7 @@
     <xsl:function name="nota:is-inline" as="xs:boolean">
         <xsl:param name="n" as="node()"/>
         <xsl:value-of
-            select="$n/(self::text()[normalize-space() ne ''] or local-name() =
-                    $INLINE_ELEMENT_NAMES)"/>
+            select="$n/(self::text() or local-name() = $INLINE_ELEMENT_NAMES)"/>
     </xsl:function>
     <xsl:function name="nota:is-note" as="xs:boolean">
         <xsl:param name="n" as="element()"/>
@@ -904,9 +903,11 @@
     </xsl:function>
     <xsl:function name="nota:starts-inline" as="xs:boolean">
         <xsl:param name="n" as="node()"/>
+        <xsl:variable name="previous" as="node()?"
+            select="$n/preceding-sibling::node()[1]"/>
         <xsl:value-of
-            select="$n/(nota:is-inline(.) and (nota:starts-sequence(.) or
-                    preceding-sibling::node()[1]/not(nota:is-inline(.))))"/>
+            select="$n/(nota:is-inline(.) and (not(exists($previous)) or
+                    not($previous/nota:is-inline(.))))"/>
     </xsl:function>
     <xsl:function name="nota:starts-list-item" as="xs:boolean">
         <xsl:param name="n" as="node()"/>
