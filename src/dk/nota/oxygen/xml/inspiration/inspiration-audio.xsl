@@ -26,7 +26,7 @@
             	</xsl:if>
             	<level depth="2">
                 	<levelhd depth="2">Oplysninger om denne udgave af Inspiration</levelhd>
-                	<p>Denne udgave er produceret i 2016 af Nota - Nationalbibliotek for mennesker med læsevanskeligheder, i henhold til ophavsrettes bestemmelser, og må ikke kopieres uden tilladelse.</p>
+                	<p>Denne udgave er produceret i 2016 af Nota i henhold til ophavsretslovens bestemmelser og må ikke kopieres uden tilladelse.</p>
                 	<p>Bladet er opmærket elektronisk i 3 niveauer.</p>
                 	<p>Indlæst af:</p>
             	</level>
