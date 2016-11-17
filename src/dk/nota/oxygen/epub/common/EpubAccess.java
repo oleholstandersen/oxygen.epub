@@ -86,7 +86,11 @@ public class EpubAccess {
 		opfUrl = new URL(getArchiveContentUrl(), opfReferenceNode
 				.getAttributeValue(new QName("full-path")));
 		contentFolderUrl = new URL(opfUrl, "./");
-		navigationUrl = new URL(contentFolderUrl, "nav.xhtml");
+		XdmNode navReferenceNode = getXmlAccess().getFirstNodeByXpath(
+				"/opf:package/opf:manifest/opf:item[@properties eq 'nav']",
+				getOpfDocument());
+		navigationUrl = new URL(contentFolderUrl, navReferenceNode
+				.getAttributeValue(new QName("href")));
 	}
 	
 	public URL getArchiveContentUrl() {
