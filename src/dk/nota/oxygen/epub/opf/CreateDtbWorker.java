@@ -78,6 +78,8 @@ public class CreateDtbWorker extends AbstractConsoleWorker {
 				"IDENTIFIER"), new XdmAtomicValue(dtbIdentifier));
 		dtbConverter.setParameter(new QName("NAV_DOCUMENT"), epubAccess
 				.getNavigationDocument());
+		dtbConverter.setParameter(new QName("OPF_DOCUMENT"), epubAccess
+				.getOpfDocument());
 		concatTransformer.setDestination(dtbConverter);
 		concatTransformer.setParameter(new QName("UPDATE_EPUB"),
 				new XdmAtomicValue(false));
