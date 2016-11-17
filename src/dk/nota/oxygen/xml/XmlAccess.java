@@ -177,7 +177,8 @@ public class XmlAccess {
 				return new XdmValue(new XdmAtomicValue(imageInfo.getWidth()))
 						.append(new XdmAtomicValue(imageInfo.getHeight()));
 			} catch (IOException | URISyntaxException e) {
-				throw new SaxonApiException(e.toString());
+				return new XdmValue(new XdmAtomicValue(-1)).append(
+						new XdmAtomicValue(-1));
 			}
 		}
 

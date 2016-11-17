@@ -165,8 +165,10 @@
             select="nota:get-image-size(concat($CONTENT_FOLDER_URL, @src))[1]"/>
     	<xsl:copy>
     	    <xsl:copy-of select="@* except (@height|@width)"/>
-    	    <xsl:attribute name="height" select="$height"/>
-    	    <xsl:attribute name="width" select="$width"/>
+    	    <xsl:if test="$height ne -1 and $width ne -1">
+ 	        	<xsl:attribute name="height" select="$height"/>
+    	    	<xsl:attribute name="width" select="$width"/>
+    	    </xsl:if>
     	</xsl:copy>
     </xsl:template>
     <!-- XHTML second pass: Update references -->
