@@ -33,7 +33,16 @@
             <xsl:variable name="coverSection" as="element(xhtml:section)?"
                 select="//xhtml:html/xhtml:body/xhtml:section
                         [nota:has-epub-types(., 'cover')]"/>
-            <xsl:apply-templates select="$coverSection"/>    
+            <xsl:choose>
+                <xsl:when test="$coverSection/xhtml:section">
+                    <xsl:apply-templates select="$coverSection"/>
+                </xsl:when>
+                <xsl:otherwise>
+                    <level depth="1" class="cover">
+                        <xsl:apply-templates select="$coverSection"/>
+                    </level>
+                </xsl:otherwise>
+            </xsl:choose>    
             <xsl:call-template name="LEVELS.GROUP">
                 <xsl:with-param name="sections" as="element(xhtml:section)*"
                     select="//xhtml:html/xhtml:body/xhtml:section
