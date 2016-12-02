@@ -73,8 +73,7 @@
                     select="$numbering"/>
                 <xsl:with-param name="relationships" tunnel="yes"
                     select="$relationships"/>
-                <xsl:with-param name="styles" tunnel="yes"
-                    select="$styles"/>
+                <xsl:with-param name="styles" tunnel="yes" select="$styles"/>
             </xsl:apply-templates>
             <xsl:apply-templates mode="CAT_LIST" select="$catLists"/>
         </body>
@@ -386,10 +385,10 @@
                 <xsl:when test="$property/self::w:b">
                     <strong><xsl:copy-of select="$content"/></strong>
                 </xsl:when>
-                <xsl:when test="$property/@w:val = 'subscript'">
+                <xsl:when test="$property/@w:val eq 'subscript'">
                     <sub><xsl:copy-of select="$content"/></sub>
                 </xsl:when>
-                <xsl:when test="$property/@w:val = 'superscript'">
+                <xsl:when test="$property/@w:val eq 'superscript'">
                     <sup><xsl:copy-of select="$content"/></sup>
                 </xsl:when>
                 <xsl:otherwise>

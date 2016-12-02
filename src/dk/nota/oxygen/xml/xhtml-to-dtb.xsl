@@ -5,10 +5,10 @@
     xmlns:epub="http://www.idpf.org/2007/ops"
     xmlns:nota="http://www.nota.dk/oxygen"
     xmlns:opf="http://www.idpf.org/2007/opf"
+    xmlns:saxon="http://saxon.sf.net/"
     xmlns:xhtml="http://www.w3.org/1999/xhtml"
-    xmlns=""
     exclude-result-prefixes="dc epub nota opf xhtml xs" version="2.0">
-    <xsl:output method="xml" indent="yes"/>
+    <xsl:output method="xml" indent="yes" saxon:indent-spaces="4"/>
     <xsl:param name="IDENTIFIER" as="xs:string?"
         select="$OPF_DOCUMENT/opf:package/opf:metadata/dc:identifier[1]/text()"/>
     <xsl:param name="NAV_DOCUMENT" as="document-node()*"
