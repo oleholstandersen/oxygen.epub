@@ -18,7 +18,14 @@
     <xsl:output method="xml" indent="yes"/>
     <xsl:param name="IMPORT_TO_CONCAT" as="xs:boolean"
         select="matches(document-uri(/), 'concat\.xhtml$')"/>
+    <xsl:param name="SEPARATE_DOCUMENTS" as="xs:boolean" select="true()"/>
     <xsl:param name="SOURCE_URLS" as="xs:string*"/>
+    <xsl:variable name="OPF_DOCUMENT_COUNT" as="xs:integer"
+        select="/opf:package/opf:manifest/count(opf:item[@id = //opf:itemref/
+                @idref])"/>
+    <xsl:variable name="OPF_IMPORT_COUNT" as="xs:integer"
+        select="/opf:package/opf:manifest/count(opf:item[matches(@id,
+                '^import_\d$')])"/>
     <xsl:variable name="OPF_LANGUAGE" as="xs:string*"
         select="/opf:package/opf:metadata/dc:language/text()"/>
     <xsl:variable name="OPF_PID" as="xs:string*"
@@ -26,7 +33,7 @@
     <xsl:variable name="OPF_TITLE" as="xs:string*"
         select="/opf:package/opf:metadata/dc:title/text()"/>
     <xsl:variable name="ROOT" as="node()" select="/"/>
-    <xsl:variable name="FIRST_PASS" as="node()*">
+    <xsl:variable name="FIRST_PASS" as="element(xhtml:body)*">
         <xsl:variable name="inputReferences" as="element()*">
             <xsl:for-each select="$SOURCE_URLS">
                 <xsl:choose>
@@ -34,19 +41,13 @@
                         <nota:docx url="{.}"/>
                     </xsl:when>
                     <xsl:when test="matches(., '\.kat$')">
-                    	<xsl:message>
-                    		<nota:out>
-                    			<xsl:value-of select="doc-available(.)"/>
-                    			<xsl:value-of select="concat(': ', .)"/>
-                    		</nota:out>
-                    	</xsl:message>
-                        <nota:cat url="{.}"/>
+                    	<nota:cat url="{.}"/>
                     </xsl:when>
                 </xsl:choose>
             </xsl:for-each>
         </xsl:variable>
-        <xsl:for-each-group select="$inputReferences"
-            group-starting-with="nota:docx">
+        <xsl:for-each-group group-starting-with="nota:docx"
+            select="$inputReferences">
             <xsl:call-template name="DOCX.CONVERT">
                 <xsl:with-param name="wordFolderUrl" as="xs:string"
                     select="current-group()[1]/@url"/>
@@ -55,17 +56,42 @@
             </xsl:call-template>
         </xsl:for-each-group>
     </xsl:variable>
+    <xsl:template name="HEADINGS.GROUP" as="element(xhtml:section)*">
+        <xsl:param name="sequence" as="node()*" select="node()"/>
+        <xsl:variable name="minDepth" as="xs:integer?"
+            select="min($sequence[self::nota:hd]/xs:integer(@depth))"/>
+        <xsl:for-each-group group-starting-with="nota:hd[@depth = $minDepth]"
+            select="$sequence">
+            <section>
+                <xsl:variable name="nextGroup" as="node()*"
+                    select="current-group()[self::nota:hd][2]/((self::nota:hd|
+                            following-sibling::node()) intersect
+                            current-group())"/>
+                <xsl:copy-of select="current-group() except $nextGroup"/>
+                <xsl:if test="$nextGroup">
+                    <xsl:call-template name="HEADINGS.GROUP">
+                        <xsl:with-param name="sequence" select="$nextGroup"/>
+                    </xsl:call-template>
+                </xsl:if>
+            </section>
+        </xsl:for-each-group>
+    </xsl:template>
+    <xsl:variable name="FIRST_PASS_GROUPED" as="element(xhtml:section)*">
+        <xsl:call-template name="HEADINGS.GROUP">
+            <xsl:with-param name="sequence" select="$FIRST_PASS/node()"/>
+        </xsl:call-template>
+    </xsl:variable>
     <xsl:template name="DOCX.CONVERT" as="element()">
         <xsl:param name="wordFolderUrl" as="xs:string" select="."/>
         <xsl:param name="catLists" as="document-node()*"/>
-        <xsl:variable name="document" as="document-node()*"
+        <xsl:variable name="document" as="document-node()?"
             select="document(concat($wordFolderUrl, 'document.xml'))"/>
-        <xsl:variable name="numbering" as="document-node()*"
+        <xsl:variable name="numbering" as="document-node()?"
             select="document(concat($wordFolderUrl, 'numbering.xml'))"/>
-        <xsl:variable name="relationships" as="document-node()*"
+        <xsl:variable name="relationships" as="document-node()?"
             select="document(concat($wordFolderUrl,
                     '_rels/document.xml.rels'))"/>
-        <xsl:variable name="styles" as="document-node()*"
+        <xsl:variable name="styles" as="document-node()?"
             select="document(concat($wordFolderUrl, 'styles.xml'))"/>
         <body>
             <xsl:apply-templates select="$document/w:document/w:body/node()">
@@ -78,14 +104,68 @@
             <xsl:apply-templates mode="CAT_LIST" select="$catLists"/>
         </body>
     </xsl:template>
+    <xsl:template name="OPF.DOCUMENT" as="element(opf:package)">
+        <xsl:param name="documents" as="element(nota:document)*"/>
+        <package xmlns="http://www.idpf.org/2007/opf">
+            <xsl:copy-of select="$ROOT/opf:package/(@*|opf:metadata)"/>
+            <manifest>
+                <xsl:copy-of select="$ROOT/opf:package/opf:manifest/(@*|*)"/>
+                <xsl:for-each select="$documents">
+                    <item id="{@id}" media-type="application/xhtml+xml"
+                        href="{@name}"/>
+                </xsl:for-each>
+            </manifest>
+            <spine>
+                <xsl:copy-of select="$ROOT/opf:package/opf:spine/(@*|*)"/>
+                <xsl:for-each select="$documents">
+                    <itemref idref="{@id}"/>
+                </xsl:for-each>
+            </spine>
+        </package>
+    </xsl:template>
+    <xsl:template name="XHTML.DOCUMENT" as="element(nota:document)">
+        <xsl:param name="content" as="node()*"/>
+        <xsl:param name="position" as="xs:integer" select="position()"/>
+        <xsl:variable name="id" as="xs:string"
+            select="concat('import_', $OPF_IMPORT_COUNT + $position)"/>
+        <xsl:variable name="fileName" as="xs:string"
+            select="concat($OPF_PID, '-', format-number($OPF_DOCUMENT_COUNT +
+                    $position, '000'), '-chapter.xhtml')"/>
+        <xsl:variable name="outputUrl" as="xs:string"
+            select="replace(document-uri($ROOT), '/[^/]*$', concat('/',
+                    $fileName))"/>
+        <nota:document url="{$outputUrl}" id="{$id}" name="{$fileName}">
+            <html xmlns:epub="http://www.idpf.org/2007/ops"
+                xmlns:nordic="http://www.mtm.se/epub/"
+                epub:prefix="z3998: http://www.daisy.org/z3998/2012/vocab/structure/#"
+                lang="{$OPF_LANGUAGE}"
+                xml:lang="{$OPF_LANGUAGE}">
+                <head>
+                    <meta charset="UTF-8"/>
+                    <title>
+                        <xsl:value-of select="$OPF_TITLE"/>
+                    </title>
+                    <meta name="dc:identifier" content="{$OPF_PID}"/>
+                    <meta name="viewport" content="width=device-width"/>
+                    <xsl:for-each
+                        select="$ROOT/opf:package/opf:manifest/opf:item
+                                [@media-type eq 'text/css']">
+                        <link rel="stylesheet" type="text/css" href="{@href}"/>
+                    </xsl:for-each>
+                </head>
+                <body epub:type="chapter bodymatter">
+                    <xsl:apply-templates mode="SECOND_PASS" select="$content"/>
+                </body>
+            </html>
+        </nota:document>
+    </xsl:template>
     <xsl:template match="/xhtml:html">
         <nota:documents>
             <nota:document url="{document-uri(/)}">
                 <xsl:copy>
-                    <xsl:copy-of select="@*"/>
-                    <xsl:copy-of select="xhtml:head"/>
+                    <xsl:copy-of select="@*|xhtml:head"/>
                     <body>
-                        <xsl:copy-of select="xhtml:body/@*|xhtml:body/node()"/>
+                        <xsl:copy-of select="xhtml:body/(@*|node())"/>
                         <xsl:choose>
                             <xsl:when test="$IMPORT_TO_CONCAT">
                                 <xsl:for-each select="$FIRST_PASS">
@@ -106,76 +186,22 @@
         </nota:documents>
     </xsl:template>
     <xsl:template match="/opf:package">
-        <xsl:variable name="documents" as="element()*">
-            <xsl:for-each select="$FIRST_PASS">
-                <xsl:variable name="id" as="xs:string">
-                    <xsl:variable name="count" as="xs:integer"
-                        select="$ROOT/opf:package/opf:manifest/
-                                count(opf:item[matches(@id, '^import_\d$')])"/>
-                    <xsl:value-of
-                        select="concat('import_', $count + position())"/>
-                </xsl:variable>
-                <xsl:variable name="fileName" as="xs:string">
-                    <xsl:variable name="count" as="xs:integer"
-                        select="$ROOT/opf:package/opf:manifest/
-                                count(opf:item[@id = //opf:itemref/@idref])"/>
-                    <xsl:value-of
-                        select="concat($OPF_PID, '-', format-number($count
-                                + position(), '000'), '-chapter.xhtml')"/>
-                </xsl:variable>
-                <xsl:variable name="outputUrl" as="xs:string"
-                    select="replace(document-uri($ROOT), '/[^/]*$', concat('/',
-                            $fileName))"/>
-                <nota:document url="{$outputUrl}" id="{$id}" name="{$fileName}">
-                    <html xmlns:epub="http://www.idpf.org/2007/ops"
-                        xmlns:nordic="http://www.mtm.se/epub/"
-                        epub:prefix="z3998: http://www.daisy.org/z3998/2012/vocab/structure/#"
-                        lang="{$OPF_LANGUAGE}"
-                        xml:lang="{$OPF_LANGUAGE}">
-                        <head>
-                            <meta charset="UTF-8"/>
-                            <title>
-                                <xsl:value-of select="$OPF_TITLE"/>
-                            </title>
-                            <meta name="dc:identifier" content="{$OPF_PID}"/>
-                            <meta name="viewport" content="width=device-width"/>
-                            <xsl:for-each
-                                select="$ROOT/opf:package/opf:manifest/opf:item
-                                        [@media-type eq 'text/css']">
-                                <link rel="stylesheet" type="text/css"
-                                    href="{@href}"/>
-                            </xsl:for-each>
-                        </head>
-                        <body epub:type="chapter bodymatter">
-                            <xsl:apply-templates mode="SECOND_PASS"
-                                select="@*|xhtml:p[not(
-                                        preceding-sibling::nota:hd)]|nota:hd
-                                        [@depth = 1]"/>
-                        </body>
-                    </html>
-                </nota:document>
+        <xsl:variable name="documents" as="element(nota:document)*">
+            <xsl:for-each
+                select="if ($SEPARATE_DOCUMENTS) then $FIRST_PASS_GROUPED
+                        else $FIRST_PASS">
+                <xsl:call-template name="XHTML.DOCUMENT">
+                    <xsl:with-param name="content" select="node()"/>
+                </xsl:call-template>
             </xsl:for-each>
         </xsl:variable>
         <nota:documents>
-            <xsl:copy-of select="$documents"/>
+            <xsl:sequence select="$documents"/>
             <nota:document url="{document-uri(/)}">
-                <xsl:copy xmlns="http://www.idpf.org/2007/opf">
-                    <xsl:copy-of select="@*|opf:metadata"/>
-                    <manifest>
-                        <xsl:copy-of select="opf:manifest/(@*|*)"/>
-                        <xsl:for-each select="$documents">
-                            <item id="{@id}" media-type="application/xhtml+xml"
-                                href="{@name}"/>
-                        </xsl:for-each>
-                    </manifest>
-                    <spine>
-                        <xsl:copy-of select="opf:spine/(@*|*)"/>
-                        <xsl:for-each select="$documents">
-                            <itemref idref="{@id}"/>
-                        </xsl:for-each>
-                    </spine>
-                </xsl:copy>
-            </nota:document>  
+                <xsl:call-template name="OPF.DOCUMENT">
+                    <xsl:with-param name="documents" select="$documents"/>
+                </xsl:call-template>
+            </nota:document>
         </nota:documents>
     </xsl:template>
     <xsl:template match="@*|node()">
@@ -286,11 +312,11 @@
             <xsl:apply-templates mode="SECOND_PASS" select="@*|node()"/>
         </xsl:copy>
     </xsl:template>
-    <xsl:template mode="SECOND_PASS" match="xhtml:body">
-        <xsl:apply-templates mode="SECOND_PASS"
+    <xsl:template mode="SECOND_PASS" match="xhtml:body"> 
+        <xsl:apply-templates mode="SECOND_PASS" 
             select="@*|xhtml:p[not(preceding-sibling::nota:hd)]|
-                    nota:hd"/>
-    </xsl:template>
+                    nota:hd"/> 
+    </xsl:template> 
     <xsl:template mode="SECOND_PASS" match="xhtml:em">
         <xsl:copy>
             <xsl:for-each select="nota:expand-inline(.)">
@@ -300,36 +326,6 @@
     </xsl:template>
     <xsl:template mode="SECOND_PASS"
         match="xhtml:em[preceding-sibling::node()[1]/self::xhtml:em]"/>
-    <xsl:template mode="SECOND_PASS NEST_SECTIONS" match="nota:hd">
-        <xsl:variable name="depth" as="xs:integer"
-            select="xs:integer(@depth)"/>
-        <xsl:variable name="content" as="node()+">
-            <xsl:element name="{concat('h', $depth)}">
-                <xsl:apply-templates mode="SECOND_PASS"
-                    select="@*|node()"/>
-            </xsl:element>
-            <xsl:apply-templates mode="SECOND_PASS"
-                select="following-sibling::* except
-                        following-sibling::nota:hd[1]/
-                        (self::nota:hd|following-sibling::*)"/>
-            <xsl:apply-templates mode="NEST_SECTIONS"
-                select="following-sibling::nota:hd[@depth &gt; $depth] except
-                        following-sibling::nota:hd[@depth &lt;= $depth][1]/
-                        (self::nota:hd|following-sibling::*)"/>
-        </xsl:variable>
-        <xsl:choose>
-            <xsl:when test="$depth = 1">
-                <xsl:copy-of select="$content"/>
-            </xsl:when>
-            <xsl:otherwise>
-                <section>
-                    <xsl:copy-of select="$content"/>
-                </section>
-            </xsl:otherwise>
-        </xsl:choose>
-    </xsl:template>
-    <xsl:template mode="SECOND_PASS"
-        match="nota:hd[@depth &gt; preceding-sibling::nota:hd/@depth]"/>
     <xsl:template mode="SECOND_PASS" match="nota:hd/@depth"/>
     <xsl:template mode="SECOND_PASS THIRD_PASS" match="xhtml:li">
         <xsl:variable name="listElementName" as="xs:string"
@@ -341,10 +337,14 @@
                         following-sibling::*[not(self::xhtml:li)][1]/
                         (self::xhtml:li|following-sibling::xhtml:li)">
                 <xsl:copy>
-                    <xsl:apply-templates mode="SECOND_PASS"
-                        select="@*|node()"/>
+                    <xsl:apply-templates mode="SECOND_PASS" select="@*|node()"/>
                 </xsl:copy>
             </xsl:for-each>
+        </xsl:element>
+    </xsl:template>
+    <xsl:template mode="SECOND_PASS" match="nota:hd">
+        <xsl:element name="{concat('h', count(ancestor::xhtml:section))}">
+            <xsl:apply-templates mode="SECOND_PASS" select="node()"/>
         </xsl:element>
     </xsl:template>
     <xsl:template mode="SECOND_PASS"
@@ -529,6 +529,10 @@
                     '^8[2-5,7-8]')) then 'Skønlitteratur'
                     else if ($n/p/span[@class eq 'DK5']) then 'Faglitteratur'
                     else 'Skønlitteratur'"/>
+    </xsl:function>
+    <xsl:function name="nota:group-headings" as="node()*">
+        <xsl:param name="n" as="node()*"/>
+        
     </xsl:function>
     <xsl:function name="nota:follows-type" as="xs:boolean">
         <xsl:param name="n" as="element()"/>
