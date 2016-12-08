@@ -70,7 +70,8 @@
                 <xsl:copy-of select="current-group() except $nextGroup"/>
                 <xsl:if test="$nextGroup">
                     <xsl:call-template name="HEADINGS.GROUP">
-                        <xsl:with-param name="sequence" select="$nextGroup"/>
+                        <xsl:with-param name="sequence" as="node()+"
+                            select="$nextGroup"/>
                     </xsl:call-template>
                 </xsl:if>
             </section>
@@ -78,10 +79,11 @@
     </xsl:template>
     <xsl:variable name="FIRST_PASS_GROUPED" as="element(xhtml:section)*">
         <xsl:call-template name="HEADINGS.GROUP">
-            <xsl:with-param name="sequence" select="$FIRST_PASS/node()"/>
+            <xsl:with-param name="sequence" as="node()*"
+                select="$FIRST_PASS/node()"/>
         </xsl:call-template>
     </xsl:variable>
-    <xsl:template name="DOCX.CONVERT" as="element()">
+    <xsl:template name="DOCX.CONVERT" as="element(xhtml:body)">
         <xsl:param name="wordFolderUrl" as="xs:string" select="."/>
         <xsl:param name="catLists" as="document-node()*"/>
         <xsl:variable name="document" as="document-node()?"
@@ -95,11 +97,12 @@
             select="document(concat($wordFolderUrl, 'styles.xml'))"/>
         <body>
             <xsl:apply-templates select="$document/w:document/w:body/node()">
-                <xsl:with-param name="numbering" tunnel="yes"
-                    select="$numbering"/>
-                <xsl:with-param name="relationships" tunnel="yes"
-                    select="$relationships"/>
-                <xsl:with-param name="styles" tunnel="yes" select="$styles"/>
+                <xsl:with-param name="numbering" as="document-node()?"
+                    tunnel="yes" select="$numbering"/>
+                <xsl:with-param name="relationships" as="document-node()?"
+                    tunnel="yes" select="$relationships"/>
+                <xsl:with-param name="styles" as="document-node()?"
+                    tunnel="yes" select="$styles"/>
             </xsl:apply-templates>
             <xsl:apply-templates mode="CAT_LIST" select="$catLists"/>
         </body>
@@ -191,7 +194,8 @@
                 select="if ($SEPARATE_DOCUMENTS) then $FIRST_PASS_GROUPED
                         else $FIRST_PASS">
                 <xsl:call-template name="XHTML.DOCUMENT">
-                    <xsl:with-param name="content" select="node()"/>
+                    <xsl:with-param name="content" as="node()*"
+                        select="node()"/>
                 </xsl:call-template>
             </xsl:for-each>
         </xsl:variable>
@@ -199,7 +203,8 @@
             <xsl:sequence select="$documents"/>
             <nota:document url="{document-uri(/)}">
                 <xsl:call-template name="OPF.DOCUMENT">
-                    <xsl:with-param name="documents" select="$documents"/>
+                    <xsl:with-param name="documents" as="node()+"
+                        select="$documents"/>
                 </xsl:call-template>
             </nota:document>
         </nota:documents>
@@ -208,21 +213,21 @@
         <xsl:apply-templates select="@*|node()"/>
     </xsl:template>
     <xsl:template match="w:br">
-        <xsl:param name="properties" as="node()*"/>
+        <xsl:param name="properties" as="element()*"/>
         <xsl:call-template name="DOCX.FORMATTING.CONVERT">
-            <xsl:with-param name="content" as="node()">
+            <xsl:with-param name="content" as="element(xhtml:br)">
                 <br/>
             </xsl:with-param>
-            <xsl:with-param name="properties" as="node()*"
+            <xsl:with-param name="properties" as="element()*"
                 select="$properties"/>
         </xsl:call-template>
     </xsl:template>
     <xsl:template match="w:p">
-        <xsl:param name="numbering" as="document-node()*" tunnel="yes"/>
-        <xsl:param name="styles" as="document-node()*" tunnel="yes"/>
-        <xsl:variable name="styleName" as="xs:string*"
+        <xsl:param name="numbering" as="document-node()?" tunnel="yes"/>
+        <xsl:param name="styles" as="document-node()?" tunnel="yes"/>
+        <xsl:variable name="styleName" as="xs:string?"
             select="w:pPr/w:pStyle/@w:val"/>
-        <xsl:variable name="styleItem" as="node()*"
+        <xsl:variable name="styleItem" as="element(w:style)?"
             select="$styles/w:styles/w:style[@w:styleId eq $styleName]"/>
         <xsl:variable name="outlineLevel" as="xs:integer"
             select="if (w:pPr/w:outlineLvl)
@@ -230,7 +235,8 @@
                     else if ($styleItem/w:pPr/w:outlineLvl)
                     then xs:integer($styleItem/w:pPr/w:outlineLvl/@w:val)
                     else -1"/>
-        <xsl:variable name="numPr" as="node()*" select="w:pPr/w:numPr"/>
+        <xsl:variable name="numPr" as="element(w:numPr)?"
+            select="w:pPr/w:numPr"/>
         <xsl:choose>
             <xsl:when test="$outlineLevel gt -1">
                 <nota:hd depth="{$outlineLevel + 1}">
@@ -238,12 +244,12 @@
                 </nota:hd>
             </xsl:when>
             <xsl:when test="$numPr">
-                <xsl:variable name="depth" as="xs:integer*"
+                <xsl:variable name="depth" as="xs:integer?"
                     select="xs:integer($numPr/w:ilvl/@w:val)"/>
-                <xsl:variable name="abstractNumberId" as="xs:string*"
+                <xsl:variable name="abstractNumberId" as="xs:string?"
                     select="$numbering/w:numbering/w:num[@w:numId = $numPr/
                             w:numId/@w:val]/w:abstractNumId/@w:val"/>
-                <xsl:variable name="numberFormat" as="xs:string*"
+                <xsl:variable name="numberFormat" as="xs:string?"
                     select="$numbering/w:numbering/w:abstractNum
                             [@w:abstractNumId = $abstractNumberId]/w:lvl
                             [@w:ilvl = $depth]/w:numFmt/@w:val"/>
@@ -260,18 +266,18 @@
     </xsl:template>
     <xsl:template match="w:p[not(w:r/w:t)]"/>
     <xsl:template match="w:r">
-        <xsl:variable name="properties" as="node()*"
+        <xsl:variable name="properties" as="element()*"
             select="w:rPr/(w:b|w:i|w:vertAlign)"/>
         <xsl:apply-templates select="w:t|w:br">
-            <xsl:with-param name="properties" as="node()*"
+            <xsl:with-param name="properties" as="element()*"
                 select="$properties"/>
         </xsl:apply-templates>
     </xsl:template>
     <xsl:template match="w:t">
-        <xsl:param name="properties" as="node()*"/>
+        <xsl:param name="properties" as="element()*"/>
         <xsl:call-template name="DOCX.FORMATTING.CONVERT">
             <xsl:with-param name="content" as="node()" select="text()"/>
-            <xsl:with-param name="properties" as="node()*"
+            <xsl:with-param name="properties" as="element()*"
                 select="$properties"/>
         </xsl:call-template>
     </xsl:template>
@@ -295,8 +301,7 @@
                 <xsl:attribute name="colspan" select="$colSpan"/>
             </xsl:if>
             <xsl:if test="$rowSpan gt 0">
-                <xsl:attribute name="rowspan"
-                    select="$rowSpan"/>
+                <xsl:attribute name="rowspan" select="$rowSpan"/>
             </xsl:if>
             <xsl:apply-templates/>
         </td>
@@ -314,8 +319,7 @@
     </xsl:template>
     <xsl:template mode="SECOND_PASS" match="xhtml:body"> 
         <xsl:apply-templates mode="SECOND_PASS" 
-            select="@*|xhtml:p[not(preceding-sibling::nota:hd)]|
-                    nota:hd"/> 
+            select="@*|xhtml:p[not(preceding-sibling::nota:hd)]|nota:hd"/> 
     </xsl:template> 
     <xsl:template mode="SECOND_PASS" match="xhtml:em">
         <xsl:copy>
@@ -375,8 +379,8 @@
     </xsl:template>
     <xsl:template name="DOCX.FORMATTING.CONVERT">
         <xsl:param name="content" as="node()" select="."/>
-        <xsl:param name="properties" as="node()*"/>
-        <xsl:variable name="property" as="node()?" select="$properties[1]"/>
+        <xsl:param name="properties" as="element()*"/>
+        <xsl:variable name="property" as="element()?" select="$properties[1]"/>
         <xsl:variable name="convertedRun">
             <xsl:choose>
                 <xsl:when test="$property/self::w:i">
@@ -399,8 +403,9 @@
         <xsl:choose>
             <xsl:when test="$properties[2]">
                 <xsl:call-template name="DOCX.FORMATTING.CONVERT">
-                    <xsl:with-param name="content" select="$convertedRun"/>
-                    <xsl:with-param name="properties"
+                    <xsl:with-param name="content" as="node()"
+                        select="$convertedRun"/>
+                    <xsl:with-param name="properties" as="element()*"
                         select="$properties[position() gt 1]"/>
                 </xsl:call-template>
             </xsl:when>
@@ -414,7 +419,7 @@
         <xsl:param name="position" as="xs:integer"/>
         <xsl:variable name="nextRow" as="element(w:tr)?"
             select="$row/following-sibling::w:tr[1]"/>
-        <xsl:variable name="mergedCellBelow" as="element(w:vMerge)*"
+        <xsl:variable name="mergedCellBelow" as="element(w:vMerge)?"
             select="$nextRow/w:tc[$position]/w:tcPr/w:vMerge
                     [not(@w:val eq 'restart')]"/>
         <xsl:value-of
@@ -464,8 +469,8 @@
     <xsl:template mode="CAT_LIST" match="@id"/>
     <xsl:template mode="CAT_LIST" match="span[@class eq 'typedescription']">
         <xsl:variable name="id" as="xs:string?"
-            select="following-sibling::*[1]/self::span
-                    [@class eq 'masternummer']/text()"/>
+            select="following-sibling::*[1]/self::span[@class eq
+                    'masternummer']/text()"/>
         <span class="typedescription">
             <xsl:choose>
                 <xsl:when test="$id">
