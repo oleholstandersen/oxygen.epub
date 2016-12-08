@@ -223,6 +223,22 @@
                 select="$properties"/>
         </xsl:call-template>
     </xsl:template>
+    <xsl:template match="w:hyperlink">
+        <xsl:param name="relationships" as="document-node()?" tunnel="yes"/>
+        <xsl:variable name="relationship" as="element(rel:Relationship)?"
+            select="$relationships/rel:Relationships/rel:Relationship[@Id eq
+                    current()/@r:id]"/>
+		<xsl:choose>
+            <xsl:when test="$relationship/@TargetMode eq 'External'">
+                <a href="{$relationship/@Target}">
+                    <xsl:apply-templates/>
+                </a>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:apply-templates/>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
     <xsl:template match="w:p">
         <xsl:param name="numbering" as="document-node()?" tunnel="yes"/>
         <xsl:param name="styles" as="document-node()?" tunnel="yes"/>
@@ -265,7 +281,7 @@
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
-    <xsl:template match="w:p[not(w:r/w:t)]"/>
+    <xsl:template match="w:p[not(.//w:r/w:t)]"/>
     <xsl:template match="w:r">
         <xsl:variable name="properties" as="element()*"
             select="w:rPr/(w:b|w:i|w:vertAlign)"/>
