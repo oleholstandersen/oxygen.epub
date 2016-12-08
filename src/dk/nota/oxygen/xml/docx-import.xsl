@@ -171,7 +171,8 @@
                         <xsl:copy-of select="xhtml:body/(@*|node())"/>
                         <xsl:choose>
                             <xsl:when test="$IMPORT_TO_CONCAT">
-                                <xsl:for-each select="$FIRST_PASS">
+                                <xsl:for-each
+                                    select="$FIRST_PASS_GROUPED">
                                     <section epub:type="chapter bodymatter">
                                         <xsl:apply-templates
                                             mode="SECOND_PASS"/>
@@ -180,7 +181,7 @@
                             </xsl:when>
                             <xsl:otherwise>
                                 <xsl:apply-templates mode="SECOND_PASS"
-                                    select="$FIRST_PASS"/>
+                                    select="$FIRST_PASS_GROUPED"/>
                             </xsl:otherwise>
                         </xsl:choose>
                     </body>
@@ -203,8 +204,8 @@
             <xsl:sequence select="$documents"/>
             <nota:document url="{document-uri(/)}">
                 <xsl:call-template name="OPF.DOCUMENT">
-                    <xsl:with-param name="documents" as="node()+"
-                        select="$documents"/>
+                    <xsl:with-param name="documents"
+                        as="element(nota:document)*" select="$documents"/>
                 </xsl:call-template>
             </nota:document>
         </nota:documents>
@@ -317,10 +318,6 @@
             <xsl:apply-templates mode="SECOND_PASS" select="@*|node()"/>
         </xsl:copy>
     </xsl:template>
-    <xsl:template mode="SECOND_PASS" match="xhtml:body"> 
-        <xsl:apply-templates mode="SECOND_PASS" 
-            select="@*|xhtml:p[not(preceding-sibling::nota:hd)]|nota:hd"/> 
-    </xsl:template> 
     <xsl:template mode="SECOND_PASS" match="xhtml:em">
         <xsl:copy>
             <xsl:for-each select="nota:expand-inline(.)">
