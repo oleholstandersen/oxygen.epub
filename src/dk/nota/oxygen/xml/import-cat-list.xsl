@@ -3,7 +3,7 @@
     xmlns:xs="http://www.w3.org/2001/XMLSchema"
     xmlns:nota="http://www.nota.dk/oxygen"
     xmlns="http://www.w3.org/1999/xhtml"
-    exclude-result-prefixes="nota xs"
+    exclude-result-prefixes="#all"
     version="2.0">
     <xsl:output method="xml" indent="yes"/>
     <xsl:strip-space elements="*"/>

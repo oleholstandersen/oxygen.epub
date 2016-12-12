@@ -7,7 +7,8 @@
     xmlns:opf="http://www.idpf.org/2007/opf"
     xmlns:saxon="http://saxon.sf.net/"
     xmlns:xhtml="http://www.w3.org/1999/xhtml"
-    exclude-result-prefixes="dc epub nota opf xhtml xs" version="2.0">
+    exclude-result-prefixes="#all"
+    version="2.0">
     <xsl:output method="xml" indent="yes" saxon:indent-spaces="4"/>
     <xsl:param name="IDENTIFIER" as="xs:string?"
         select="$OPF_DOCUMENT/opf:package/opf:metadata/dc:identifier[1]/text()"/>

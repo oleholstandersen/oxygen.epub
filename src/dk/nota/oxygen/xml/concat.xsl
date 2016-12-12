@@ -7,7 +7,7 @@
     xmlns:opf="http://www.idpf.org/2007/opf"
     xmlns:xhtml="http://www.w3.org/1999/xhtml"
     xmlns="http://www.w3.org/1999/xhtml"
-    exclude-result-prefixes="dc epub nota opf xhtml xs"
+    exclude-result-prefixes="#all"
     version="2.0">
     <xsl:output method="xml" indent="no"/>
     <xsl:strip-space elements="opf:*"/>

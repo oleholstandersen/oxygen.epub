@@ -4,7 +4,7 @@
     xmlns:nota="http://www.nota.dk/oxygen"
     xmlns:saxon="http://saxon.sf.net/"
     xmlns:xhtml="http://www.w3.org/1999/xhtml"
-    exclude-result-prefixes="nota xhtml xs"
+    exclude-result-prefixes="#all"
     version="2.0">
     <xsl:output method="xml" indent="yes" saxon:indent-spaces="4"/>
     <xsl:template match="nota:documents">

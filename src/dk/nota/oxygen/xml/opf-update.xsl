@@ -4,7 +4,7 @@
     xmlns:nota="http://www.nota.dk/oxygen"
     xmlns:opf="http://www.idpf.org/2007/opf"
     xmlns="http://www.idpf.org/2007/opf"
-    exclude-result-prefixes="nota opf xs"
+    exclude-result-prefixes="#all"
     version="2.0">
     <xsl:output method="xml" indent="yes"/>
     <xsl:param name="HREFS" as="xs:string*"/>

@@ -13,7 +13,7 @@
     xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"
     xmlns:xhtml="http://www.w3.org/1999/xhtml"
     xmlns="http://www.w3.org/1999/xhtml"
-    exclude-result-prefixes="a dc epub nota opf pic r rel w wp xhtml xs"
+    exclude-result-prefixes="#all"
     version="2.0">
     <xsl:output method="xml" indent="yes"/>
     <xsl:param name="IMPORT_TO_CONCAT" as="xs:boolean"
