@@ -78,10 +78,9 @@
         </xsl:for-each-group>
     </xsl:template>
     <xsl:variable name="FIRST_PASS_GROUPED" as="element(xhtml:section)*">
-        <xsl:call-template name="HEADINGS.GROUP">
-            <xsl:with-param name="sequence" as="node()*"
-                select="$FIRST_PASS/node()"/>
-        </xsl:call-template>
+        <xsl:for-each select="$FIRST_PASS">
+            <xsl:call-template name="HEADINGS.GROUP"/>
+        </xsl:for-each>
     </xsl:variable>
     <xsl:template name="DOCX.CONVERT" as="element(xhtml:body)">
         <xsl:param name="wordFolderUrl" as="xs:string" select="."/>
