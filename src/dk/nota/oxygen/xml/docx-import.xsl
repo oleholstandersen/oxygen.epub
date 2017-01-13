@@ -299,7 +299,9 @@
     </xsl:template>
     <xsl:template match="w:tbl">
         <table>
-            <xsl:apply-templates/>
+            <tbody>
+                <xsl:apply-templates/>
+            </tbody>
         </table>
     </xsl:template>
     <xsl:template match="w:tc">
