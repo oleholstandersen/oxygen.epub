@@ -13,12 +13,12 @@ import net.sf.saxon.s9api.XsltTransformer;
 
 public class CreateInspirationOutputWorker extends CreateDtbWorker {
 	
-	private OutputType outputType;
+	private InspOutputType outputType;
 	private boolean success = false;
 
 	public CreateInspirationOutputWorker(EditorAccess editorAccess,
 			EpubAccess epubAccess, ConsoleWindow consoleWindow,
-			File outputFile, OutputType outputType) {
+			File outputFile, InspOutputType outputType) {
 		super(editorAccess, epubAccess, consoleWindow, outputFile, true);
 		this.outputType = outputType;
 	}
@@ -58,7 +58,7 @@ public class CreateInspirationOutputWorker extends CreateDtbWorker {
 		outputTransformer.setMessageListener(new ConsoleListener(
 				getConsoleWindow()));
 		outputTransformer.setInitialContextNode(dtbDocument);
-		outputTransformer.setDestination(outputType != OutputType.INSP_PRINT ?
+		outputTransformer.setDestination(outputType != InspOutputType.INSP_PRINT ?
 				getEpubAccess().getXmlAccess().getSerializer(getOutputFile()) :
 				new XdmDestination());
 		outputTransformer.transform();
@@ -71,7 +71,7 @@ public class CreateInspirationOutputWorker extends CreateDtbWorker {
 		if (success) {
 			getConsoleWindow().writeToConsole("CONVERSION DONE");
 			try {
-				if (outputType != OutputType.INSP_PRINT)
+				if (outputType != InspOutputType.INSP_PRINT)
 					getEditorAccess().getWorkspace().open(getOutputFile().toURI()
 						.toURL());
 			} catch (MalformedURLException e) {

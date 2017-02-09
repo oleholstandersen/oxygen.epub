@@ -10,10 +10,10 @@ import net.sf.saxon.s9api.SaxonApiException;
 
 public class CreateInspirationOutputAction extends ArchiveSensitiveAction {
 	
-	private OutputType outputType;
+	private InspOutputType outputType;
 
 	public CreateInspirationOutputAction(String name,
-			OutputType outputType) {
+			InspOutputType outputType) {
 		super(name);
 		this.outputType = outputType;
 	}

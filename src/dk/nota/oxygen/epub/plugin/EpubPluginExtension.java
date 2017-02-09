@@ -9,7 +9,7 @@ import dk.nota.oxygen.epub.opf.ConcatAction;
 import dk.nota.oxygen.epub.opf.CreateDocxAction;
 import dk.nota.oxygen.epub.opf.CreateDtbAction;
 import dk.nota.oxygen.epub.opf.CreateInspirationOutputAction;
-import dk.nota.oxygen.epub.opf.OutputType;
+import dk.nota.oxygen.epub.opf.InspOutputType;
 import dk.nota.oxygen.epub.opf.SplitAction;
 import dk.nota.oxygen.epub.xhtml.ImportCatListAction;
 import ro.sync.exml.plugin.workspace.WorkspaceAccessPluginExtension;
@@ -81,15 +81,15 @@ public class EpubPluginExtension implements WorkspaceAccessPluginExtension {
 			exportMenu.insertAction(new CreateDtbAction(), 0);
 			exportMenu.insertSeparator(1);
 			exportMenu.insertAction(new CreateInspirationOutputAction(
-					"Inspiration: E-tekst", OutputType.INSP_ETEXT), 2);
+					"Inspiration: E-tekst", InspOutputType.INSP_ETEXT), 2);
 			exportMenu.insertAction(new CreateInspirationOutputAction(
-					"Inspiration: Korrektur", OutputType.INSP_PROOF), 3);
+					"Inspiration: Korrektur", InspOutputType.INSP_PROOF), 3);
 			exportMenu.insertAction(new CreateInspirationOutputAction(
-					"Inspiration: Lyd", OutputType.INSP_AUDIO), 4);
+					"Inspiration: Lyd", InspOutputType.INSP_AUDIO), 4);
 			exportMenu.insertAction(new CreateInspirationOutputAction(
-					"Inspiration: Punkt", OutputType.INSP_BRAILLE), 5);
+					"Inspiration: Punkt", InspOutputType.INSP_BRAILLE), 5);
 			exportMenu.insertAction(new CreateInspirationOutputAction(
-					"Inspiration: Tryk", OutputType.INSP_PRINT), 6);
+					"Inspiration: Tryk", InspOutputType.INSP_PRINT), 6);
 			exportMenu.insertSeparator(7);
 			exportMenu.insertAction(new CreateDocxAction(), 8);
 			JComponent[] opfComponents = new JComponent[] {
