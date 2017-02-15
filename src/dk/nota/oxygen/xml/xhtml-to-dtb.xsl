@@ -36,7 +36,8 @@
                         [nota:has-epub-types(., 'cover')]"/>
             <xsl:choose>
                 <xsl:when test="$coverSection/xhtml:section">
-                    <xsl:apply-templates select="$coverSection"/>
+                    <xsl:apply-templates
+                        select="$coverSection/xhtml:section"/>
                 </xsl:when>
                 <xsl:otherwise>
                     <level depth="1" class="cover">
