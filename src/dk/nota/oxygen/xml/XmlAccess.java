@@ -121,10 +121,21 @@ public class XmlAccess {
 	}
 	
 	public StreamSource getXsltStreamSource(String fileName) {
-		StreamSource source = new StreamSource(getClass().getResourceAsStream(
-				fileName));
-		source.setSystemId(fileName);
-		return source;
+		StreamSource source;
+		// TODO: Better exception handling or really a more elegant solution
+		try {
+			if (new URI(fileName).isAbsolute()) {
+				source = new StreamSource(fileName);
+				source.setSystemId(fileName);
+				return source;
+			}
+			source = new StreamSource(getClass().getResourceAsStream(fileName));
+			source.setSystemId(getClass().getResource("/dk/nota/oxygen/xml/")
+					.toString() + fileName);
+			return source;
+		} catch (URISyntaxException e) {
+			return null;
+		}
 	}
 	
 	public XsltTransformer getXsltTransformer(Source xsltSource)
