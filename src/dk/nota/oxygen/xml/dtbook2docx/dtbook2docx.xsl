@@ -27,7 +27,9 @@
         <xsl:result-document href="{encode-for-uri('[Content_Types].xml')}">
             <Types
                 xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+                <Default Extension="gif" ContentType="image/gif"/>
                 <Default Extension="jpg" ContentType="image/jpeg"/>
+                <Default Extension="png" ContentType="image/png"/>
                 <Default Extension="xml" ContentType="application/xml"/>
                 <Default Extension="rels"
                     ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
