@@ -622,6 +622,12 @@
     <xsl:template match="xhtml:p[parent::xhtml:caption]">
         <xsl:call-template name="ELEMENT.BRIDGEHEAD"/>
     </xsl:template>
+    <!--  PRE -->
+    <xsl:template match="xhtml:pre">
+        <p class="preformatted">
+        	<xsl:apply-templates/>
+        </p>
+    </xsl:template>
     <!-- PAGE BREAK -->
     <xsl:template
         match="xhtml:*[nota:is-page-break(.)]">
