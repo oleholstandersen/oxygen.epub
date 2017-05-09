@@ -911,6 +911,8 @@
                     else if ($types = 'rearnote') then 'endnote required'
                     else if ($types = 'titlepage') then 'title'
                     else if ($types = 'colophon') then 'colophon'
+                    else if ($types = 'toc') then 'toc'
+                    else if ($types = 'index') then 'index'
                     else ''"/>
     </xsl:function>
     <xsl:function name="nota:starts-sequence" as="xs:boolean">
