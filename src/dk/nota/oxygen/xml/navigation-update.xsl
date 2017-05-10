@@ -3,6 +3,7 @@
     xmlns:xs="http://www.w3.org/2001/XMLSchema"
     xmlns:dc="http://purl.org/dc/elements/1.1/"
     xmlns:epub="http://www.idpf.org/2007/ops"
+    xmlns:ncx="http://www.daisy.org/z3986/2005/ncx/"
     xmlns:nota="http://www.nota.dk/oxygen"
     xmlns:opf="http://www.idpf.org/2007/opf"
     xmlns:xhtml="http://www.w3.org/1999/xhtml"
@@ -20,15 +21,14 @@
     <xsl:variable name="TITLE" as="xs:string"
         select="/opf:package/opf:metadata/dc:title/text()"/>
     <!-- Content documents after first pass -->
-    <xsl:variable name="CONTENT_DOCUMENTS" as="node()*">
+    <xsl:variable name="CONTENT_DOCUMENTS" as="element(nota:document)*">
         <xsl:for-each select="/opf:package/opf:spine/opf:itemref">
-            <xsl:variable name="item"
+            <xsl:variable name="item" as="element(opf:item)"
                 select="//opf:item[@id eq current()/@idref]"/>
             <xsl:variable name="reference" as="xs:string"
                 select="$item/@href"/>
             <xsl:variable name="isXHTMLDocument" as="xs:boolean"
-                select="if ($item/@media-type eq 'application/xhtml+xml')
-                        then true() else false()"/>
+                select="$item/@media-type = 'application/xhtml+xml'"/>
             <xsl:if test="$isXHTMLDocument">
                 <xsl:message>
                     <nota:out>
@@ -52,7 +52,7 @@
             </xsl:if>
         </xsl:for-each> 
     </xsl:variable>
-    <xsl:variable name="NAVIGATION" as="node()">
+    <xsl:variable name="NAVIGATION" as="element(nota:navigation)">
         <nota:navigation>
             <xsl:for-each-group select="$CONTENT_DOCUMENTS"
                 group-adjacent="nota:get-document-placement(.)">
@@ -85,7 +85,7 @@
         </nota:navigation>
     </xsl:variable>
     <!-- NCX navigation document: Based on XHTML ditto -->
-    <xsl:variable name="NCX_NAVIGATION_DOCUMENT" as="node()">
+    <xsl:variable name="NCX_NAVIGATION_DOCUMENT" as="element(ncx:ncx)">
         <xsl:variable name="depth" as="xs:integer"
             select="xs:integer(max($XHTML_NAVIGATION_DOCUMENT/xhtml:body/
                     xhtml:nav[@epub:type eq 'toc']//xhtml:li[not(xhtml:ol)]/
@@ -128,14 +128,14 @@
         </ncx>
     </xsl:variable>
     <!-- Page numbers -->
-    <xsl:variable name="PAGE_NUMBERS" as="node()*"
+    <xsl:variable name="PAGE_NUMBERS" as="element()*"
         select="$CONTENT_DOCUMENTS//xhtml:*[@epub:type eq 'pagebreak']"/>
     <!-- Total number of TOC items: Dumb thing needed for NCX -->
     <xsl:variable name="TOC_ENTRY_COUNT" as="xs:integer"
         select="count($XHTML_NAVIGATION_DOCUMENT//
                 xhtml:nav[@epub:type eq 'toc']//xhtml:li)"/>
     <!-- XHTML navigation document -->
-    <xsl:variable name="XHTML_NAVIGATION_DOCUMENT" as="node()">
+    <xsl:variable name="XHTML_NAVIGATION_DOCUMENT" as="element(xhtml:html)">
         <html xmlns="http://www.w3.org/1999/xhtml"
             xmlns:epub="http://www.idpf.org/2007/ops"
             xmlns:nordic="http://www.mtm.se/epub/"
