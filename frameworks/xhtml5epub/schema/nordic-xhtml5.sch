@@ -1076,7 +1076,7 @@
                     select="concat('&lt;',name(),string-join(for $a in (@*) return concat(' ',$a/name(),'=&quot;',$a,'&quot;'),''),'&gt;')"/></report>
         </rule>
     </pattern>
-
+    
     <!--
         MG20061101: added as a consequence of zedval feature request #1565049: http://sourceforge.net/p/zedval/feature-requests/12/
         JAJ20150225: Imported from Pipeline 1 DTBook validator and adapted to EPUB3
@@ -1141,5 +1141,11 @@
                     select="concat('&lt;',name(),string-join(for $a in (@*) return concat(' ',$a/name(),'=&quot;',$a,'&quot;'),''),'&gt;')"/></assert>
         </rule>
     </pattern>-->
+    
+    <pattern>
+        <rule context="html:meta[@name eq 'dc:identifier']">
+            <assert test="matches(@content, '^dk-nota-')">the identifier ("<value-of select="@content"/>") must have the prefix 'dk-nota-'</assert>
+        </rule>
+    </pattern>
 
 </schema>

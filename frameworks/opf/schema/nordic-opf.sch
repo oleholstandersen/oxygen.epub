@@ -30,6 +30,7 @@
     <pattern id="opf_nordic_3">
         <rule context="opf:metadata">
             <assert test="count(dc:identifier) = 1">[opf3a] there must be exactly one dc:identifier element</assert>
+            
             <assert test="parent::opf:package/@unique-identifier = dc:identifier/@id">[opf3a] the id of the dc:identifier must equal the value of the package elements unique-identifier
                 attribute</assert>
             <assert test="count(dc:identifier) = 1 and matches(dc:identifier/text(),'^[A-Za-z0-9].*$')">[opf3a] The identifier ("<value-of select="dc:identifier/text()"/>") must start with a upper- or
@@ -89,6 +90,7 @@
 
             <assert test="count(opf:meta[@property='nordic:supplier' and not(@refines)]) = 1">[opf3j] there must be exactly one meta element with the property "nordic:supplier" <value-of
                     select="if (opf:meta[@property='nordic:supplier' and @refines]) then '(without a &quot;refines&quot; attribute)' else ''"/></assert>
+            <assert test="matches(dc:identifier/text(),'^dk-nota-')">[opf3k] the identifier ("<value-of select="dc:identifier/text()"/>") must have the prefix 'dk-nota-'</assert>
         </rule>
     </pattern>
 
