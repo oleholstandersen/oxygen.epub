@@ -16,7 +16,7 @@ import net.sf.saxon.s9api.XsltTransformer;
 public class ImportDocxAction extends AbstractAction {
 	
 	public ImportDocxAction() {
-		super("Import Docx");
+		super("Docx");
 	}
 	
 	@Override

@@ -11,7 +11,7 @@ import net.sf.saxon.s9api.XsltTransformer;
 public class ImportDtbAction extends ArchiveSensitiveAction {
 	
 	public ImportDtbAction() {
-		super("Import DTBook");
+		super("DTBook");
 	}
 	
 	@Override
