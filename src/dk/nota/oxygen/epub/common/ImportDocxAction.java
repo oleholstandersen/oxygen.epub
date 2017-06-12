@@ -29,7 +29,7 @@ public class ImportDocxAction extends AbstractAction {
 		if (sourceFiles == null) return;
 		try {
 			XsltTransformer inspirationImporter = epubAccess
-					.getEditorTransformer("docx-import.xsl");
+					.getEditorTransformer("import-docx.xsl");
 			LinkedList<XdmItem> sourceFileUrls = new LinkedList<XdmItem>();
 			for (java.io.File sourceFile : sourceFiles) {
 				String url = sourceFile.getName().endsWith(".docx") ?
