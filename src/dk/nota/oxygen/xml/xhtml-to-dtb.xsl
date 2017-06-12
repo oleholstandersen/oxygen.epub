@@ -35,10 +35,14 @@
                 select="//xhtml:html/xhtml:body/xhtml:section
                         [nota:has-epub-types(., 'cover')]"/>
             <xsl:choose>
+            	<!--  If there is no cover, do nothing  -->
+            	<xsl:when test="not($coverSection)"/>
+            	<!--  If the cover contains subsections, make them level 1 -->
                 <xsl:when test="$coverSection/xhtml:section">
                     <xsl:apply-templates
                         select="$coverSection/xhtml:section"/>
                 </xsl:when>
+                <!-- Otherwise, create single cover level -->
                 <xsl:otherwise>
                     <level depth="1" class="cover">
                         <xsl:apply-templates select="$coverSection"/>
