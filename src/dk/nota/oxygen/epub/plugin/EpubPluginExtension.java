@@ -9,6 +9,7 @@ import dk.nota.oxygen.epub.opf.ConcatAction;
 import dk.nota.oxygen.epub.opf.CreateDocxAction;
 import dk.nota.oxygen.epub.opf.CreateDtbAction;
 import dk.nota.oxygen.epub.opf.CreateInspirationOutputAction;
+import dk.nota.oxygen.epub.opf.ImportDtbAction;
 import dk.nota.oxygen.epub.opf.InspOutputType;
 import dk.nota.oxygen.epub.opf.SplitAction;
 import dk.nota.oxygen.epub.xhtml.ImportCatListAction;
@@ -92,10 +93,14 @@ public class EpubPluginExtension implements WorkspaceAccessPluginExtension {
 					"Inspiration: Tryk", InspOutputType.INSP_PRINT), 6);
 			exportMenu.insertSeparator(7);
 			exportMenu.insertAction(new CreateDocxAction(), 8);
+			Menu importMenu = new Menu("Import");
+			importMenu.insertAction(new ImportDocxAction(), 0);
+			importMenu.insertSeparator(1);
+			importMenu.insertAction(new ImportDtbAction(), 2);
 			JComponent[] opfComponents = new JComponent[] {
 				new ToolbarButton(new ConcatAction(), true),
 				new ToolbarButton(new SplitAction(), true),
-				new ToolbarButton(new ImportDocxAction(), true),
+				importMenu,
 				exportMenu
 			};
 			toolbar.setTitle("EPUB OPF");
