@@ -63,7 +63,7 @@
             select="replace(text(), '.+?(\d+)$', '$1')"/>
         <span>
             <xsl:copy-of select="@class"/>
-            <a href="{concat('http://www.e17.dk/bog/', $id)}" class="link">
+            <a href="{concat('http://www.nota.dk/work/', $id)}" class="link">
                 <xsl:value-of select="."/>
             </a>
         </span>
