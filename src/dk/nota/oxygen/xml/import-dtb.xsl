@@ -12,7 +12,6 @@
     xmlns:zip="http://expath.org/ns/archive"
     xmlns="http://www.w3.org/1999/xhtml"
     exclude-result-prefixes="#all"
-    extension-element-prefixes="saxon"
     version="2.0">
     <xsl:output method="xml" indent="yes" saxon:indent-spaces="4"/>
     <xsl:strip-space elements="body div imggroup level list table"/>
@@ -283,7 +282,8 @@
             <xsl:apply-templates
                 select="$contents[self::prodnote][not(@class eq 'caption')]"/>
         </figure>
-    </xsl:template>    <xsl:template name="SKIP_SINGLE_PARAGRAPH" as="node()*">
+    </xsl:template>
+    <xsl:template name="SKIP_SINGLE_PARAGRAPH" as="node()*">
         <xsl:choose>
             <xsl:when test="count(p) eq 1 and count(*) eq 1">
                 <xsl:apply-templates select="p/node()"/>
@@ -332,7 +332,7 @@
     <xsl:template match="@class[. = $ALLOWED_CLASSES]">
         <xsl:copy/>
     </xsl:template>
-    <xsl:template match="@alt|@colspan|@height|@href|@id|@rowspan">
+    <xsl:template match="@alt|@colspan|@height|@href|@id|@rowspan|@width">
         <xsl:copy/>
     </xsl:template>
     <xsl:template match="@lang">
