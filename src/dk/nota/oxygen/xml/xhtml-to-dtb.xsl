@@ -77,6 +77,7 @@
                 </title>
                 <meta name="prod:AutoBrailleReady" content="no"/>
                 <meta name="dc:identifier" content="{$IDENTIFIER}"/>
+                <meta name="dc:type" content="Format: DTBook"/>
                 <xsl:apply-templates
                     select="$OPF_DOCUMENT/opf:package/opf:metadata/dc:*"/>
             </head>
@@ -124,6 +125,7 @@
     <xsl:template match="dc:*">
         <meta name="{name()}" content="{text()}"/>
     </xsl:template>
+    <xsl:template match="dc:format"/>
     <xsl:template match="dc:identifier"/>
     <xsl:template match="dc:source">
         <meta name="{name()}" content="{replace(text(), '^urn:isbn:|-', '')}"/>
