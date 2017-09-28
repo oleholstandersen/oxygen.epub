@@ -47,7 +47,7 @@
     	<span class="typedescription">
     		<xsl:choose>
     		    <xsl:when test="$id">
-    		        <a href="{concat('http://nota.dk/work/', $id)}"
+    		        <a href="{concat('https://nota.dk/bibliotek/bogid/', $id)}"
     		            class="link">
     		            <xsl:value-of select="concat(., $id)"/>
     		        </a>
@@ -63,7 +63,7 @@
             select="replace(text(), '.+?(\d+)$', '$1')"/>
         <span>
             <xsl:copy-of select="@class"/>
-            <a href="{concat('http://www.nota.dk/work/', $id)}" class="link">
+            <a href="{concat('https://nota.dk/bibliotek/bogid/', $id)}" class="link">
                 <xsl:value-of select="."/>
             </a>
         </span>
