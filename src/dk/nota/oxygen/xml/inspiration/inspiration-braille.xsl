@@ -70,10 +70,11 @@
         match="span[nota:has-classes(., ('OEE', 'OEL', 'OEP', 'typedescription'))]//a">
         <xsl:apply-templates/>
     </xsl:template>
-    <xsl:template match="level">
+    <xsl:template match="level[levelhd]">
+        <xsl:variable name="text" as="xs:string"
+            select="normalize-space(string-join(levelhd//text(), ''))"/>
         <xsl:choose>
-            <xsl:when
-                test="matches(levelhd/text(), '^Nye (e-|lyd)bøger$')"/>
+            <xsl:when test="matches($text, '^Nye (e-|lyd)bøger$')"/>
             <xsl:otherwise>
                 <xsl:next-match/>
             </xsl:otherwise>
