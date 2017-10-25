@@ -41,8 +41,8 @@
             <!--<xsl:copy-of select="$firstPass"/>-->
             <xsl:value-of disable-output-escaping="yes"
                 select="replace(saxon:serialize($firstPass, 'default'),
-                        '&lt;katalogpost&gt;\s+&lt;/katalogpost&gt;',
-                        '&lt;katalogpost&gt;&lt;/katalogpost&gt;')"/>
+                        '&lt;/katalogpost&gt;\s+&lt;katalogpost&gt;',
+                        '&lt;/katalogpost&gt;&lt;katalogpost&gt;')"/>
         </xsl:result-document>
         <xsl:for-each-group group-starting-with="*[nota:starts-file(.)]"
             select="$firstPass/*">
@@ -77,7 +77,8 @@
         match="level[normalize-space(levelhd) = $HEADINGS_TO_EXCLUDE]"/>
     <xsl:template match="levelhd">
         <xsl:variable name="depth" as="xs:integer"
-            select="xs:integer(@depth)"/>
+            select="xs:integer(@depth)
+                    + (if (matches(text(), '^Top 10')) then 1 else 0)"/>
         <xsl:element name="{concat('overskrift', $depth)}">
             <xsl:apply-templates/>
         </xsl:element>
@@ -91,6 +92,14 @@
         <list>
             <xsl:apply-templates/>
         </list>
+    </xsl:template>
+    <xsl:template match="list[matches(preceding-sibling::levelhd, '^Top 10')]">
+        <xsl:for-each select="li">
+            <paranormal><xsl:value-of
+                select="concat(span[@class eq 'titellinie']/normalize-space(
+                        text()), '&#xa;', span[@class eq 'typedescription']/a/
+                        normalize-space(text()))"/></paranormal>
+        </xsl:for-each>
     </xsl:template>
     <xsl:template match="p">
         <paranormal>
@@ -164,6 +173,8 @@
         <xsl:value-of
             select="$n/self::overskrift1[following-sibling::*[1]/
                     self::overskrift2] or $n/self::overskrift2
-                    [preceding-sibling::*[1]/not(self::overskrift1)]"/>
+                    [preceding-sibling::*[1]/not(self::overskrift1)] or
+                    $n/self::overskrift3[matches(text(), '^Top 10')][not(
+                    preceding-sibling::*[1]/self::overskrift2)]"/>
     </xsl:function>
 </xsl:stylesheet>
