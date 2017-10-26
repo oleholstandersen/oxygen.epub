@@ -122,28 +122,15 @@ public class XmlAccess {
 	
 	public StreamSource getXsltStreamSource(String fileName) {
 		StreamSource source;
-		// TODO: Better exception handling or really a more elegant solution
-		try {
-			if (new URI(fileName).isAbsolute()) {
-				source = new StreamSource(fileName);
-				source.setSystemId(fileName);
-				return source;
-			}
-			source = new StreamSource(getClass().getResourceAsStream(fileName));
-			source.setSystemId(getClass().getResource("/dk/nota/oxygen/xml/")
-					.toString() + fileName);
-			return source;
-		} catch (URISyntaxException e) {
-			return null;
-		}
+		source = new StreamSource(getClass().getResourceAsStream(fileName));
+		source.setSystemId(getClass().getResource("/dk/nota/oxygen/xml/")
+				.toString() + fileName);
+		return source;
 	}
 	
 	public XsltTransformer getXsltTransformer(Source xsltSource)
 			throws SaxonApiException {
-		String xsltBase = xsltSource.getSystemId().replaceFirst("/[^/]+?$",
-				"/");
-		xsltCompiler.setURIResolver((href, base) -> getXsltStreamSource(
-				xsltBase + href));
+		xsltCompiler.setURIResolver((href, base) -> getXsltStreamSource(href));
 		XsltExecutable xsltExecutable = xsltCompiler.compile(xsltSource);
 		return xsltExecutable.load();
 	}
