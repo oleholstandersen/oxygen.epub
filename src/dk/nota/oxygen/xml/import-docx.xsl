@@ -15,6 +15,7 @@
     xmlns="http://www.w3.org/1999/xhtml"
     exclude-result-prefixes="#all"
     version="2.0">
+    <xsl:import href="import-cat-list.xsl"/>
     <xsl:output method="xml" indent="yes"/>
     <xsl:param name="IMPORT_TO_CONCAT" as="xs:boolean"
         select="matches(document-uri(/), 'concat\.xhtml$')"/>
@@ -103,7 +104,7 @@
                 <xsl:with-param name="styles" as="document-node()?"
                     tunnel="yes" select="$styles"/>
             </xsl:apply-templates>
-            <xsl:apply-templates mode="CAT_LIST" select="$catLists"/>
+            <xsl:apply-templates select="$catLists"/>
         </body>
     </xsl:template>
     <xsl:template name="OPF.DOCUMENT" as="element(opf:package)">
@@ -160,6 +161,12 @@
                 </body>
             </html>
         </nota:document>
+    </xsl:template>
+    <!--  Special templates for non-namespaced nodes (assumed to be DTBook 
+    nodes from included .kat files) -->
+    <xsl:template
+    	match="node()[namespace-uri() eq '']|@*[namespace-uri() eq '']">
+    	<xsl:apply-imports/>
     </xsl:template>
     <xsl:template match="/xhtml:html">
         <nota:documents>
@@ -451,113 +458,5 @@
             select="if ($firstFollowingSibling/name() eq $elementName)
                     then $element|nota:expand-inline($firstFollowingSibling)
                     else $element"/>
-    </xsl:function>
-    <xsl:template mode="CAT_LIST" match="/dtbook">
-    	<xsl:choose>
-            <xsl:when
-                test="book/frontmatter/doctitle/matches(., '^Top 10')">
-                <xsl:apply-templates mode="CAT_LIST.CONVERT_TO_LIST"
-                    select="book/frontmatter/level/div"/>
-            </xsl:when>
-            <xsl:otherwise>
-                <xsl:for-each-group group-by="nota:get-classification(.)"
-                    select="book/frontmatter/level/div">
-                    <nota:hd depth="2">
-                        <xsl:value-of select="current-grouping-key()"/>
-                    </nota:hd>
-                    <xsl:apply-templates mode="CAT_LIST"
-                        select="current-group()"/>
-                </xsl:for-each-group>
-            </xsl:otherwise>
-        </xsl:choose>
-    </xsl:template>
-    <xsl:template mode="CAT_LIST" match="text()|@*">
-        <xsl:copy/>
-    </xsl:template>
-    <xsl:template mode="CAT_LIST" match="*">
-        <xsl:element name="{local-name()}"
-            namespace="http://www.w3.org/1999/xhtml">
-            <xsl:apply-templates mode="CAT_LIST" select="node()|@*"/>	
-        </xsl:element>
-    </xsl:template>
-    <xsl:template mode="CAT_LIST" match="@id"/>
-    <xsl:template mode="CAT_LIST" match="span[@class eq 'typedescription']">
-        <xsl:variable name="id" as="xs:string?"
-            select="following-sibling::*[1]/self::span[@class eq
-                    'masternummer']/text()"/>
-        <span class="typedescription">
-            <xsl:choose>
-                <xsl:when test="$id">
-                    <a href="{concat('https://nota.dk/bibliotek/bogid/', $id)}"
-                        class="link">
-                        <xsl:value-of select="concat(., $id)"/>
-                    </a>
-                </xsl:when>
-                <xsl:otherwise>
-                    <xsl:value-of select="."/>
-                </xsl:otherwise>
-            </xsl:choose>
-        </span>
-    </xsl:template>
-    <xsl:template mode="CAT_LIST" match="span[@class = ('OEE', 'OEL', 'OEP')]">
-        <xsl:variable name="id" as="xs:string"
-            select="replace(text(), '.+?(\d+)$', '$1')"/>
-        <span>
-            <xsl:copy-of select="@class"/>
-            <a href="{concat('https://nota.dk/bibliotek/bogid/', $id)}"
-            	class="link">
-                <xsl:value-of select="."/>
-            </a>
-        </span>
-    </xsl:template>
-    <xsl:template mode="CAT_LIST"
-        match="span[@class eq 'masternummer'][nota:follows-type(.)]"/>
-    <xsl:template mode="CAT_LIST" match="span[@class eq 'playingtime']">
-        <xsl:variable name="hoursString" as="xs:string"
-            select="replace(text(), '^Spilletid: (\d+).*?$', '$1')"/>
-        <xsl:variable name="minutesString" as="xs:string"
-            select="replace(text(), '^.*?(\d+) minutter\. $', '$1')"/>
-        <xsl:variable name="hours" as="xs:integer"
-            select="if (matches($hoursString, '^[0-9]+$'))
-                    then xs:integer($hoursString)
-                    else -1"/>
-        <xsl:variable name="minutes" as="xs:integer"
-            select="if (matches($minutesString, '^[0-9]+$'))
-                    then xs:integer($minutesString)
-                    else -1"/>
-        <span class="playingtime">
-            <xsl:value-of
-                select="if ($hours gt -1 and $minutes gt -1) then
-                        concat('Spilletid: ', $hours, if ($hours eq 1) then
-                        ' time, ' else ' timer, ', $minutes, if ($minutes eq 1)
-                        then ' minut.' else ' minutter.')
-                        else text()"/>
-        </span>
-    </xsl:template>
-    <xsl:template mode="CAT_LIST.CONVERT_TO_LIST"
-        match="div[@class eq 'katalogpost']">
-        <li>
-            <xsl:apply-templates mode="CAT_LIST" select="p/node()"/>
-        </li>
-    </xsl:template>
-    <xsl:function name="nota:get-classification" as="xs:string">
-        <xsl:param name="n" as="element()"/>
-        <xsl:value-of
-            select="if ($n/p/span[@class eq 'DK5']/matches(text(), '^99'))
-                    then 'Erindringer og biografier'
-                    else if ($n/p/span[@class eq 'DK5']/matches(text(),
-                    '^8[2-5,7-8]')) then 'Skønlitteratur'
-                    else if ($n/p/span[@class eq 'DK5']) then 'Faglitteratur'
-                    else 'Skønlitteratur'"/>
-    </xsl:function>
-    <xsl:function name="nota:group-headings" as="node()*">
-        <xsl:param name="n" as="node()*"/>
-        
-    </xsl:function>
-    <xsl:function name="nota:follows-type" as="xs:boolean">
-        <xsl:param name="n" as="element()"/>
-        <xsl:value-of
-            select="$n/preceding-sibling::*[1]/self::span/@class eq
-                    'typedescription'"/>
     </xsl:function>
 </xsl:stylesheet>
