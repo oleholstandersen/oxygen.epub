@@ -120,17 +120,30 @@ public class XmlAccess {
 		return xpathExecutable.load();
 	}
 	
-	public StreamSource getXsltStreamSource(String fileName) {
+	public StreamSource getXsltStreamSource(String xsltLocation) {
 		StreamSource source;
-		source = new StreamSource(getClass().getResourceAsStream(fileName));
-		source.setSystemId(getClass().getResource("/dk/nota/oxygen/xml/")
-				.toString() + fileName);
+		if (xsltLocation.contains(":")) {
+			source = new StreamSource(xsltLocation);
+			source.setSystemId(xsltLocation);
+		} else {
+			source = new StreamSource(getClass().getResourceAsStream(xsltLocation));
+			source.setSystemId(getClass().getResource("/dk/nota/oxygen/xml/")
+					.toString() + xsltLocation);
+		}
 		return source;
 	}
 	
 	public XsltTransformer getXsltTransformer(Source xsltSource)
 			throws SaxonApiException {
-		xsltCompiler.setURIResolver((href, base) -> getXsltStreamSource(href));
+		xsltCompiler.setURIResolver((href, base) -> {
+			try {
+				URI uri = new URI(base.replaceFirst("/[^/]*?$", "/" + href))
+						.normalize();
+				return getXsltStreamSource(uri.toString());
+			} catch (URISyntaxException e) {
+				return null;
+			}
+		});
 		XsltExecutable xsltExecutable = xsltCompiler.compile(xsltSource);
 		return xsltExecutable.load();
 	}
