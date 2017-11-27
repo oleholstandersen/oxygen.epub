@@ -44,35 +44,34 @@ public abstract class AbstractAuthorOperation implements AuthorOperation {
 				true, true, true)[0];
 	}
 	
-	public void floatInterval(int start, int end) throws BadLocationException {
+	public int floatInterval(int start, int end) throws BadLocationException {
 		AuthorDocumentFragment content = getDocumentController()
 				.createDocumentFragment(start, end);
 		getDocumentController().delete(start, end);
 		AuthorNode parentNode = getDocumentController().getNodeAtOffset(start);
 		if (parentNode.getEndOffset() - parentNode.getStartOffset() == 1) {
 			getDocumentController().deleteNode(parentNode);
-			getDocumentController().insertFragment(start - 1, content);
-			return;
+			getDocumentController().insertFragment(--start, content);
+			return start;
 		}
 		splitNodeAtOffset(parentNode, start, true);
 		OffsetInformation offsetInformation = getDocumentController()
 				.getContentInformationAtOffset(start);
 		switch (offsetInformation.getPositionType()) {
 		case OffsetInformation.ON_START_MARKER:
-			getDocumentController().insertFragment(start - 1, content);
+			start--;
 			break;
 		case OffsetInformation.ON_END_MARKER:
-			getDocumentController().insertFragment(start + 1, content);
-			break;
-		default: getDocumentController().insertFragment(start, content);
+			start++;
 		}
+		getDocumentController().insertFragment(start++, content);
+		return start;
 	}
 	
 	public AuthorNode floatNode(AuthorNode node)
 			throws AuthorOperationException, BadLocationException {
-		int start = node.getStartOffset();
-		floatInterval(start, node.getEndOffset());
-		return getDocumentController().getNodeAtOffset(start + 2);
+		int start = floatInterval(node.getStartOffset(), node.getEndOffset());
+		return getDocumentController().getNodeAtOffset(start);
 	}
 	
 	public boolean fragmentIsEmptyElement(AuthorDocumentFragment fragment) {
@@ -222,21 +221,19 @@ public abstract class AbstractAuthorOperation implements AuthorOperation {
 	
 	public void splitNodeAtOffset(AuthorNode node, int offset,
 			boolean discardEmptyRemainders) throws BadLocationException {
-		int start = node.getStartOffset();
-		int end = node.getEndOffset();
-		if (offset == start || offset == end) return;
-		AuthorDocumentFragment fragmentBefore = getDocumentController()
-				.createDocumentFragment(start, offset - 1);
-		AuthorDocumentFragment fragmentAfter = getDocumentController()
-				.createDocumentFragment(offset, end);
+		getDocumentController().split(node, offset);
+		AuthorNode nodeBefore = getDocumentController().getNodeAtOffset(offset);
+		AuthorNode nodeAfter = getDocumentController().getNodeAtOffset(offset + 2);
 		// Avoid duplicate id on element after split
-		if (node instanceof AuthorElement) ((AuthorElement)fragmentAfter
-				.getContentNodes().get(0)).removeAttribute("id");
-		getDocumentController().delete(start, end);
-		if (!discardEmptyRemainders || !fragmentIsEmptyElement(fragmentAfter))
-			getDocumentController().insertFragment(start, fragmentAfter);
-		if (!discardEmptyRemainders || !fragmentIsEmptyElement(fragmentBefore))
-			getDocumentController().insertFragment(start, fragmentBefore);
+		if (nodeAfter instanceof AuthorElement)
+			((AuthorElement)nodeAfter).removeAttribute("id");
+		if (discardEmptyRemainders) {
+			// Delete empty elements last to first
+			if (nodeAfter.getEndOffset() - nodeAfter.getStartOffset() == 1)
+				getDocumentController().deleteNode(nodeAfter);
+			if (nodeBefore.getEndOffset() - nodeBefore.getStartOffset() == 1)
+				getDocumentController().deleteNode(nodeBefore);
+		}
 	}
 	
 	public void stripElements(AuthorElement element, String... elementNames)
