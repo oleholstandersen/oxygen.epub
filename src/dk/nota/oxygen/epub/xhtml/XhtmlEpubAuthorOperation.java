@@ -29,10 +29,11 @@ public abstract class XhtmlEpubAuthorOperation extends AbstractAuthorOperation {
 					"h" + depth);
 			return;
 		}
-		for (AuthorElement childElement : getElementsByXpath("*", element))
+		for (AuthorElement childElement : getElementsByXpath(
+				"h1|h2|h3|h4|h5|h6|section", element))
 			normaliseToDepth(childElement, depth + 1);
 		if (element.getName().matches("section")) {
-			if (depth >= 6 && !hasEpubType(element)) dissolveElement(element);
+			if (depth > 6 && !hasEpubType(element)) dissolveElement(element);
 		}
 	}
 	
