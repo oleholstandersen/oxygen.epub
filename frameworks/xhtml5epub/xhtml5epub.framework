@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<serialized version="18.0" xml:space="preserve">
+<serialized version="18.1" xml:space="preserve">
 	<serializableOrderedMap>
 		<entry>
 			<String>document.types</String>
@@ -2547,7 +2547,12 @@ ancestor-or-self::node()[self::*:tbody | self::*:tfoot | self::*:thead | self::*
 														<String>(ancestor-or-self::*[matches(local-name(), 'h\d')])/(parent::section|parent::body)</String>
 													</field>
 													<field name="argValues">
-														<serializableOrderedMap/>
+														<serializableOrderedMap>
+															<entry>
+																<String>newDepth</String>
+																<String>none</String>
+															</entry>
+														</serializableOrderedMap>
 													</field>
 													<field name="operationID">
 														<String>dk.nota.oxygen.epub.xhtml.HeadingOperation</String>
@@ -3179,6 +3184,356 @@ ancestor-or-self::node()[self::*:tbody | self::*:tfoot | self::*:thead | self::*
 											<Boolean>false</Boolean>
 										</field>
 									</action>
+									<action>
+										<field name="id">
+											<String>heading.none.shift</String>
+										</field>
+										<field name="name">
+											<String>None + shift</String>
+										</field>
+										<field name="description">
+											<String>Converts the selected heading to a paragraph and shifts subsections</String>
+										</field>
+										<field name="largeIconPath">
+											<String></String>
+										</field>
+										<field name="smallIconPath">
+											<String></String>
+										</field>
+										<field name="accessKey">
+											<String></String>
+										</field>
+										<field name="accelerator">
+											<null/>
+										</field>
+										<field name="actionModes">
+											<actionMode-array>
+												<actionMode>
+													<field name="xpathCondition">
+														<String>(ancestor-or-self::*[matches(local-name(), 'h\d')])/(parent::section|parent::body)</String>
+													</field>
+													<field name="argValues">
+														<serializableOrderedMap>
+															<entry>
+																<String>newDepth</String>
+																<String>none</String>
+															</entry>
+															<entry>
+																<String>shift</String>
+																<String>true</String>
+															</entry>
+														</serializableOrderedMap>
+													</field>
+													<field name="operationID">
+														<String>dk.nota.oxygen.epub.xhtml.HeadingOperation</String>
+													</field>
+												</actionMode>
+											</actionMode-array>
+										</field>
+										<field name="enabledInReadOnlyContext">
+											<Boolean>false</Boolean>
+										</field>
+									</action>
+									<action>
+										<field name="id">
+											<String>heading.h1.shift</String>
+										</field>
+										<field name="name">
+											<String>H1 + shift</String>
+										</field>
+										<field name="description">
+											<String>Creates an h1 at the current position and shifts subsections</String>
+										</field>
+										<field name="largeIconPath">
+											<String></String>
+										</field>
+										<field name="smallIconPath">
+											<String></String>
+										</field>
+										<field name="accessKey">
+											<String></String>
+										</field>
+										<field name="accelerator">
+											<null/>
+										</field>
+										<field name="actionModes">
+											<actionMode-array>
+												<actionMode>
+													<field name="xpathCondition">
+														<String>(ancestor-or-self::*:p|ancestor-or-self::*[matches(local-name(), 'h\d')])/(parent::section|parent::body)</String>
+													</field>
+													<field name="argValues">
+														<serializableOrderedMap>
+															<entry>
+																<String>newDepth</String>
+																<String>1</String>
+															</entry>
+															<entry>
+																<String>shift</String>
+																<String>true</String>
+															</entry>
+														</serializableOrderedMap>
+													</field>
+													<field name="operationID">
+														<String>dk.nota.oxygen.epub.xhtml.HeadingOperation</String>
+													</field>
+												</actionMode>
+											</actionMode-array>
+										</field>
+										<field name="enabledInReadOnlyContext">
+											<Boolean>false</Boolean>
+										</field>
+									</action>
+									<action>
+										<field name="id">
+											<String>heading.h2.shift</String>
+										</field>
+										<field name="name">
+											<String>H2 + shift</String>
+										</field>
+										<field name="description">
+											<String>Creates an h1 at the current position and shifts subsections</String>
+										</field>
+										<field name="largeIconPath">
+											<String></String>
+										</field>
+										<field name="smallIconPath">
+											<String></String>
+										</field>
+										<field name="accessKey">
+											<String></String>
+										</field>
+										<field name="accelerator">
+											<null/>
+										</field>
+										<field name="actionModes">
+											<actionMode-array>
+												<actionMode>
+													<field name="xpathCondition">
+														<String>(ancestor-or-self::*:p|ancestor-or-self::*[matches(local-name(), 'h\d')])/(parent::section|parent::body)</String>
+													</field>
+													<field name="argValues">
+														<serializableOrderedMap>
+															<entry>
+																<String>newDepth</String>
+																<String>2</String>
+															</entry>
+															<entry>
+																<String>shift</String>
+																<String>true</String>
+															</entry>
+														</serializableOrderedMap>
+													</field>
+													<field name="operationID">
+														<String>dk.nota.oxygen.epub.xhtml.HeadingOperation</String>
+													</field>
+												</actionMode>
+											</actionMode-array>
+										</field>
+										<field name="enabledInReadOnlyContext">
+											<Boolean>false</Boolean>
+										</field>
+									</action>
+									<action>
+										<field name="id">
+											<String>heading.h3.shift</String>
+										</field>
+										<field name="name">
+											<String>H3 + shift</String>
+										</field>
+										<field name="description">
+											<String>Creates an h3 at the current position and shifts subsections</String>
+										</field>
+										<field name="largeIconPath">
+											<String></String>
+										</field>
+										<field name="smallIconPath">
+											<String></String>
+										</field>
+										<field name="accessKey">
+											<String></String>
+										</field>
+										<field name="accelerator">
+											<null/>
+										</field>
+										<field name="actionModes">
+											<actionMode-array>
+												<actionMode>
+													<field name="xpathCondition">
+														<String>(ancestor-or-self::*:p|ancestor-or-self::*[matches(local-name(), 'h\d')])/(parent::section|parent::body)</String>
+													</field>
+													<field name="argValues">
+														<serializableOrderedMap>
+															<entry>
+																<String>newDepth</String>
+																<String>3</String>
+															</entry>
+															<entry>
+																<String>shift</String>
+																<String>true</String>
+															</entry>
+														</serializableOrderedMap>
+													</field>
+													<field name="operationID">
+														<String>dk.nota.oxygen.epub.xhtml.HeadingOperation</String>
+													</field>
+												</actionMode>
+											</actionMode-array>
+										</field>
+										<field name="enabledInReadOnlyContext">
+											<Boolean>false</Boolean>
+										</field>
+									</action>
+									<action>
+										<field name="id">
+											<String>heading.h4.shift</String>
+										</field>
+										<field name="name">
+											<String>H4 + shift</String>
+										</field>
+										<field name="description">
+											<String>Creates an h3 at the current position and shifts ubsections</String>
+										</field>
+										<field name="largeIconPath">
+											<String></String>
+										</field>
+										<field name="smallIconPath">
+											<String></String>
+										</field>
+										<field name="accessKey">
+											<String></String>
+										</field>
+										<field name="accelerator">
+											<null/>
+										</field>
+										<field name="actionModes">
+											<actionMode-array>
+												<actionMode>
+													<field name="xpathCondition">
+														<String>(ancestor-or-self::*:p|ancestor-or-self::*[matches(local-name(), 'h\d')])/(parent::section|parent::body)</String>
+													</field>
+													<field name="argValues">
+														<serializableOrderedMap>
+															<entry>
+																<String>newDepth</String>
+																<String>4</String>
+															</entry>
+															<entry>
+																<String>shift</String>
+																<String>true</String>
+															</entry>
+														</serializableOrderedMap>
+													</field>
+													<field name="operationID">
+														<String>dk.nota.oxygen.epub.xhtml.HeadingOperation</String>
+													</field>
+												</actionMode>
+											</actionMode-array>
+										</field>
+										<field name="enabledInReadOnlyContext">
+											<Boolean>false</Boolean>
+										</field>
+									</action>
+									<action>
+										<field name="id">
+											<String>heading.h5.shift</String>
+										</field>
+										<field name="name">
+											<String>H5 + shift</String>
+										</field>
+										<field name="description">
+											<String>Creates an h3 at the current position and shifts subsections</String>
+										</field>
+										<field name="largeIconPath">
+											<String></String>
+										</field>
+										<field name="smallIconPath">
+											<String></String>
+										</field>
+										<field name="accessKey">
+											<String></String>
+										</field>
+										<field name="accelerator">
+											<null/>
+										</field>
+										<field name="actionModes">
+											<actionMode-array>
+												<actionMode>
+													<field name="xpathCondition">
+														<String>(ancestor-or-self::*:p|ancestor-or-self::*[matches(local-name(), 'h\d')])/(parent::section|parent::body)</String>
+													</field>
+													<field name="argValues">
+														<serializableOrderedMap>
+															<entry>
+																<String>newDepth</String>
+																<String>5</String>
+															</entry>
+															<entry>
+																<String>shift</String>
+																<String>true</String>
+															</entry>
+														</serializableOrderedMap>
+													</field>
+													<field name="operationID">
+														<String>dk.nota.oxygen.epub.xhtml.HeadingOperation</String>
+													</field>
+												</actionMode>
+											</actionMode-array>
+										</field>
+										<field name="enabledInReadOnlyContext">
+											<Boolean>false</Boolean>
+										</field>
+									</action>
+									<action>
+										<field name="id">
+											<String>heading.h6.shift</String>
+										</field>
+										<field name="name">
+											<String>H6 + shift</String>
+										</field>
+										<field name="description">
+											<String>Creates an h3 at the current position and shifts subsections</String>
+										</field>
+										<field name="largeIconPath">
+											<String></String>
+										</field>
+										<field name="smallIconPath">
+											<String></String>
+										</field>
+										<field name="accessKey">
+											<String></String>
+										</field>
+										<field name="accelerator">
+											<null/>
+										</field>
+										<field name="actionModes">
+											<actionMode-array>
+												<actionMode>
+													<field name="xpathCondition">
+														<String>(ancestor-or-self::*:p|ancestor-or-self::*[matches(local-name(), 'h\d')])/(parent::section|parent::body)</String>
+													</field>
+													<field name="argValues">
+														<serializableOrderedMap>
+															<entry>
+																<String>newDepth</String>
+																<String>6</String>
+															</entry>
+															<entry>
+																<String>shift</String>
+																<String>true</String>
+															</entry>
+														</serializableOrderedMap>
+													</field>
+													<field name="operationID">
+														<String>dk.nota.oxygen.epub.xhtml.HeadingOperation</String>
+													</field>
+												</actionMode>
+											</actionMode-array>
+										</field>
+										<field name="enabledInReadOnlyContext">
+											<Boolean>false</Boolean>
+										</field>
+									</action>
 								</action-array>
 							</field>
 							<field name="menubarDescriptor">
@@ -3259,13 +3614,49 @@ ancestor-or-self::node()[self::*:tbody | self::*:tfoot | self::*:thead | self::*
 														</menuItem>
 														<menuItem>
 															<field name="actionID">
-																<String>heading.bridgehead</String>
+																<String>heading.none</String>
 															</field>
 														</menuItem>
 														<menuSeparator/>
 														<menuItem>
 															<field name="actionID">
-																<String>heading.none</String>
+																<String>heading.h1.shift</String>
+															</field>
+														</menuItem>
+														<menuItem>
+															<field name="actionID">
+																<String>heading.h2.shift</String>
+															</field>
+														</menuItem>
+														<menuItem>
+															<field name="actionID">
+																<String>heading.h3.shift</String>
+															</field>
+														</menuItem>
+														<menuItem>
+															<field name="actionID">
+																<String>heading.h4.shift</String>
+															</field>
+														</menuItem>
+														<menuItem>
+															<field name="actionID">
+																<String>heading.h5.shift</String>
+															</field>
+														</menuItem>
+														<menuItem>
+															<field name="actionID">
+																<String>heading.h6.shift</String>
+															</field>
+														</menuItem>
+														<menuItem>
+															<field name="actionID">
+																<String>heading.none.shift</String>
+															</field>
+														</menuItem>
+														<menuSeparator/>
+														<menuItem>
+															<field name="actionID">
+																<String>heading.bridgehead</String>
 															</field>
 														</menuItem>
 														<menuSeparator/>
@@ -3576,13 +3967,49 @@ ancestor-or-self::node()[self::*:tbody | self::*:tfoot | self::*:thead | self::*
 														</menuItem>
 														<menuItem>
 															<field name="actionID">
-																<String>heading.bridgehead</String>
+																<String>heading.none</String>
 															</field>
 														</menuItem>
 														<menuSeparator/>
 														<menuItem>
 															<field name="actionID">
-																<String>heading.none</String>
+																<String>heading.h1.shift</String>
+															</field>
+														</menuItem>
+														<menuItem>
+															<field name="actionID">
+																<String>heading.h2.shift</String>
+															</field>
+														</menuItem>
+														<menuItem>
+															<field name="actionID">
+																<String>heading.h3.shift</String>
+															</field>
+														</menuItem>
+														<menuItem>
+															<field name="actionID">
+																<String>heading.h4.shift</String>
+															</field>
+														</menuItem>
+														<menuItem>
+															<field name="actionID">
+																<String>heading.h5.shift</String>
+															</field>
+														</menuItem>
+														<menuItem>
+															<field name="actionID">
+																<String>heading.h6.shift</String>
+															</field>
+														</menuItem>
+														<menuItem>
+															<field name="actionID">
+																<String>heading.none.shift</String>
+															</field>
+														</menuItem>
+														<menuSeparator/>
+														<menuItem>
+															<field name="actionID">
+																<String>heading.bridgehead</String>
 															</field>
 														</menuItem>
 														<menuSeparator/>
@@ -3892,13 +4319,49 @@ ancestor-or-self::node()[self::*:tbody | self::*:tfoot | self::*:thead | self::*
 														</toolbarItem>
 														<toolbarItem>
 															<field name="actionID">
-																<String>heading.bridgehead</String>
+																<String>heading.none</String>
 															</field>
 														</toolbarItem>
 														<toolbarSeparator/>
 														<toolbarItem>
 															<field name="actionID">
-																<String>heading.none</String>
+																<String>heading.h1.shift</String>
+															</field>
+														</toolbarItem>
+														<toolbarItem>
+															<field name="actionID">
+																<String>heading.h2.shift</String>
+															</field>
+														</toolbarItem>
+														<toolbarItem>
+															<field name="actionID">
+																<String>heading.h3.shift</String>
+															</field>
+														</toolbarItem>
+														<toolbarItem>
+															<field name="actionID">
+																<String>heading.h4.shift</String>
+															</field>
+														</toolbarItem>
+														<toolbarItem>
+															<field name="actionID">
+																<String>heading.h5.shift</String>
+															</field>
+														</toolbarItem>
+														<toolbarItem>
+															<field name="actionID">
+																<String>heading.h6.shift</String>
+															</field>
+														</toolbarItem>
+														<toolbarItem>
+															<field name="actionID">
+																<String>heading.none.shift</String>
+															</field>
+														</toolbarItem>
+														<toolbarSeparator/>
+														<toolbarItem>
+															<field name="actionID">
+																<String>heading.bridgehead</String>
 															</field>
 														</toolbarItem>
 														<toolbarSeparator/>
