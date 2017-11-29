@@ -13,7 +13,6 @@ public class HeadingOperation extends XhtmlEpubAuthorOperation {
 	
 	private int depth;
 	private boolean dissolve;
-	private boolean editingConcatDocument;
 	private int newDepth;
 	private String sectionTag =
 			"<section xmlns='http://www.w3.org/1999/xhtml'/>";
@@ -22,7 +21,8 @@ public class HeadingOperation extends XhtmlEpubAuthorOperation {
 	private int determineSectionEnd(AuthorElement section)
 			throws AuthorOperationException {
 		// Basically decide whether to include following subsections or not
-		AuthorElement[] subsections = getElementsByXpath("section", section);
+		AuthorElement[] subsections = getElementsByXpath(
+				"section[not(matches(@epub:type, '(poem|verse)$'))]", section);
 		if (!shift && subsections.length > 0)
 			return subsections[0].getStartOffset();
 		else return section.getEndOffset();
@@ -49,11 +49,10 @@ public class HeadingOperation extends XhtmlEpubAuthorOperation {
 		try {
 			// Get ancestor sections
 			AuthorElement[] ancestorSections = getElementsByXpath(
+					editingConcatDocument() ? "ancestor::section" :
 					"ancestor::body|ancestor::section", heading);
-			// Get current depth (= number of ancestor sections); note that
-			// depth is lower if we are editing a concat document
-			depth = editingConcatDocument ? ancestorSections.length - 1 :
-				ancestorSections.length;
+			// Get current depth (= number of ancestor sections)
+			depth = ancestorSections.length;
 			AuthorElement parentSection = ancestorSections[depth - 1];
 			int end = determineSectionEnd(parentSection);
 			if (dissolve) {
@@ -120,8 +119,10 @@ public class HeadingOperation extends XhtmlEpubAuthorOperation {
 		// lowermost branch of nested sections
 		AuthorElement[] precedingSections = getElementsByXpath(
 				"(preceding-sibling::*[1][self::section][not(matches(@epub:type,"
-				+ "'(poem|verse)$'))]/descendant-or-self::section[last()]/"
-				+ "ancestor-or-self::section) except ancestor-or-self::section",
+				+ "'(poem|verse)$'))]/descendant-or-self::section[not(matches("
+				+ "@epub:type, '(poem|verse)$'))][last()]/ancestor-or-self::"
+				+ "section[not(matches(@epub:type, '(poem|verse)$'))]) except "
+				+ "ancestor-or-self::section",
 				section);
 		// If there are no preceding sections to consider, just wrap here until
 		// we reach the desired depth
@@ -184,7 +185,6 @@ public class HeadingOperation extends XhtmlEpubAuthorOperation {
 		if (!dissolve) newDepth = Integer.parseInt(depthArgument);
 		String shiftArgument = (String)arguments.getArgumentValue("shift");
 		shift = shiftArgument.equals("true");
-		editingConcatDocument = editingConcatDocument();
 	}
 	
 	private void wrapSection(AuthorElement section, int iterations)
