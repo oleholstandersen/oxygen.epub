@@ -15,7 +15,7 @@ public class HeadingOperation extends XhtmlEpubAuthorOperation {
 	private boolean dissolve;
 	private boolean editingConcatDocument;
 	private int newDepth;
-	private String sectionFragment =
+	private String sectionTag =
 			"<section xmlns='http://www.w3.org/1999/xhtml'/>";
 	private boolean shift;
 	
@@ -50,8 +50,8 @@ public class HeadingOperation extends XhtmlEpubAuthorOperation {
 			// Get ancestor sections
 			AuthorElement[] ancestorSections = getElementsByXpath(
 					"ancestor::body|ancestor::section", heading);
-			// Get current depth (= number of ancestor sections), may be 0;
-			// note that depth is lower if we are editing a concat document
+			// Get current depth (= number of ancestor sections); note that
+			// depth is lower if we are editing a concat document
 			depth = editingConcatDocument ? ancestorSections.length - 1 :
 				ancestorSections.length;
 			AuthorElement parentSection = ancestorSections[depth - 1];
@@ -72,11 +72,8 @@ public class HeadingOperation extends XhtmlEpubAuthorOperation {
 			AuthorElement section = establishSection(parentSection, start, end);
 			if (shift) normaliseToDepth(section, newDepth - 1);
 			if (newDepth < depth)
-				// If the established section is the parent section, we need
-				// the actual parent section
 				insertSectionAbove(section, depth - newDepth);
-			else if (newDepth > depth)
-				insertSectionBelow(section, newDepth - depth);
+			else if (newDepth > depth) insertSectionBelow(section);
 		} catch (BadLocationException e) {
 			throw new AuthorOperationException(e.toString());
 		} finally {
@@ -97,7 +94,7 @@ public class HeadingOperation extends XhtmlEpubAuthorOperation {
 			}
 		}
 		// Establish a section
-		getDocumentController().surroundInFragment(sectionFragment, ++start,
+		getDocumentController().surroundInFragment(sectionTag, ++start,
 				--end);
 		// With the new section we increase the working depth
 		depth++;
@@ -115,13 +112,50 @@ public class HeadingOperation extends XhtmlEpubAuthorOperation {
 		if (iterations > 1) insertSectionAbove(section, --iterations);
 	}
 	
-	private void insertSectionBelow(AuthorNode section, int iterations)
+	private void insertSectionBelow(AuthorElement section)
 			throws AuthorOperationException, BadLocationException {
-		int start = section.getStartOffset();
-		int end = section.getEndOffset();
-		for (int i = 1; i <= iterations; i++)
-			getDocumentController().surroundInFragment(sectionFragment, start,
-					end++);
+		// This XPath gets the last section descendant of a preceding sibling
+		// section along with its ancestor sections up to and including the
+		// preceding sibling section; basically, it retrieves only the 
+		// lowermost branch of nested sections
+		AuthorElement[] precedingSections = getElementsByXpath(
+				"(preceding-sibling::*[1][self::section][not(matches(@epub:type,"
+				+ "'(poem|verse)$'))]/descendant-or-self::section[last()]/"
+				+ "ancestor-or-self::section) except ancestor-or-self::section",
+				section);
+		// If there are no preceding sections to consider, just wrap here until
+		// we reach the desired depth
+		if (precedingSections.length == 0) {
+			wrapSection(section, newDepth - depth);
+			return;
+		}
+		// Extract a fragment of the section, then delete it
+		AuthorDocumentFragment sectionFragment = getDocumentController()
+				.createDocumentFragment(section, true);
+		getDocumentController().deleteNode(section);
+		int precedingSectionDepth = precedingSections.length - 1;
+		int depthDifference = (depth + precedingSectionDepth) - newDepth;
+		// Determine offset for insertion
+		// We assume it will be within the lowermost preceding section ...
+		int offset = precedingSections[precedingSectionDepth].getEndOffset();
+		// ... but it may be the case that we need to move up the branch, which
+		// requires us to substract 1 from the difference to account for the
+		// 0-based array index, ...
+		if (depthDifference > 0) 
+			offset = precedingSections[depthDifference - 1].getEndOffset();
+		// or we may need to insert after the lowermost preceding section
+		else if (depthDifference == 0)
+			offset = precedingSections[precedingSectionDepth].getEndOffset() + 1;
+		getDocumentController().insertFragment(offset, sectionFragment);
+		// The section is now inserted into a preceding section, thus
+		// increasing the depth difference by 1
+		depthDifference++;
+		// If the depth difference is still negative, we need to wrap
+		// additional sections around the inserted section until we reach the
+		// desired depth
+		if (depthDifference < 0)
+			wrapSection((AuthorElement)getDocumentController().getNodeAtOffset(
+					offset + 1), Math.abs(depthDifference));
 	}
 
 	@Override
@@ -151,6 +185,15 @@ public class HeadingOperation extends XhtmlEpubAuthorOperation {
 		String shiftArgument = (String)arguments.getArgumentValue("shift");
 		shift = shiftArgument.equals("true");
 		editingConcatDocument = editingConcatDocument();
+	}
+	
+	private void wrapSection(AuthorElement section, int iterations)
+			throws AuthorOperationException {
+		int start = section.getStartOffset();
+ 		int end = section.getEndOffset();
+ 		for (int i = 1; i <= iterations; i++)
+ 			getDocumentController().surroundInFragment(sectionTag, start,
+ 					end++);
 	}
 
 }
