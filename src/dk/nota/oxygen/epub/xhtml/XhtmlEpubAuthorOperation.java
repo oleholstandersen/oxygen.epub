@@ -14,6 +14,10 @@ public abstract class XhtmlEpubAuthorOperation extends AbstractAuthorOperation {
 				"concat.xhtml");
 	}
 	
+	public boolean hasClass(AuthorElement element) {
+		return (element.getAttribute("class") != null);
+	}
+	
 	public boolean hasEpubType(AuthorElement element) {
 		return (element.getAttribute("epub:type") != null);
 	}
@@ -41,6 +45,24 @@ public abstract class XhtmlEpubAuthorOperation extends AbstractAuthorOperation {
 			throws AuthorOperationException, BadLocationException {
 		for (AuthorElement element : elements) normaliseToDepth(element,
 				depth);
+	}
+	
+	public void removeSpacedAttrValue(AuthorElement element, String attrName,
+			String valueToRemove, boolean discardIfEmpty) {
+		if (element.getAttribute(attrName) == null) return;
+		String oldString = element.getAttribute(attrName).getValue();
+		getDocumentController().removeAttribute(attrName, element);
+		String newString = "";
+		for (String value : oldString.split(" "))
+			if (!value.equals(valueToRemove)) newString += value;
+		if (!discardIfEmpty || newString.length() > 0)
+			getDocumentController().setAttribute(attrName, new AttrValue(
+					newString), element);
+	}
+	
+	public void resetClass(AuthorElement element, String classValue) {
+		getDocumentController().setAttribute("class", new AttrValue(classValue),
+				element);
 	}
 	
 	public void resetEpubType(AuthorElement element, String epubTypeValue) {

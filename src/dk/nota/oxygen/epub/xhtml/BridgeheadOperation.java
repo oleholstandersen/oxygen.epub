@@ -11,7 +11,7 @@ public class BridgeheadOperation extends XhtmlEpubAuthorOperation {
 	protected void doOperation() throws AuthorOperationException {
 		AuthorElement paragraph = getFirstElementByXpath(
 				"ancestor-or-self::p");
-		if (!hasClassAttribute(paragraph)) resetClass(paragraph, "bridgehead");
+		if (!hasClass(paragraph)) resetClass(paragraph, "bridgehead");
 		else getDocumentController().removeAttribute("class", paragraph);;
 		if (!hasEpubType(paragraph)) resetEpubType(paragraph, "bridgehead");
 		else getDocumentController().removeAttribute("epub:type", paragraph);

@@ -178,10 +178,6 @@ public abstract class AbstractAuthorOperation implements AuthorOperation {
 		return false;
 	}
 	
-	public boolean hasClassAttribute(AuthorElement element) {
-		return (element.getAttribute("class") != null);
-	}
-	
 	public AuthorNode moveNodeToOffset(AuthorNode node, int offset)
 			throws BadLocationException {
 		AuthorDocumentFragment nodeFragment = getDocumentController()
@@ -193,11 +189,6 @@ public abstract class AbstractAuthorOperation implements AuthorOperation {
 	
 	protected abstract void parseArguments(ArgumentsMap arguments)
 			throws IllegalArgumentException;
-	
-	public void resetClass(AuthorElement element, String classValue) {
-		getDocumentController().setAttribute("class", new AttrValue(classValue),
-				element);
-	}
 	
 	public boolean selectionIsSiblingsOnly() throws BadLocationException {
 		AuthorNode nodeAtStart = getDocumentController().getNodeAtOffset(
