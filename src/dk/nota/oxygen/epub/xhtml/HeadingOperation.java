@@ -68,6 +68,8 @@ public class HeadingOperation extends XhtmlEpubAuthorOperation {
 			}
 			int start = determineSectionStart(heading);
 			getDocumentController().renameElement(heading, "h" + newDepth);
+			removeSpacedAttrValue(heading, "class", "bridgehead", true);
+			removeSpacedAttrValue(heading, "epub:type", "bridgehead", true);
 			AuthorElement section = establishSection(parentSection, start, end);
 			if (shift) normaliseToDepth(section, newDepth - 1);
 			if (newDepth < depth)
@@ -167,7 +169,7 @@ public class HeadingOperation extends XhtmlEpubAuthorOperation {
 						new String[] {"1", "2", "3", "4", "5", "6", "none"},
 						"none"),
 				new ArgumentDescriptor("shift", ArgumentDescriptor
-						.TYPE_CONSTANT_LIST, "Shift subsequent sections up/down",
+						.TYPE_CONSTANT_LIST, "Shift subsections up/down",
 						new String[] {"true", "false"}, "false"),
 		};
 	}
