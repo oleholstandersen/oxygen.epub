@@ -14,7 +14,6 @@ import ro.sync.ecss.extensions.api.AuthorOperationException;
 import ro.sync.ecss.extensions.api.access.AuthorEditorAccess;
 import ro.sync.ecss.extensions.api.access.AuthorWorkspaceAccess;
 import ro.sync.ecss.extensions.api.content.OffsetInformation;
-import ro.sync.ecss.extensions.api.node.AttrValue;
 import ro.sync.ecss.extensions.api.node.AuthorDocumentFragment;
 import ro.sync.ecss.extensions.api.node.AuthorElement;
 import ro.sync.ecss.extensions.api.node.AuthorNode;
@@ -110,12 +109,12 @@ public abstract class AbstractAuthorOperation implements AuthorOperation {
 	
 	public AuthorElement[] getElementsByXpath(String xpath)
 			throws AuthorOperationException {
-		return getElements(getNodesByXpath(xpath));
+		return getElements(getNodesByXpath(xpath, false));
 	}
 	
 	public AuthorElement[] getElementsByXpath(String xpath,
 			AuthorNode contextNode) throws AuthorOperationException {
-		return getElements(getNodesByXpath(xpath, contextNode));
+		return getElements(getNodesByXpath(xpath, false, contextNode));
 	}
 	
 	public AuthorElement getFirstElement(AuthorNode[] nodes) {
@@ -126,24 +125,24 @@ public abstract class AbstractAuthorOperation implements AuthorOperation {
 	
 	public AuthorElement getFirstElementByXpath(String xpath)
 			throws AuthorOperationException {
-		return getFirstElement(getNodesByXpath(xpath));
+		return getFirstElement(getNodesByXpath(xpath, false));
 	}
 	
 	public AuthorElement getFirstElementByXpath(String xpath,
 			AuthorNode contextNode) throws AuthorOperationException {
-		return getFirstElement(getNodesByXpath(xpath, contextNode));
+		return getFirstElement(getNodesByXpath(xpath, false, contextNode));
 	}
 	
-	public AuthorNode[] getNodesByXpath(String xpath)
+	public AuthorNode[] getNodesByXpath(String xpath, boolean includeText)
 			throws AuthorOperationException {
-		return getDocumentController().findNodesByXPath(xpath, true, true,
-				true);
+		return getDocumentController().findNodesByXPath(xpath, includeText,
+				true, true);
 	}
 	
-	public AuthorNode[] getNodesByXpath(String xpath,
+	public AuthorNode[] getNodesByXpath(String xpath, boolean includeText,
 			AuthorNode contextNode) throws AuthorOperationException {
 		return getDocumentController().findNodesByXPath(xpath, contextNode,
-				true, true, true, true);
+				includeText, true, true, true);
 	}
 	
 	public List<AuthorNode> getSelectedNodes() throws BadLocationException {
