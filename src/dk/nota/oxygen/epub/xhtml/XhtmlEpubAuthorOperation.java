@@ -4,6 +4,8 @@ import javax.swing.text.BadLocationException;
 
 import dk.nota.oxygen.common.AbstractAuthorOperation;
 import ro.sync.ecss.extensions.api.AuthorOperationException;
+import ro.sync.ecss.extensions.api.content.TextContentIterator;
+import ro.sync.ecss.extensions.api.content.TextContext;
 import ro.sync.ecss.extensions.api.node.AttrValue;
 import ro.sync.ecss.extensions.api.node.AuthorElement;
 
@@ -68,6 +70,37 @@ public abstract class XhtmlEpubAuthorOperation extends AbstractAuthorOperation {
 	public void resetEpubType(AuthorElement element, String epubTypeValue) {
 		getDocumentController().setAttribute("epub:type",
 				new AttrValue(epubTypeValue), element);
+	}
+	
+	public void stripSpaceFromElement(AuthorElement element,
+			boolean stripLeading, boolean stripTrailing)
+			throws AuthorOperationException, BadLocationException {
+		int elementStart = element.getStartOffset();
+		int elementEnd = element.getEndOffset();
+		// Iterate on text contant across node limits
+		TextContentIterator contentIterator = getDocumentController()
+				.getTextContentIterator(elementStart, elementEnd);
+		int characterOffset, nonWhitespaceStart, nonWhitespaceEnd;
+		characterOffset = nonWhitespaceStart = elementStart;
+		nonWhitespaceEnd = elementEnd;
+		boolean foundNonwhitespace = false;
+		while (contentIterator.hasNext()) {
+			TextContext context = contentIterator.next();
+			characterOffset = context.getTextStartOffset();
+			for (char c: ((String)context.getText()).toCharArray()) {
+				if (!foundNonwhitespace && !Character.isWhitespace(c)) {
+					nonWhitespaceStart = nonWhitespaceEnd = characterOffset;
+					foundNonwhitespace = true;
+				} else if (!Character.isWhitespace(c))
+					nonWhitespaceEnd = characterOffset;
+				characterOffset++;
+			}
+		}
+		// Delete intervals in reverse order to avoid offsets shifting
+		if (stripTrailing) getDocumentController().delete(++nonWhitespaceEnd,
+				element.getEndOffset());
+		if (stripLeading) getDocumentController().delete(element
+				.getStartOffset(), --nonWhitespaceStart);
 	}
 
 }
