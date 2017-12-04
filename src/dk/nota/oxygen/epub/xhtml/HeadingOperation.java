@@ -54,6 +54,7 @@ public class HeadingOperation extends XhtmlEpubAuthorOperation {
 			// Get current depth (= number of ancestor sections)
 			depth = ancestorSections.length;
 			AuthorElement parentSection = ancestorSections[depth - 1];
+			stripSpaceFromElement(heading, true, true);
 			int end = determineSectionEnd(parentSection);
 			if (dissolve) {
 				getDocumentController().renameElement(heading, "p");
