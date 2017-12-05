@@ -108,10 +108,12 @@ public class EpubPluginExtension implements WorkspaceAccessPluginExtension {
 		}
 		
 		private void setupXhtmlToolbar(ToolbarInfo toolbar) {
+			Menu importMenu = new Menu("Import");
+			importMenu.insert(new ImportDocxAction(), 0);
+			importMenu.insert(new ImportCatListAction(), 1);
 			JComponent[] xhtmlComponents = new JComponent[] {
 				new ToolbarButton(new UpdateNavigationAction(), true),
-				new ToolbarButton(new ImportDocxAction(), true),
-				new ToolbarButton(new ImportCatListAction(), true)
+				importMenu
 			};
 			toolbar.setTitle("EPUB XHTML");
 			toolbar.setComponents(xhtmlComponents);
