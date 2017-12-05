@@ -216,7 +216,8 @@ public abstract class AbstractAuthorOperation implements AuthorOperation {
 		AuthorNode nodeAfter = getDocumentController().getNodeAtOffset(offset + 2);
 		// Avoid duplicate id on element after split
 		if (nodeAfter instanceof AuthorElement)
-			((AuthorElement)nodeAfter).removeAttribute("id");
+			getDocumentController().removeAttribute("id",
+					(AuthorElement)nodeAfter);
 		if (discardEmptyRemainders) {
 			// Delete empty elements last to first
 			if (nodeAfter.getEndOffset() - nodeAfter.getStartOffset() == 1)
