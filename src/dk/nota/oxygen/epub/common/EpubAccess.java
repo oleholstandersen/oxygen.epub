@@ -154,9 +154,13 @@ public class EpubAccess {
 		return editorUrl;
 	}
 	
-	public File getFileFromContentFolder(String filePath) {
-		return new ZipArchiveDetector().createFile(getArchiveFileUrl()
-				.getPath() + "/EPUB/" + filePath);
+	public File getFileFromContentFolder(String filePath) throws IOException {
+		try {
+			return new ZipArchiveDetector().createFile(getArchiveFileUrl()
+						.toURI().getPath() + "/EPUB/" + filePath);
+		} catch (URISyntaxException e) {
+			throw new IOException(e.getMessage());
+		}
 	}
 	
 	public XdmNode getNavigationDocument() throws SaxonApiException {
