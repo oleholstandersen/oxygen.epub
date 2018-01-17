@@ -27,9 +27,10 @@ import ro.sync.ecss.extensions.api.AuthorOperationException;
 
 public class ImportImageMapsOperation extends AbstractAuthorOperation {
 	
-	EditorAccess editorAccess;
-	EpubAccess epubAccess;
-	ResultsViewImageListener imageListener;
+	private int depth;
+	private EditorAccess editorAccess;
+	private EpubAccess epubAccess;
+	private ResultsViewImageListener imageListener;
 	
 	private void insertImages() throws IOException, SaxonApiException {
 		HashMap<String,String> fileTypes = new HashMap<String,String>();
@@ -67,6 +68,8 @@ public class ImportImageMapsOperation extends AbstractAuthorOperation {
 		StringWriter outputWriter = new StringWriter();
 		imageMapImporter.setDestination(editorAccess.getEpubAccess()
 				.getXmlAccess().getSerializer(outputWriter));
+		imageMapImporter.setParameter(new QName("INSERTION_DEPTH"),
+				new XdmAtomicValue(depth));
 		imageMapImporter.setParameter(new QName("OUTPUT_FOLDER_URL"),
 				new XdmAtomicValue(imageMapFiles[0].toURI().toString()));
 		// Add image listener to get list of images
@@ -99,7 +102,10 @@ public class ImportImageMapsOperation extends AbstractAuthorOperation {
 
 	@Override
 	public ArgumentDescriptor[] getArguments() {
-		return null;
+		return new ArgumentDescriptor[] {
+				new ArgumentDescriptor("depth", ArgumentDescriptor
+						.TYPE_STRING, "Depth at the insertion point")
+		};
 	}
 
 	@Override
@@ -110,6 +116,7 @@ public class ImportImageMapsOperation extends AbstractAuthorOperation {
 	@Override
 	protected void parseArguments(ArgumentsMap arguments)
 			throws IllegalArgumentException {
+		depth = Integer.parseInt((String)arguments.getArgumentValue("depth"));
 	}
 
 }
