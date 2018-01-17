@@ -8,11 +8,11 @@ import java.util.LinkedList;
 import javax.xml.transform.SourceLocator;
 
 import de.schlichtherle.io.File;
-import dk.nota.oxygen.common.AbstractConsoleWorker;
-import dk.nota.oxygen.common.ConsoleWindow;
+import dk.nota.oxygen.common.AbstractResultsWorker;
+import dk.nota.oxygen.common.ResultsView;
 import dk.nota.oxygen.common.EditorAccess;
 import dk.nota.oxygen.epub.common.EpubAccess;
-import dk.nota.oxygen.xml.ConsoleListener;
+import dk.nota.oxygen.xml.ResultsViewListener;
 import dk.nota.oxygen.xml.XmlAccess;
 import net.sf.saxon.s9api.Axis;
 import net.sf.saxon.s9api.QName;
@@ -22,7 +22,7 @@ import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmSequenceIterator;
 import net.sf.saxon.s9api.XsltTransformer;
 
-public class CreateDtbWorker extends AbstractConsoleWorker {
+public class CreateDtbWorker extends AbstractResultsWorker {
 	
 	private boolean copyImages = true;
 	private java.io.File outputFile;
@@ -34,18 +34,18 @@ public class CreateDtbWorker extends AbstractConsoleWorker {
 	private boolean success = false;
 	
 	public CreateDtbWorker(EditorAccess editorAccess, EpubAccess epubAccess,
-			ConsoleWindow consoleWindow, java.io.File outputFile,
+			ResultsView resultsView, java.io.File outputFile,
 			boolean returnDtbDocument) {
-		super(consoleWindow);
+		super(resultsView);
 		this.outputFile = outputFile;
 		this.editorAccess = editorAccess;
 		this.epubAccess = epubAccess;
-		this.imageListener = new ImageListener(consoleWindow);
+		this.imageListener = new ImageListener(resultsView);
 		this.returnDtbDocument = returnDtbDocument;
 	}
 	
 	public CreateDtbWorker(EditorAccess editorAccess, EpubAccess epubAccess,
-			ConsoleWindow consoleWindow, java.io.File outputFile,
+			ResultsView consoleWindow, java.io.File outputFile,
 			boolean returnDtbDocument, boolean copyImages) {
 		this(editorAccess, epubAccess, consoleWindow, outputFile,
 				returnDtbDocument);
@@ -53,7 +53,7 @@ public class CreateDtbWorker extends AbstractConsoleWorker {
 	}
 	
 	public void copyImages(URI outputFolderUri) throws IOException {
-		imageListener.writeToConsole("COPYING IMAGE FILES...");
+		imageListener.writeToResultsView("COPYING IMAGE FILES...");
 		new File(outputFolderUri).mkdirs();
 		for (String imagePath : getImagePaths()) {
 			File imageFile = epubAccess.getFileFromContentFolder(imagePath);
@@ -61,7 +61,7 @@ public class CreateDtbWorker extends AbstractConsoleWorker {
 					.getName()));
 			newImageFile.archiveCopyFrom(imageFile);
 		}
-		imageListener.writeToConsole("IMAGE FILES COPIED");
+		imageListener.writeToResultsView("IMAGE FILES COPIED");
 	}
 
 	@Override
@@ -91,10 +91,6 @@ public class CreateDtbWorker extends AbstractConsoleWorker {
 		return null;
 	}
 	
-	public java.io.File getOutputFile() {
-		return outputFile;
-	}
-	
 	public EditorAccess getEditorAccess() {
 		return editorAccess;
 	}
@@ -107,6 +103,10 @@ public class CreateDtbWorker extends AbstractConsoleWorker {
 		return epubAccess;
 	}
 	
+	public java.io.File getOutputFile() {
+		return outputFile;
+	}
+	
 	public void setDtbIdentifier(String identifier) {
 		dtbIdentifier = identifier;
 	}
@@ -114,22 +114,27 @@ public class CreateDtbWorker extends AbstractConsoleWorker {
 	@Override
 	protected void done() {
 		if (success) {
-			imageListener.writeToConsole("DTBOOK CONVERSION DONE");
 			try {
-				if (!returnDtbDocument) editorAccess.getWorkspace().open(
-						outputFile.toURI().toURL());
+				if (returnDtbDocument) {
+					imageListener.writeToResultsView("DTBOOK CONVERSION DONE");
+				} else {
+					imageListener.writeToResultsView("DTBOOK CONVERSION DONE",
+							outputFile.toURI().toString());
+					editorAccess.getWorkspace().open(outputFile.toURI()
+							.toURL());
+				}
 			} catch (MalformedURLException e) {
 				editorAccess.showErrorMessage(e.toString());
 			}
 		}
 	}
 	
-	public class ImageListener extends ConsoleListener {
+	public class ImageListener extends ResultsViewListener {
 		
 		private LinkedList<String> imagePaths = new LinkedList<String>();
 		
-		public ImageListener(ConsoleWindow consoleWindow) {
-			super(consoleWindow);
+		public ImageListener(ResultsView resultsView) {
+			super(resultsView);
 		}
 		
 		public LinkedList<String> getImagePaths() {

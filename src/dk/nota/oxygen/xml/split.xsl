@@ -26,7 +26,7 @@
             <xsl:message>
                 <nota:out>
                     <xsl:value-of
-                        select="concat('+++ Assigning id &quot;', $id,
+                        select="concat('Assigning id &quot;', $id,
                                 '&quot; to element ', local-name())"/>
                 </nota:out>
             </xsl:message>
@@ -91,7 +91,7 @@
                     <xsl:message>
                         <nota:out>
                             <xsl:value-of
-                                select="concat('!!! WARNING: The division at',
+                                select="concat('WARNING: The division at ',
                                         local-name(), position(), ' has no epub:type')"/>
                         </nota:out>
                     </xsl:message>
@@ -117,7 +117,7 @@
             <xsl:message>
                 <nota:out>
                     <xsl:value-of
-                        select="concat('!!! WARNING: Reference to id &quot;',
+                        select="concat('WARNING: Reference to id &quot;',
                                 $referencedId, '&quot; does not resolve')"/>
                 </nota:out>
             </xsl:message>

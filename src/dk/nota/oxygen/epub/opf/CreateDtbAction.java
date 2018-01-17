@@ -3,11 +3,10 @@ package dk.nota.oxygen.epub.opf;
 import java.io.File;
 import java.net.URISyntaxException;
 
-import dk.nota.oxygen.common.ConsoleWindow;
 import dk.nota.oxygen.common.EditorAccess;
+import dk.nota.oxygen.common.ResultsView;
 import dk.nota.oxygen.epub.common.ArchiveSensitiveAction;
 import dk.nota.oxygen.epub.common.EpubAccess;
-import net.sf.saxon.s9api.SaxonApiException;
 
 public class CreateDtbAction extends ArchiveSensitiveAction {
 	
@@ -26,10 +25,10 @@ public class CreateDtbAction extends ArchiveSensitiveAction {
 					true);
 			if (dtbFile == null) return;
 			CreateDtbWorker createDtbWorker = new CreateDtbWorker(editorAccess,
-					epubAccess, new ConsoleWindow("Export [DTBook]"), dtbFile,
-					false);
+					epubAccess, new ResultsView(epubAccess.getPid() +
+							" - Export [DTBook]"), dtbFile, false);
 			createDtbWorker.execute();
-		} catch (URISyntaxException | SaxonApiException e) {
+		} catch (URISyntaxException e) {
 			editorAccess.showErrorMessage(e.toString());
 		}
 	}

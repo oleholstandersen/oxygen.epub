@@ -1,22 +1,22 @@
 package dk.nota.oxygen.epub.nav;
 
-import dk.nota.oxygen.common.AbstractConsoleWorker;
-import dk.nota.oxygen.common.ConsoleWindow;
+import dk.nota.oxygen.common.AbstractResultsWorker;
+import dk.nota.oxygen.common.ResultsView;
 import dk.nota.oxygen.epub.common.EpubAccess;
-import dk.nota.oxygen.xml.ConsoleListener;
+import dk.nota.oxygen.xml.ResultsViewListener;
 import net.sf.saxon.s9api.XsltTransformer;
 
-public class UpdateNavigationWorker extends AbstractConsoleWorker {
+public class UpdateNavigationWorker extends AbstractResultsWorker {
 	
 	private EpubAccess epubAccess;
-	private ConsoleListener messageListener;
+	private ResultsViewListener messageListener;
 	private boolean success = false;
 	
 	public UpdateNavigationWorker(EpubAccess epubAccess,
-			ConsoleWindow consoleWindow) {
-		super(consoleWindow);
+			ResultsView resultsView) {
+		super(resultsView);
 		this.epubAccess = epubAccess;
-		this.messageListener = new ConsoleListener(consoleWindow);
+		this.messageListener = new ResultsViewListener(resultsView);
 	}
 
 	@Override
@@ -33,7 +33,7 @@ public class UpdateNavigationWorker extends AbstractConsoleWorker {
 	
 	@Override
 	protected void done() {
-		if (success) messageListener.writeToConsole("NAVIGATION UPDATE DONE");
+		if (success) messageListener.writeToResultsView("NAVIGATION UPDATE DONE");
 	}
 
 }

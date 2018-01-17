@@ -3,11 +3,10 @@ package dk.nota.oxygen.epub.opf;
 import java.io.File;
 import java.net.URISyntaxException;
 
-import dk.nota.oxygen.common.ConsoleWindow;
+import dk.nota.oxygen.common.ResultsView;
 import dk.nota.oxygen.common.EditorAccess;
 import dk.nota.oxygen.epub.common.ArchiveSensitiveAction;
 import dk.nota.oxygen.epub.common.EpubAccess;
-import net.sf.saxon.s9api.SaxonApiException;
 
 public class CreateDocxAction extends ArchiveSensitiveAction {
 
@@ -26,10 +25,10 @@ public class CreateDocxAction extends ArchiveSensitiveAction {
 					"Word documents", true);
 			if (docxFile == null) return;
 			CreateDocxWorker createDocxWorker = new CreateDocxWorker(
-					editorAccess, epubAccess, new ConsoleWindow("Create Docx"),
-					docxFile);
+					editorAccess, epubAccess, new ResultsView(epubAccess
+							.getPid() + " - Create Docx"), docxFile);
 			createDocxWorker.execute();
-		} catch (SaxonApiException | URISyntaxException e) {
+		} catch (URISyntaxException e) {
 			editorAccess.showErrorMessage(e.toString());
 		}
 	}

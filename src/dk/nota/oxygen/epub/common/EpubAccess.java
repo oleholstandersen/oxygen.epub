@@ -30,6 +30,7 @@ public class EpubAccess {
 	private URL editorUrl;
 	private URL navigationUrl;
 	private URL opfUrl;
+	private String pid;
 	private XmlAccess xmlAccess = new XmlAccess();
 	
 	public EpubAccess(WSEditor editor) throws IOException, SaxonApiException {
@@ -86,11 +87,15 @@ public class EpubAccess {
 		opfUrl = new URL(getArchiveContentUrl(), opfReferenceNode
 				.getAttributeValue(new QName("full-path")));
 		contentFolderUrl = new URL(opfUrl, "./");
+		XdmNode opfDocument = getOpfDocument();
 		XdmNode navReferenceNode = getXmlAccess().getFirstNodeByXpath(
 				"/opf:package/opf:manifest/opf:item[@properties eq 'nav']",
-				getOpfDocument());
+				opfDocument);
 		navigationUrl = new URL(contentFolderUrl, navReferenceNode
 				.getAttributeValue(new QName("href")));
+		pid = getXmlAccess().getFirstNodeByXpath(
+				"/opf:package/opf:metadata/dc:identifier", opfDocument)
+				.getStringValue();
 	}
 	
 	public URL getArchiveContentUrl() {
@@ -221,11 +226,8 @@ public class EpubAccess {
 		return outputTransformer;
 	}
 	
-	public String getPid() throws SaxonApiException {
-		XdmNode opfDocument = getOpfDocument();
-		XdmNode pidNode = getXmlAccess().getFirstNodeByXpath(
-				"/opf:package/opf:metadata/dc:identifier", opfDocument);
-		return pidNode.getStringValue();
+	public String getPid() {
+		return pid;
 	}
 	
 	public XsltTransformer getSplitTransformer() throws SaxonApiException {

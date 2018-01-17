@@ -59,6 +59,10 @@
                             select="concat('ERROR: Spine reference ',
                                     @idref, ' does not resolve')"/>
                     </nota:out>
+                    <nota:systemid>
+                        <xsl:value-of
+                            select="concat(base-uri(/), '#', @idref)"/>
+                    </nota:systemid>
                 </xsl:message>
             </xsl:if>
             <xsl:variable name="reference" as="xs:string?"
@@ -85,7 +89,7 @@
             <xsl:message>
                 <nota:out>
                     <xsl:value-of
-                        select="concat('+++ Assigning id &quot;', $id,
+                        select="concat('Assigning id &quot;', $id,
                                 '&quot; to element ', local-name())"/>
                 </nota:out>
             </xsl:message>
@@ -118,6 +122,11 @@
                 test="document(concat($CONTENT_FOLDER_URL, 'concat.xhtml'))">
                 <xsl:message terminate="yes">
                     <nota:out>ERROR: concat.xhtml already exists</nota:out>
+                    <nota:systemid>
+                        <xsl:value-of
+                            select="concat($CONTENT_FOLDER_URL,
+                                    'concat.xhtml')"/>
+                    </nota:systemid>
                 </xsl:message>
             </xsl:if>
         </xsl:if>

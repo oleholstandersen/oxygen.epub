@@ -17,6 +17,9 @@
             <nota:out>
                 <xsl:value-of select="concat('Writing document ', $fileName)"/>
             </nota:out>
+            <nota:systemid>
+                <xsl:value-of select="@url"/>
+            </nota:systemid>
         </xsl:message>
         <xsl:result-document href="{@url}">
             <xsl:if test="xhtml:html">

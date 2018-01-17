@@ -1,5 +1,6 @@
 package dk.nota.oxygen.epub.opf;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.FileVisitResult;
@@ -10,7 +11,7 @@ import java.nio.file.SimpleFileVisitor;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import dk.nota.oxygen.common.ConsoleWindow;
+import dk.nota.oxygen.common.ResultsView;
 import dk.nota.oxygen.common.EditorAccess;
 import dk.nota.oxygen.epub.common.EpubAccess;
 import net.sf.saxon.s9api.XdmDestination;
@@ -19,12 +20,14 @@ import net.sf.saxon.s9api.XsltTransformer;
 
 public class CreateDocxWorker extends CreateDtbWorker {
 	
+	private File docxFile;
 	private String docxFileName;
 	private URI tempDocxFolderUri;
 	
 	public CreateDocxWorker(EditorAccess editorAccess, EpubAccess epubAccess,
-			ConsoleWindow consoleWindow, java.io.File docxFile) {
-		super(editorAccess, epubAccess, consoleWindow, docxFile, true, false);
+			ResultsView resultsView, File docxFile) {
+		super(editorAccess, epubAccess, resultsView, docxFile, true, false);
+		this.docxFile = docxFile;
 		docxFileName = docxFile.getName();
 		tempDocxFolderUri = docxFile.toURI().resolve(docxFileName + ".tmp/");
 	}
@@ -32,7 +35,7 @@ public class CreateDocxWorker extends CreateDtbWorker {
 	@Override
 	protected Object doInBackground() throws Exception {
 		XdmNode dtbDocument = (XdmNode)super.doInBackground();
-		getConsoleWindow().writeToConsole("CONVERTING TO DOCX...");
+		getResultsView().writeResult("CONVERTING TO DOCX...");
 		XsltTransformer docxTransformer = getEpubAccess().getXmlAccess()
 				.getXsltTransformer("dtbook2docx/dtbook2docx.xsl");
 		docxTransformer.setInitialContextNode(dtbDocument);
@@ -74,7 +77,8 @@ public class CreateDocxWorker extends CreateDtbWorker {
 	
 	@Override
 	protected void done() {
-		getConsoleWindow().writeToConsole("DOCX CONVERSION DONE");
+		getResultsView().writeResult("DOCX CONVERSION DONE", docxFile.toURI()
+				.toString());
 	}
 
 }

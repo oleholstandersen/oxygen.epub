@@ -2,11 +2,11 @@ package dk.nota.oxygen.epub.opf;
 
 import java.io.File;
 import java.net.URISyntaxException;
-import dk.nota.oxygen.common.ConsoleWindow;
+
 import dk.nota.oxygen.common.EditorAccess;
+import dk.nota.oxygen.common.ResultsView;
 import dk.nota.oxygen.epub.common.ArchiveSensitiveAction;
 import dk.nota.oxygen.epub.common.EpubAccess;
-import net.sf.saxon.s9api.SaxonApiException;
 
 public class CreateInspirationOutputAction extends ArchiveSensitiveAction {
 	
@@ -47,11 +47,11 @@ public class CreateInspirationOutputAction extends ArchiveSensitiveAction {
 			if (outputFile == null) return;
 			CreateInspirationOutputWorker outputWorker =
 				new CreateInspirationOutputWorker(editorAccess, epubAccess,
-						new ConsoleWindow(processName), outputFile,
-						outputType);
+						new ResultsView(epubAccess.getPid() + " - " +
+								processName), outputFile, outputType);
 			outputWorker.setDtbIdentifier(identifier);
 			outputWorker.execute();
-		} catch (SaxonApiException | URISyntaxException e) {
+		} catch (URISyntaxException e) {
 			editorAccess.showErrorMessage(e.toString());
 		}
 	}

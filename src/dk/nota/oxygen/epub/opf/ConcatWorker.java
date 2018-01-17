@@ -5,11 +5,11 @@ import java.util.LinkedList;
 
 import javax.xml.transform.SourceLocator;
 
-import dk.nota.oxygen.common.AbstractConsoleWorker;
-import dk.nota.oxygen.common.ConsoleWindow;
+import dk.nota.oxygen.common.AbstractResultsWorker;
 import dk.nota.oxygen.common.EditorAccess;
+import dk.nota.oxygen.common.ResultsView;
 import dk.nota.oxygen.epub.common.EpubAccess;
-import dk.nota.oxygen.xml.ConsoleListener;
+import dk.nota.oxygen.xml.ResultsViewListener;
 import dk.nota.oxygen.xml.XmlAccess;
 import net.sf.saxon.s9api.Axis;
 import net.sf.saxon.s9api.QName;
@@ -18,20 +18,20 @@ import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmSequenceIterator;
 import net.sf.saxon.s9api.XsltTransformer;
 
-public class ConcatWorker extends AbstractConsoleWorker {
+public class ConcatWorker extends AbstractResultsWorker {
 	
 	private LinkedList<String> documentPaths = new LinkedList<String>();
 	private EditorAccess editorAccess;
 	private EpubAccess epubAccess;
-	private ConsoleListener messageListener;
+	private ResultsViewListener messageListener;
 	private boolean success = false;
 	
 	public ConcatWorker(EditorAccess editorAccess, EpubAccess epubAccess,
-			ConsoleWindow consoleWindow) {
-		super(consoleWindow);
+			ResultsView resultsView) {
+		super(resultsView);
 		this.editorAccess = editorAccess;
 		this.epubAccess = epubAccess;
-		this.messageListener = new DocumentListener(consoleWindow);
+		this.messageListener = new DocumentListener(resultsView);
 	}
 
 	@Override
@@ -44,9 +44,9 @@ public class ConcatWorker extends AbstractConsoleWorker {
 				messageListener, messageListener);
 		concatTransformer.setDestination(outputTransformer);
 		concatTransformer.transform();
-		messageListener.writeToConsole("DELETING DOCUMENTS...");
+		messageListener.writeToResultsView("DELETING DOCUMENTS...");
 		for (String documentPath : documentPaths) {
-			messageListener.writeToConsole("Deleting " + documentPath);
+			messageListener.writeToResultsView("Deleting " + documentPath);
 			editorAccess.getWorkspace().delete(new URL(epubAccess
 					.getContentFolderUrl(), documentPath));
 		}
@@ -56,13 +56,14 @@ public class ConcatWorker extends AbstractConsoleWorker {
 	
 	@Override
 	protected void done() {
-		if (success) messageListener.writeToConsole("CONCAT DONE");
+		if (success) messageListener.writeToResultsView("CONCAT DONE",
+				epubAccess.getContentFolderUrl() + "concat.xhtml");
 	}
 	
-	private class DocumentListener extends ConsoleListener {
+	private class DocumentListener extends ResultsViewListener {
 		
-		public DocumentListener(ConsoleWindow consoleWindow) {
-			super(consoleWindow);
+		public DocumentListener(ResultsView resultsView) {
+			super(resultsView);
 		}
 		
 		@Override

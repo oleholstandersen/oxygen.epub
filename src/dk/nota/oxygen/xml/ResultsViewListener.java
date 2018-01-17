@@ -4,20 +4,21 @@ import javax.xml.transform.ErrorListener;
 import javax.xml.transform.SourceLocator;
 import javax.xml.transform.TransformerException;
 
-import dk.nota.oxygen.common.ConsoleWindow;
+import dk.nota.oxygen.common.ResultsView;
 import net.sf.saxon.expr.instruct.TerminationException;
 import net.sf.saxon.s9api.Axis;
 import net.sf.saxon.s9api.MessageListener;
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmSequenceIterator;
+import ro.sync.document.DocumentPositionedInfo;
 
-public class ConsoleListener implements ErrorListener, MessageListener {
+public class ResultsViewListener implements ErrorListener, MessageListener {
 
-	private ConsoleWindow consoleWindow;
+	private ResultsView resultsView;
 	
-	public ConsoleListener(ConsoleWindow consoleWindow) {
-		this.consoleWindow = consoleWindow;
+	public ResultsViewListener(ResultsView consoleWindow) {
+		this.resultsView = consoleWindow;
 	}
 	
 	@Override
@@ -29,11 +30,12 @@ public class ConsoleListener implements ErrorListener, MessageListener {
 	public void fatalError(TransformerException exception)
 			throws TransformerException {
 		if (exception instanceof TerminationException) return;
-		writeToConsole("ERROR: " + exception);
+		getResultsView().writeResult(new DocumentPositionedInfo(
+				DocumentPositionedInfo.SEVERITY_FATAL, "ERROR: " + exception));
 	}
 	
-	public ConsoleWindow getConsoleWindow() {
-		return consoleWindow;
+	public ResultsView getResultsView() {
+		return resultsView;
 	}
 	
 	public void handleMessage(XdmNode message, boolean terminate,
@@ -47,8 +49,16 @@ public class ConsoleListener implements ErrorListener, MessageListener {
 		XdmSequenceIterator messageIterator = message.axisIterator(Axis
 				.DESCENDANT_OR_SELF, new QName(XmlAccess.NOTA_NAMESPACE,
 						"out"));
-		while (messageIterator.hasNext()) writeToConsole(messageIterator.next()
-				.getStringValue());
+		XdmSequenceIterator idIterator = message.axisIterator(Axis
+				.DESCENDANT_OR_SELF, new QName(XmlAccess.NOTA_NAMESPACE,
+						"systemid"));
+		String systemId = "";
+		if (idIterator.hasNext()) systemId = idIterator.next().getStringValue();
+		while (messageIterator.hasNext()) getResultsView().writeResult(
+				new DocumentPositionedInfo(
+						terminate ? DocumentPositionedInfo.SEVERITY_FATAL :
+						DocumentPositionedInfo.SEVERITY_INFO, messageIterator
+						.next().getStringValue(), systemId));
 		handleMessage(message, terminate, sourceLocator);
 	}
 
@@ -57,8 +67,12 @@ public class ConsoleListener implements ErrorListener, MessageListener {
 			throws TransformerException {
 	}
 	
-	public void writeToConsole(String string) {
-		getConsoleWindow().writeToConsole(string);
+	public void writeToResultsView(String message) {
+		getResultsView().writeResult(message);
+	}
+	
+	public void writeToResultsView(String message, String systemId) {
+		getResultsView().writeResult(message, systemId);
 	}
 
 }

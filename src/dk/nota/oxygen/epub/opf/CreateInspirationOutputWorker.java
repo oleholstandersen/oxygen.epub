@@ -3,10 +3,10 @@ package dk.nota.oxygen.epub.opf;
 import java.io.File;
 import java.net.MalformedURLException;
 
-import dk.nota.oxygen.common.ConsoleWindow;
+import dk.nota.oxygen.common.ResultsView;
 import dk.nota.oxygen.common.EditorAccess;
 import dk.nota.oxygen.epub.common.EpubAccess;
-import dk.nota.oxygen.xml.ConsoleListener;
+import dk.nota.oxygen.xml.ResultsViewListener;
 import net.sf.saxon.s9api.XdmDestination;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XsltTransformer;
@@ -17,7 +17,7 @@ public class CreateInspirationOutputWorker extends CreateDtbWorker {
 	private boolean success = false;
 
 	public CreateInspirationOutputWorker(EditorAccess editorAccess,
-			EpubAccess epubAccess, ConsoleWindow consoleWindow,
+			EpubAccess epubAccess, ResultsView consoleWindow,
 			File outputFile, InspOutputType outputType) {
 		super(editorAccess, epubAccess, consoleWindow, outputFile, true);
 		this.outputType = outputType;
@@ -26,7 +26,7 @@ public class CreateInspirationOutputWorker extends CreateDtbWorker {
 	@Override
 	protected Object doInBackground() throws Exception {
 		XdmNode dtbDocument = (XdmNode)super.doInBackground();
-		getConsoleWindow().writeToConsole(String.format("CONVERTING TO %s...",
+		getResultsView().writeResult(String.format("CONVERTING TO %s...",
 				outputType.getName().toUpperCase()));
 		XsltTransformer outputTransformer = null;
 		switch (outputType) {
@@ -53,10 +53,10 @@ public class CreateInspirationOutputWorker extends CreateDtbWorker {
 			outputTransformer = getEpubAccess().getXmlAccess()
 					.getXsltTransformer("inspiration/inspiration-proof.xsl");
 		}
-		outputTransformer.setErrorListener(new ConsoleListener(
-				getConsoleWindow()));
-		outputTransformer.setMessageListener(new ConsoleListener(
-				getConsoleWindow()));
+		outputTransformer.setErrorListener(new ResultsViewListener(
+				getResultsView()));
+		outputTransformer.setMessageListener(new ResultsViewListener(
+				getResultsView()));
 		outputTransformer.setInitialContextNode(dtbDocument);
 		outputTransformer.setDestination(outputType != InspOutputType.INSP_PRINT ?
 				getEpubAccess().getXmlAccess().getSerializer(getOutputFile()) :
@@ -69,7 +69,7 @@ public class CreateInspirationOutputWorker extends CreateDtbWorker {
 	@Override
 	protected void done() {
 		if (success) {
-			getConsoleWindow().writeToConsole("CONVERSION DONE");
+			getResultsView().writeResult("CONVERSION DONE");
 			try {
 				if (outputType != InspOutputType.INSP_PRINT)
 					getEditorAccess().getWorkspace().open(getOutputFile().toURI()

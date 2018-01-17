@@ -126,7 +126,8 @@ public class XmlAccess {
 			source = new StreamSource(xsltLocation);
 			source.setSystemId(xsltLocation);
 		} else {
-			source = new StreamSource(getClass().getResourceAsStream(xsltLocation));
+			source = new StreamSource(getClass().getResourceAsStream(
+					xsltLocation));
 			source.setSystemId(getClass().getResource("/dk/nota/oxygen/xml/")
 					.toString() + xsltLocation);
 		}

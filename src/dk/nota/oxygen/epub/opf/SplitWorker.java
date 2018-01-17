@@ -1,21 +1,21 @@
 package dk.nota.oxygen.epub.opf;
 
-import dk.nota.oxygen.common.AbstractConsoleWorker;
-import dk.nota.oxygen.common.ConsoleWindow;
+import dk.nota.oxygen.common.AbstractResultsWorker;
+import dk.nota.oxygen.common.ResultsView;
 import dk.nota.oxygen.epub.common.EpubAccess;
-import dk.nota.oxygen.xml.ConsoleListener;
+import dk.nota.oxygen.xml.ResultsViewListener;
 import net.sf.saxon.s9api.XsltTransformer;
 
-public class SplitWorker extends AbstractConsoleWorker {
+public class SplitWorker extends AbstractResultsWorker {
 	
 	private EpubAccess epubAccess;
-	private ConsoleListener messageListener;
+	private ResultsViewListener messageListener;
 	private boolean success = false;
 	
-	public SplitWorker(EpubAccess epubAccess, ConsoleWindow consoleWindow) {
-		super(consoleWindow);
+	public SplitWorker(EpubAccess epubAccess, ResultsView resultsView) {
+		super(resultsView);
 		this.epubAccess = epubAccess;
-		this.messageListener = new ConsoleListener(consoleWindow);
+		this.messageListener = new ResultsViewListener(resultsView);
 	}
 
 	@Override
@@ -32,7 +32,7 @@ public class SplitWorker extends AbstractConsoleWorker {
 	
 	@Override
 	protected void done() {
-		if (success) messageListener.writeToConsole("SPLIT DONE");
+		if (success) messageListener.writeToResultsView("SPLIT DONE");
 	}
 
 }
