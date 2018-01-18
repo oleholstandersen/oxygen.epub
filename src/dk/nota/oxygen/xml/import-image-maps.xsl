@@ -32,9 +32,7 @@
         <div class="area" style="{$style}"/>
     </xsl:template>
     <xsl:template match="html:body">
-        <xsl:apply-templates select="html:map">
-            <xsl:sort order="descending"/>
-        </xsl:apply-templates>
+        <xsl:apply-templates select="html:map"/>
     </xsl:template>
     <xsl:template match="html:head">
         <xsl:variable name="page" as="xs:string?"
