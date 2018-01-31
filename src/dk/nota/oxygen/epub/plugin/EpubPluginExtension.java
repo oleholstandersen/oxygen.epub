@@ -6,6 +6,7 @@ import dk.nota.oxygen.common.EditorAccess;
 import dk.nota.oxygen.epub.common.ImportDocxAction;
 import dk.nota.oxygen.epub.nav.UpdateNavigationAction;
 import dk.nota.oxygen.epub.opf.ConcatAction;
+import dk.nota.oxygen.epub.opf.CreateDaisyComicAction;
 import dk.nota.oxygen.epub.opf.CreateDocxAction;
 import dk.nota.oxygen.epub.opf.CreateDtbAction;
 import dk.nota.oxygen.epub.opf.CreateInspirationOutputAction;
@@ -93,6 +94,8 @@ public class EpubPluginExtension implements WorkspaceAccessPluginExtension {
 					"Inspiration: Tryk", InspOutputType.INSP_PRINT), 6);
 			exportMenu.insertSeparator(7);
 			exportMenu.insertAction(new CreateDocxAction(), 8);
+			exportMenu.insertSeparator(9);
+			exportMenu.insertAction(new CreateDaisyComicAction(), 10);
 			Menu importMenu = new Menu("Import");
 			importMenu.insertAction(new ImportDocxAction(), 0);
 			importMenu.insertSeparator(1);
