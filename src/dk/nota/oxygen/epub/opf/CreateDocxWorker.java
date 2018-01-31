@@ -47,30 +47,28 @@ public class CreateDocxWorker extends CreateDtbWorker {
 		Path docxFilePath = tempDocxFolderPath.resolve("../" + docxFileName);
 		try (ZipOutputStream zipOutputStream = new ZipOutputStream(
 				Files.newOutputStream(docxFilePath))) {
-			Files.walk(tempDocxFolderPath)
-				.filter(path -> !Files.isDirectory(path))
-				.forEach(path -> {
-					ZipEntry zipEntry = new ZipEntry(tempDocxFolderPath
-							.relativize(path).toString());
-					try {
-						zipOutputStream.putNextEntry(zipEntry);
-						zipOutputStream.write(Files.readAllBytes(path));
-						zipOutputStream.closeEntry();
-						Files.delete(path);
-					} catch (Exception e) {
-						getEditorAccess().showErrorMessage(e.toString());
-					}
+					Files.walk(tempDocxFolderPath)
+						.filter(path -> !Files.isDirectory(path))
+						.forEach(path -> {
+							ZipEntry zipEntry = new ZipEntry(tempDocxFolderPath
+									.relativize(path).toString());
+							try {
+								zipOutputStream.putNextEntry(zipEntry);
+								zipOutputStream.write(Files.readAllBytes(path));
+								zipOutputStream.closeEntry();
+								Files.delete(path);
+							} catch (Exception e) {
+								getEditorAccess().showErrorMessage(e.toString());
+							}
 				});
 		}
 		Files.walkFileTree(tempDocxFolderPath, new SimpleFileVisitor<Path>() {
-			
 			@Override
 			public FileVisitResult postVisitDirectory(Path folder,
 					IOException exception) throws IOException {
 				Files.delete(folder);
 				return FileVisitResult.CONTINUE;
 			}
-			
 		});
 		return null;
 	}

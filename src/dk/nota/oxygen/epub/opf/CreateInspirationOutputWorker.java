@@ -14,7 +14,6 @@ import net.sf.saxon.s9api.XsltTransformer;
 public class CreateInspirationOutputWorker extends CreateDtbWorker {
 	
 	private InspOutputType outputType;
-	private boolean success = false;
 
 	public CreateInspirationOutputWorker(EditorAccess editorAccess,
 			EpubAccess epubAccess, ResultsView resultsView,
@@ -62,13 +61,13 @@ public class CreateInspirationOutputWorker extends CreateDtbWorker {
 				getEpubAccess().getXmlAccess().getSerializer(getOutputFile()) :
 				new XdmDestination());
 		outputTransformer.transform();
-		success = true;
+		setSuccess();
 		return null;
 	}
 	
 	@Override
 	protected void done() {
-		if (success) {
+		if (getSuccess()) {
 			getResultsView().writeResult("CONVERSION DONE");
 			try {
 				if (outputType != InspOutputType.INSP_PRINT)

@@ -1,39 +1,34 @@
 package dk.nota.oxygen.epub.nav;
 
-import dk.nota.oxygen.common.AbstractResultsWorker;
 import dk.nota.oxygen.common.ResultsView;
+import dk.nota.oxygen.epub.common.AbstractEpubResultsWorker;
 import dk.nota.oxygen.epub.common.EpubAccess;
 import dk.nota.oxygen.xml.ResultsViewListener;
 import net.sf.saxon.s9api.XsltTransformer;
 
-public class UpdateNavigationWorker extends AbstractResultsWorker {
-	
-	private EpubAccess epubAccess;
-	private ResultsViewListener messageListener;
-	private boolean success = false;
+public class UpdateNavigationWorker extends AbstractEpubResultsWorker {
 	
 	public UpdateNavigationWorker(EpubAccess epubAccess,
 			ResultsView resultsView) {
-		super(resultsView);
-		this.epubAccess = epubAccess;
-		this.messageListener = new ResultsViewListener(resultsView);
+		super(resultsView, new ResultsViewListener(resultsView), epubAccess);
 	}
 
 	@Override
 	protected Object doInBackground() throws Exception {
-		XsltTransformer navigationTransformer = epubAccess
-				.getNavUpdateTransformer(messageListener, messageListener);
-		XsltTransformer outputTransformer = epubAccess.getOutputTransformer(
-				messageListener, messageListener);
+		XsltTransformer navigationTransformer = getEpubAccess()
+				.getNavUpdateTransformer(getListener(), getListener());
+		XsltTransformer outputTransformer = getEpubAccess()
+				.getOutputTransformer(getListener(), getListener());
 		navigationTransformer.setDestination(outputTransformer);
 		navigationTransformer.transform();
-		success = true;
+		setSuccess();
 		return null;
 	}
 	
 	@Override
 	protected void done() {
-		if (success) messageListener.writeToResultsView("NAVIGATION UPDATE DONE");
+		if (getSuccess()) getListener().writeToResultsView(
+				"NAVIGATION UPDATE DONE");
 	}
 
 }

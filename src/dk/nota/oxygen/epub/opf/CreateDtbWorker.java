@@ -6,35 +6,31 @@ import java.net.URI;
 import java.util.LinkedList;
 
 import de.schlichtherle.io.File;
-import dk.nota.oxygen.common.AbstractResultsWorker;
 import dk.nota.oxygen.common.ResultsView;
 import dk.nota.oxygen.common.ResultsViewImageListener;
 import dk.nota.oxygen.common.EditorAccess;
+import dk.nota.oxygen.epub.common.AbstractEpubResultsWorker;
 import dk.nota.oxygen.epub.common.EpubAccess;
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.XdmAtomicValue;
 import net.sf.saxon.s9api.XdmDestination;
 import net.sf.saxon.s9api.XsltTransformer;
 
-public class CreateDtbWorker extends AbstractResultsWorker {
+public class CreateDtbWorker extends AbstractEpubResultsWorker {
 	
 	private boolean copyImages = true;
 	private java.io.File outputFile;
 	private String dtbIdentifier;
 	private EditorAccess editorAccess;
-	private EpubAccess epubAccess;
-	private ResultsViewImageListener imageListener;
 	private boolean returnDtbDocument = false;
-	private boolean success = false;
 	
 	public CreateDtbWorker(EditorAccess editorAccess, EpubAccess epubAccess,
 			ResultsView resultsView, java.io.File outputFile,
 			boolean returnDtbDocument) {
-		super(resultsView);
+		super(resultsView, new ResultsViewImageListener(resultsView),
+				epubAccess);
 		this.outputFile = outputFile;
 		this.editorAccess = editorAccess;
-		this.epubAccess = epubAccess;
-		this.imageListener = new ResultsViewImageListener(resultsView);
 		this.returnDtbDocument = returnDtbDocument;
 	}
 	
@@ -47,39 +43,39 @@ public class CreateDtbWorker extends AbstractResultsWorker {
 	}
 	
 	public void copyImages(URI outputFolderUri) throws IOException {
-		imageListener.writeToResultsView("COPYING IMAGE FILES...");
+		getListener().writeToResultsView("COPYING IMAGE FILES...");
 		new File(outputFolderUri).mkdirs();
 		for (String imagePath : getImagePaths()) {
-			File imageFile = epubAccess.getFileFromContentFolder(imagePath);
+			File imageFile = getEpubAccess().getFileFromContentFolder(imagePath);
 			File newImageFile = new File(outputFolderUri.resolve(imageFile
 					.getName()));
 			newImageFile.archiveCopyFrom(imageFile);
 		}
-		imageListener.writeToResultsView("IMAGE FILES COPIED");
+		getListener().writeToResultsView("IMAGE FILES COPIED");
 	}
 
 	@Override
 	protected Object doInBackground() throws Exception {
-		XsltTransformer concatTransformer = epubAccess.getConcatTransformer(
-				imageListener, imageListener);
-		XsltTransformer dtbConverter = epubAccess.getDtbConverter(
-				imageListener, imageListener);
+		XsltTransformer concatTransformer = getEpubAccess()
+				.getConcatTransformer(getListener(), getListener());
+		XsltTransformer dtbConverter = getEpubAccess().getDtbConverter(
+				getListener(), getListener());
 		if (returnDtbDocument) {
 			dtbConverter.setDestination(new XdmDestination());
-		} else dtbConverter.setDestination(epubAccess.getXmlAccess()
+		} else dtbConverter.setDestination(getEpubAccess().getXmlAccess()
 				.getSerializer(outputFile));
 		if (dtbIdentifier != null) dtbConverter.setParameter(new QName(
 				"IDENTIFIER"), new XdmAtomicValue(dtbIdentifier));
-		dtbConverter.setParameter(new QName("NAV_DOCUMENT"), epubAccess
+		dtbConverter.setParameter(new QName("NAV_DOCUMENT"), getEpubAccess()
 				.getNavigationDocument());
-		dtbConverter.setParameter(new QName("OPF_DOCUMENT"), epubAccess
+		dtbConverter.setParameter(new QName("OPF_DOCUMENT"), getEpubAccess()
 				.getOpfDocument());
 		concatTransformer.setDestination(dtbConverter);
 		concatTransformer.setParameter(new QName("UPDATE_EPUB"),
 				new XdmAtomicValue(false));
 		concatTransformer.transform();
 		if (copyImages) copyImages(outputFile.getParentFile().toURI());
-		success = true;
+		setSuccess();
 		if (returnDtbDocument) return ((XdmDestination)dtbConverter
 				.getDestination()).getXdmNode();
 		return null;
@@ -90,11 +86,7 @@ public class CreateDtbWorker extends AbstractResultsWorker {
 	}
 	
 	public LinkedList<String> getImagePaths() {
-		return imageListener.getImagePaths();
-	}
-	
-	public EpubAccess getEpubAccess() {
-		return epubAccess;
+		return ((ResultsViewImageListener)getListener()).getImagePaths();
 	}
 	
 	public java.io.File getOutputFile() {
@@ -107,12 +99,12 @@ public class CreateDtbWorker extends AbstractResultsWorker {
 	
 	@Override
 	protected void done() {
-		if (success) {
+		if (getSuccess()) {
 			try {
 				if (returnDtbDocument) {
-					imageListener.writeToResultsView("DTBOOK CONVERSION DONE");
+					getListener().writeToResultsView("DTBOOK CONVERSION DONE");
 				} else {
-					imageListener.writeToResultsView("DTBOOK CONVERSION DONE",
+					getListener().writeToResultsView("DTBOOK CONVERSION DONE",
 							outputFile.toURI().toString());
 					editorAccess.getWorkspace().open(outputFile.toURI()
 							.toURL());
