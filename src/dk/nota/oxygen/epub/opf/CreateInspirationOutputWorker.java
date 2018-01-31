@@ -17,9 +17,9 @@ public class CreateInspirationOutputWorker extends CreateDtbWorker {
 	private boolean success = false;
 
 	public CreateInspirationOutputWorker(EditorAccess editorAccess,
-			EpubAccess epubAccess, ResultsView consoleWindow,
+			EpubAccess epubAccess, ResultsView resultsView,
 			File outputFile, InspOutputType outputType) {
-		super(editorAccess, epubAccess, consoleWindow, outputFile, true);
+		super(editorAccess, epubAccess, resultsView, outputFile, true);
 		this.outputType = outputType;
 	}
 	

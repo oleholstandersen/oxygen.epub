@@ -6,8 +6,8 @@ public abstract class AbstractResultsWorker extends SwingWorker<Object,Object> {
 	
 	private ResultsView resultsView;
 	
-	public AbstractResultsWorker(ResultsView consoleWindow) {
-		this.resultsView = consoleWindow;
+	public AbstractResultsWorker(ResultsView resultsView) {
+		this.resultsView = resultsView;
 	}
 
 	@Override

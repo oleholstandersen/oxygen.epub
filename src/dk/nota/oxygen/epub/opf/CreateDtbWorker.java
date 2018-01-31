@@ -45,9 +45,9 @@ public class CreateDtbWorker extends AbstractResultsWorker {
 	}
 	
 	public CreateDtbWorker(EditorAccess editorAccess, EpubAccess epubAccess,
-			ResultsView consoleWindow, java.io.File outputFile,
+			ResultsView resultsView, java.io.File outputFile,
 			boolean returnDtbDocument, boolean copyImages) {
-		this(editorAccess, epubAccess, consoleWindow, outputFile,
+		this(editorAccess, epubAccess, resultsView, outputFile,
 				returnDtbDocument);
 		this.copyImages = copyImages;
 	}
