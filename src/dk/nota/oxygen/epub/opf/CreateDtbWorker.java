@@ -5,21 +5,15 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.util.LinkedList;
 
-import javax.xml.transform.SourceLocator;
-
 import de.schlichtherle.io.File;
 import dk.nota.oxygen.common.AbstractResultsWorker;
 import dk.nota.oxygen.common.ResultsView;
+import dk.nota.oxygen.common.ResultsViewImageListener;
 import dk.nota.oxygen.common.EditorAccess;
 import dk.nota.oxygen.epub.common.EpubAccess;
-import dk.nota.oxygen.xml.ResultsViewListener;
-import dk.nota.oxygen.xml.XmlAccess;
-import net.sf.saxon.s9api.Axis;
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.XdmAtomicValue;
 import net.sf.saxon.s9api.XdmDestination;
-import net.sf.saxon.s9api.XdmNode;
-import net.sf.saxon.s9api.XdmSequenceIterator;
 import net.sf.saxon.s9api.XsltTransformer;
 
 public class CreateDtbWorker extends AbstractResultsWorker {
@@ -29,7 +23,7 @@ public class CreateDtbWorker extends AbstractResultsWorker {
 	private String dtbIdentifier;
 	private EditorAccess editorAccess;
 	private EpubAccess epubAccess;
-	private ImageListener imageListener;
+	private ResultsViewImageListener imageListener;
 	private boolean returnDtbDocument = false;
 	private boolean success = false;
 	
@@ -40,7 +34,7 @@ public class CreateDtbWorker extends AbstractResultsWorker {
 		this.outputFile = outputFile;
 		this.editorAccess = editorAccess;
 		this.epubAccess = epubAccess;
-		this.imageListener = new ImageListener(resultsView);
+		this.imageListener = new ResultsViewImageListener(resultsView);
 		this.returnDtbDocument = returnDtbDocument;
 	}
 	
@@ -127,30 +121,6 @@ public class CreateDtbWorker extends AbstractResultsWorker {
 				editorAccess.showErrorMessage(e.toString());
 			}
 		}
-	}
-	
-	public class ImageListener extends ResultsViewListener {
-		
-		private LinkedList<String> imagePaths = new LinkedList<String>();
-		
-		public ImageListener(ResultsView resultsView) {
-			super(resultsView);
-		}
-		
-		public LinkedList<String> getImagePaths() {
-			return imagePaths;
-		}
-		
-		@Override
-		public void handleMessage(XdmNode message, boolean terminate,
-				SourceLocator sourceLocator) {
-			XdmSequenceIterator messageIterator = message.axisIterator(Axis
-					.DESCENDANT_OR_SELF, new QName(XmlAccess.NOTA_NAMESPACE,
-							"image"));
-			while (messageIterator.hasNext()) imagePaths.add(messageIterator
-					.next().getStringValue());						
-		}
-		
 	}
 
 }
