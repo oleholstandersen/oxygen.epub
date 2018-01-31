@@ -4,18 +4,16 @@ import java.util.List;
 
 import javax.swing.text.BadLocationException;
 
-import dk.nota.oxygen.common.AbstractAuthorOperation;
 import ro.sync.ecss.extensions.api.ArgumentDescriptor;
 import ro.sync.ecss.extensions.api.ArgumentsMap;
 import ro.sync.ecss.extensions.api.AuthorOperationException;
 import ro.sync.ecss.extensions.api.AuthorSelectionModel;
 import ro.sync.ecss.extensions.api.ContentInterval;
 import ro.sync.ecss.extensions.api.SelectionInterpretationMode;
-import ro.sync.ecss.extensions.api.access.AuthorEditorAccess;
 import ro.sync.ecss.extensions.api.node.AuthorElement;
 import ro.sync.ecss.extensions.api.node.AuthorNode;
 
-public class ConvertTableCellsOperation extends AbstractAuthorOperation {
+public class ConvertTableCellsOperation extends XhtmlEpubAuthorOperation {
 	
 	private String cellType;
 
