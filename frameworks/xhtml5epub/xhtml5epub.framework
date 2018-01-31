@@ -2457,7 +2457,7 @@ ancestor-or-self::node()[self::*:tbody | self::*:tfoot | self::*:thead | self::*
 											<String>table.convert</String>
 										</field>
 										<field name="name">
-											<String>Convert</String>
+											<String>Convert table to paragraphs</String>
 										</field>
 										<field name="description">
 											<String>Converts paragraphs to table cells or table cells to paragraphs</String>
@@ -3580,6 +3580,98 @@ ancestor-or-self::node()[self::*:tbody | self::*:tfoot | self::*:thead | self::*
 											<Boolean>false</Boolean>
 										</field>
 									</action>
+									<action>
+										<field name="id">
+											<String>table.cells.convert.data</String>
+										</field>
+										<field name="name">
+											<String>Convert cells to data cells</String>
+										</field>
+										<field name="description">
+											<String></String>
+										</field>
+										<field name="largeIconPath">
+											<String></String>
+										</field>
+										<field name="smallIconPath">
+											<String></String>
+										</field>
+										<field name="accessKey">
+											<String></String>
+										</field>
+										<field name="accelerator">
+											<null/>
+										</field>
+										<field name="actionModes">
+											<actionMode-array>
+												<actionMode>
+													<field name="xpathCondition">
+														<String>ancestor-or-self::table</String>
+													</field>
+													<field name="argValues">
+														<serializableOrderedMap>
+															<entry>
+																<String>cellType</String>
+																<String>td</String>
+															</entry>
+														</serializableOrderedMap>
+													</field>
+													<field name="operationID">
+														<String>dk.nota.oxygen.epub.xhtml.ConvertTableCellsOperation</String>
+													</field>
+												</actionMode>
+											</actionMode-array>
+										</field>
+										<field name="enabledInReadOnlyContext">
+											<Boolean>false</Boolean>
+										</field>
+									</action>
+									<action>
+										<field name="id">
+											<String>table.cells.convert.header</String>
+										</field>
+										<field name="name">
+											<String>Convert cells to header cells</String>
+										</field>
+										<field name="description">
+											<String></String>
+										</field>
+										<field name="largeIconPath">
+											<String></String>
+										</field>
+										<field name="smallIconPath">
+											<String></String>
+										</field>
+										<field name="accessKey">
+											<String></String>
+										</field>
+										<field name="accelerator">
+											<null/>
+										</field>
+										<field name="actionModes">
+											<actionMode-array>
+												<actionMode>
+													<field name="xpathCondition">
+														<String>ancestor-or-self::table</String>
+													</field>
+													<field name="argValues">
+														<serializableOrderedMap>
+															<entry>
+																<String>cellType</String>
+																<String>th</String>
+															</entry>
+														</serializableOrderedMap>
+													</field>
+													<field name="operationID">
+														<String>dk.nota.oxygen.epub.xhtml.ConvertTableCellsOperation</String>
+													</field>
+												</actionMode>
+											</actionMode-array>
+										</field>
+										<field name="enabledInReadOnlyContext">
+											<Boolean>false</Boolean>
+										</field>
+									</action>
 								</action-array>
 							</field>
 							<field name="menubarDescriptor">
@@ -3914,6 +4006,17 @@ ancestor-or-self::node()[self::*:tbody | self::*:tfoot | self::*:thead | self::*
 														<menuItem>
 															<field name="actionID">
 																<String>table.split.below</String>
+															</field>
+														</menuItem>
+														<menuSeparator/>
+														<menuItem>
+															<field name="actionID">
+																<String>table.cells.convert.header</String>
+															</field>
+														</menuItem>
+														<menuItem>
+															<field name="actionID">
+																<String>table.cells.convert.data</String>
 															</field>
 														</menuItem>
 														<menuSeparator/>
@@ -4260,6 +4363,17 @@ ancestor-or-self::node()[self::*:tbody | self::*:tfoot | self::*:thead | self::*
 														<menuItem>
 															<field name="actionID">
 																<String>table.split.below</String>
+															</field>
+														</menuItem>
+														<menuSeparator/>
+														<menuItem>
+															<field name="actionID">
+																<String>table.cells.convert.header</String>
+															</field>
+														</menuItem>
+														<menuItem>
+															<field name="actionID">
+																<String>table.cells.convert.data</String>
 															</field>
 														</menuItem>
 														<menuSeparator/>
