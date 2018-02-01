@@ -49,7 +49,9 @@ public class EditorAccess {
 	}
 	
 	public EpubAccess getEpubAccess() {
-		return getWorkspaceSetupListener().getEpubAccess();
+		String epubUrl = getCurrentEditorUrl().toString().replaceFirst(
+				"^zip:", "").replaceFirst("\\.epub!/*.*?$", ".epub");
+		return getWorkspaceSetupListener().getEpubAccess(epubUrl);
 	}
 	
 	public WSEditorChangeListener[] getEditorChangeListeners() {

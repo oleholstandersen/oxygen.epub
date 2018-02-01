@@ -20,7 +20,6 @@ import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmValue;
 import net.sf.saxon.s9api.XsltTransformer;
-import ro.sync.exml.workspace.api.editor.WSEditor;
 
 public class EpubAccess {
 	
@@ -33,8 +32,8 @@ public class EpubAccess {
 	private String pid;
 	private XmlAccess xmlAccess = new XmlAccess();
 	
-	public EpubAccess(WSEditor editor) throws IOException, SaxonApiException {
-		determineUrls(editor.getEditorLocation());
+	public EpubAccess(URL editorUrl) throws IOException, SaxonApiException {
+		determineUrls(editorUrl);
 	}
 	
 	public void addItemReferencesToOpf(Map<String,String> fileTypes,
