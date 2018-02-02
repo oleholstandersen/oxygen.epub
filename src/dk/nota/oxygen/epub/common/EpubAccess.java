@@ -1,21 +1,21 @@
 package dk.nota.oxygen.epub.common;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import javax.xml.transform.ErrorListener;
 
-import de.schlichtherle.io.File;
-import dk.nota.oxygen.common.ZipArchiveDetector;
 import dk.nota.oxygen.xml.EpubXmlAccess;
 import net.sf.saxon.s9api.MessageListener;
 import net.sf.saxon.s9api.QName;
@@ -62,17 +62,22 @@ public class EpubAccess {
 	}
 	
 	public void backupArchive() throws IOException {
-		File archiveFile = getArchiveFile();
-		archiveFile.copyTo(new File(archiveFile.getPath() + ".bak"));
+		Path archivePath = getArchiveFile().toPath();
+		Files.copy(archivePath, archivePath.resolveSibling(archivePath
+				.getFileName() + ".bak"), StandardCopyOption.REPLACE_EXISTING);
 	}
 	
-	public boolean copyFileToArchive(java.io.File file, String relativePath) {
-		File zipFile = new ZipArchiveDetector().createFile(
-				getArchiveFileUrl().getPath() + "/" + relativePath);
-		return zipFile.archiveCopyFrom(file);
+	public boolean copyFileToArchive(java.io.File file, String internalFilePath)
+			throws IOException {
+		FileSystem epubFileSystem = getEpubAsFileSystem();
+		Path newFilePath = Files.createFile(epubFileSystem.getPath(
+				internalFilePath));
+		boolean result = Files.exists(Files.copy(file.toPath(), newFilePath));
+		epubFileSystem.close();
+		return result;
 	}
 	
-	public boolean copyFileToImageFolder(java.io.File file) {
+	public boolean copyFileToImageFolder(java.io.File file) throws IOException {
 		return copyFileToArchive(file, "EPUB/images/" + file.getName());
 	}
 	
@@ -108,11 +113,7 @@ public class EpubAccess {
 	}
 	
 	public File getArchiveFile() throws IOException {
-		try {
-			return new File(getArchiveFileUrl().toURI());
-		} catch (URISyntaxException e) {
-			throw new IOException(e.toString());
-		}
+		return new File(URI.create(getArchiveFileUrl().toString()));
 	}
 	
 	public URL getArchiveFileUrl() {
@@ -176,12 +177,10 @@ public class EpubAccess {
 	}
 	
 	public File getFileFromContentFolder(String filePath) throws IOException {
-		try {
-			return new ZipArchiveDetector().createFile(getArchiveFileUrl()
-						.toURI().getPath() + "/EPUB/" + filePath);
-		} catch (URISyntaxException e) {
-			throw new IOException(e.getMessage());
-		}
+		FileSystem epubFileSystem = getEpubAsFileSystem();
+		File result = epubFileSystem.getPath(filePath).toFile();
+		epubFileSystem.close();
+		return result;
 	}
 	
 	public XdmNode getNavigationDocument() throws SaxonApiException {

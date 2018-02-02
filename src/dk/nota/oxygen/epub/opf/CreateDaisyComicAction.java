@@ -1,8 +1,12 @@
 package dk.nota.oxygen.epub.opf;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileSystem;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
-import de.schlichtherle.io.File;
 import dk.nota.oxygen.common.EditorAccess;
 import dk.nota.oxygen.common.ResultsView;
 import dk.nota.oxygen.common.ResultsViewImageListener;
@@ -24,7 +28,7 @@ public class CreateDaisyComicAction extends ArchiveSensitiveAction {
 	public void actionPerformed(EditorAccess editorAccess) {
 		try {
 			EpubAccess epubAccess = editorAccess.getEpubAccess();
-			java.io.File outputDir = editorAccess.getWorkspace()
+			File outputDir = editorAccess.getWorkspace()
 					.chooseDirectory();
 			if (outputDir == null) return;
 			ResultsViewImageListener imageListener =
@@ -41,12 +45,14 @@ public class CreateDaisyComicAction extends ArchiveSensitiveAction {
 			daisyComicTransformer.setParameter(new QName("OUTPUT_FOLDER_URL"),
 					new XdmAtomicValue(outputDir.toURI().toString()));
 			concatTransformer.transform();
-			for (String imagePath : imageListener.getImagePaths()) {
-				File imageFile = epubAccess.getFileFromContentFolder(imagePath);
-				File newImageFile = new File(outputDir.toURI().resolve(imageFile
-						.getName()));
-				newImageFile.archiveCopyFrom(imageFile);
+			FileSystem epubFileSystem = epubAccess.getEpubAsFileSystem();
+			for (String imagePathString : imageListener.getImagePaths()) {
+				Path imagePath = epubFileSystem.getPath("/EPUB/",
+						imagePathString);
+				Files.copy(imagePath, Paths.get(outputDir.toURI().resolve(
+						imagePath.getFileName().toString())));
 			}
+			epubFileSystem.close();
 		} catch (IOException | SaxonApiException e) {
 			editorAccess.showErrorMessage(e.toString());
 		}

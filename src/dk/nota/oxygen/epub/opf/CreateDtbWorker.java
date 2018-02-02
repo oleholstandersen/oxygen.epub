@@ -3,9 +3,12 @@ package dk.nota.oxygen.epub.opf;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.nio.file.FileSystem;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.LinkedList;
 
-import de.schlichtherle.io.File;
 import dk.nota.oxygen.common.ResultsView;
 import dk.nota.oxygen.common.ResultsViewImageListener;
 import dk.nota.oxygen.common.EditorAccess;
@@ -44,13 +47,13 @@ public class CreateDtbWorker extends AbstractEpubResultsWorker {
 	
 	public void copyImages(URI outputFolderUri) throws IOException {
 		getListener().writeToResultsView("COPYING IMAGE FILES...");
-		new File(outputFolderUri).mkdirs();
-		for (String imagePath : getImagePaths()) {
-			File imageFile = getEpubAccess().getFileFromContentFolder(imagePath);
-			File newImageFile = new File(outputFolderUri.resolve(imageFile
-					.getName()));
-			newImageFile.archiveCopyFrom(imageFile);
+		FileSystem epubFileSystem = getEpubAccess().getEpubAsFileSystem();
+		for (String imagePathString : getImagePaths()) {
+			Path imagePath = epubFileSystem.getPath("/EPUB/", imagePathString);
+			Files.copy(imagePath, Paths.get(outputFolderUri.resolve(imagePath
+					.getFileName().toString())));
 		}
+		epubFileSystem.close();
 		getListener().writeToResultsView("IMAGE FILES COPIED");
 	}
 
