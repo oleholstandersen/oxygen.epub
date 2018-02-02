@@ -2,11 +2,16 @@ package dk.nota.oxygen.epub.common;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
-
 import javax.xml.transform.ErrorListener;
 
 import de.schlichtherle.io.File;
@@ -158,6 +163,13 @@ public class EpubAccess {
 		return editorUrl;
 	}
 	
+	public FileSystem getEpubAsFileSystem() throws IOException {
+		Map<String, String> environment = new HashMap<String,String>();
+        environment.put("create", "true");
+        return FileSystems.newFileSystem(URI.create("jar:"
+				+ getArchiveFileUrl()), environment);
+	}
+	
 	public File getFileFromContentFolder(String filePath) throws IOException {
 		try {
 			return new ZipArchiveDetector().createFile(getArchiveFileUrl()
@@ -240,6 +252,23 @@ public class EpubAccess {
 	
 	public XmlAccess getXmlAccess() {
 		return xmlAccess;
+	}
+	
+	public void reloadContentDocuments() throws IOException, SaxonApiException {
+		LinkedHashMap<String,String> fileTypes =
+				new LinkedHashMap<String,String>();
+		FileSystem epubFileSystem = getEpubAsFileSystem();
+		Files.walk(epubFileSystem.getPath("/EPUB"), 1)
+			.sorted()
+			.forEach(path -> {
+					if (!Files.isDirectory(path) && path.getFileName()
+							.toString().startsWith("dk-nota-")) {
+						fileTypes.put(path.getFileName().toString(),
+								"application/xhtml+xml");
+					}
+				});
+		addItemReferencesToOpf(fileTypes, "document", true);
+		epubFileSystem.close();
 	}
 	
 	public URL makeArchiveBasedUrl(String relativePath)

@@ -12,6 +12,7 @@ import dk.nota.oxygen.epub.opf.CreateDtbAction;
 import dk.nota.oxygen.epub.opf.CreateInspirationOutputAction;
 import dk.nota.oxygen.epub.opf.ImportDtbAction;
 import dk.nota.oxygen.epub.opf.InspOutputType;
+import dk.nota.oxygen.epub.opf.ReloadDocumentsAction;
 import dk.nota.oxygen.epub.opf.SplitAction;
 import dk.nota.oxygen.epub.xhtml.ImportCatListAction;
 import ro.sync.exml.plugin.workspace.WorkspaceAccessPluginExtension;
@@ -103,6 +104,7 @@ public class EpubPluginExtension implements WorkspaceAccessPluginExtension {
 			JComponent[] opfComponents = new JComponent[] {
 				new ToolbarButton(new ConcatAction(), true),
 				new ToolbarButton(new SplitAction(), true),
+				new ToolbarButton(new ReloadDocumentsAction(), true),
 				importMenu,
 				exportMenu
 			};
