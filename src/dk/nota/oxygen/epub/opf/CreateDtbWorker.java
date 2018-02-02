@@ -62,7 +62,7 @@ public class CreateDtbWorker extends AbstractEpubResultsWorker {
 				getListener(), getListener());
 		if (returnDtbDocument) {
 			dtbConverter.setDestination(new XdmDestination());
-		} else dtbConverter.setDestination(getEpubAccess().getXmlAccess()
+		} else dtbConverter.setDestination(getEpubAccess().getEpubXmlAccess()
 				.getSerializer(outputFile));
 		if (dtbIdentifier != null) dtbConverter.setParameter(new QName(
 				"IDENTIFIER"), new XdmAtomicValue(dtbIdentifier));

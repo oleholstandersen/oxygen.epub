@@ -64,10 +64,10 @@ public class ImportImageMapsOperation extends AbstractAuthorOperation {
 		}
 		inputWriter.write("</html>"); // Close root element
 		XsltTransformer imageMapImporter = editorAccess.getEpubAccess()
-				.getXmlAccess().getXsltTransformer("import-image-maps.xsl");
+				.getEpubXmlAccess().getXsltTransformer("import-image-maps.xsl");
 		StringWriter outputWriter = new StringWriter();
 		imageMapImporter.setDestination(editorAccess.getEpubAccess()
-				.getXmlAccess().getSerializer(outputWriter));
+				.getEpubXmlAccess().getSerializer(outputWriter));
 		imageMapImporter.setParameter(new QName("INSERTION_DEPTH"),
 				new XdmAtomicValue(depth));
 		imageMapImporter.setParameter(new QName("OUTPUT_FOLDER_URL"),

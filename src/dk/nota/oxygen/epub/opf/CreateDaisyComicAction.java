@@ -32,7 +32,7 @@ public class CreateDaisyComicAction extends ArchiveSensitiveAction {
 							epubAccess.getPid() + " - Create DAISY comic"));
 			XsltTransformer concatTransformer = epubAccess.getConcatTransformer(
 					imageListener, imageListener);
-			XsltTransformer daisyComicTransformer = epubAccess.getXmlAccess()
+			XsltTransformer daisyComicTransformer = epubAccess.getEpubXmlAccess()
 					.getXsltTransformer("comic-pages-to-daisy.xsl");
 			concatTransformer.setDestination(daisyComicTransformer);
 			daisyComicTransformer.setDestination(new XdmDestination());

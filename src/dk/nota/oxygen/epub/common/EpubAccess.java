@@ -16,7 +16,7 @@ import javax.xml.transform.ErrorListener;
 
 import de.schlichtherle.io.File;
 import dk.nota.oxygen.common.ZipArchiveDetector;
-import dk.nota.oxygen.xml.XmlAccess;
+import dk.nota.oxygen.xml.EpubXmlAccess;
 import net.sf.saxon.s9api.MessageListener;
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.SaxonApiException;
@@ -35,9 +35,10 @@ public class EpubAccess {
 	private URL navigationUrl;
 	private URL opfUrl;
 	private String pid;
-	private XmlAccess xmlAccess = new XmlAccess();
+	private EpubXmlAccess epubXmlAccess;
 	
 	public EpubAccess(URL editorUrl) throws IOException, SaxonApiException {
+		epubXmlAccess = new EpubXmlAccess(this);
 		determineUrls(editorUrl);
 	}
 	
@@ -82,22 +83,22 @@ public class EpubAccess {
 				"(^zip:|!.+$)", ""));
 		archiveContentUrl = new URL(editorUrl.toString().replaceFirst("!/.+$",
 				"!/"));
-		XdmNode metaDocument = getXmlAccess().getDocument(makeArchiveBasedUrl(
+		XdmNode metaDocument = getEpubXmlAccess().getDocument(makeArchiveBasedUrl(
 				"META-INF/container.xml"));
 		String opfReferenceXpath =
 				"//info:rootfile[@media-type = 'application/oebps-package+xml']";
-		XdmNode opfReferenceNode = getXmlAccess().getFirstNodeByXpath(
+		XdmNode opfReferenceNode = getEpubXmlAccess().getFirstNodeByXpath(
 				opfReferenceXpath, metaDocument);
 		opfUrl = new URL(getArchiveContentUrl(), opfReferenceNode
 				.getAttributeValue(new QName("full-path")));
 		contentFolderUrl = new URL(opfUrl, "./");
 		XdmNode opfDocument = getOpfDocument();
-		XdmNode navReferenceNode = getXmlAccess().getFirstNodeByXpath(
+		XdmNode navReferenceNode = getEpubXmlAccess().getFirstNodeByXpath(
 				"/opf:package/opf:manifest/opf:item[@properties eq 'nav']",
 				opfDocument);
 		navigationUrl = new URL(contentFolderUrl, navReferenceNode
 				.getAttributeValue(new QName("href")));
-		pid = getXmlAccess().getFirstNodeByXpath(
+		pid = getEpubXmlAccess().getFirstNodeByXpath(
 				"/opf:package/opf:metadata/dc:identifier", opfDocument)
 				.getStringValue();
 	}
@@ -136,7 +137,7 @@ public class EpubAccess {
 	}
 	
 	public XsltTransformer getDtbConverter() throws SaxonApiException {
-		XsltTransformer dtbConverter = getXmlAccess().getXsltTransformer(
+		XsltTransformer dtbConverter = getEpubXmlAccess().getXsltTransformer(
 				"xhtml-to-dtb.xsl");
 		dtbConverter.setParameter(new QName("OPF_DOCUMENT"), getOpfDocument());
 		return dtbConverter;
@@ -152,9 +153,9 @@ public class EpubAccess {
 	
 	public XsltTransformer getEditorTransformer(String xsltFileName)
 			throws SaxonApiException {
-		XsltTransformer editorTransformer = getXmlAccess().getXsltTransformer(
+		XsltTransformer editorTransformer = getEpubXmlAccess().getXsltTransformer(
 				xsltFileName);
-		editorTransformer.setSource(getXmlAccess().getStreamSource(
+		editorTransformer.setSource(getEpubXmlAccess().getStreamSource(
 				getEditorUrl()));
 		return editorTransformer;
 	}
@@ -170,6 +171,10 @@ public class EpubAccess {
 				+ getArchiveFileUrl()), environment);
 	}
 	
+	public EpubXmlAccess getEpubXmlAccess() {
+		return epubXmlAccess;
+	}
+	
 	public File getFileFromContentFolder(String filePath) throws IOException {
 		try {
 			return new ZipArchiveDetector().createFile(getArchiveFileUrl()
@@ -180,7 +185,7 @@ public class EpubAccess {
 	}
 	
 	public XdmNode getNavigationDocument() throws SaxonApiException {
-		return getXmlAccess().getDocument(navigationUrl);
+		return getEpubXmlAccess().getDocument(navigationUrl);
 	}
 	
 	public XsltTransformer getNavigationTransformer()
@@ -200,9 +205,9 @@ public class EpubAccess {
 	
 	public XsltTransformer getOpfTransformer(String xsltFileName)
 			throws SaxonApiException {
-		XsltTransformer opfTransformer = getXmlAccess().getXsltTransformer(
+		XsltTransformer opfTransformer = getEpubXmlAccess().getXsltTransformer(
 				xsltFileName);
-		opfTransformer.setSource(getXmlAccess().getStreamSource(opfUrl));
+		opfTransformer.setSource(getEpubXmlAccess().getStreamSource(opfUrl));
 		opfTransformer.setParameter(new QName("CONTENT_FOLDER_URL"),
 				new XdmAtomicValue(getContentFolderUrl().toString()));
 		return opfTransformer;
@@ -218,7 +223,7 @@ public class EpubAccess {
 	}
 	
 	public XdmNode getOpfDocument() throws SaxonApiException {
-		return getXmlAccess().getDocument(getOpfUrl());
+		return getEpubXmlAccess().getDocument(getOpfUrl());
 	}
 	
 	public URL getOpfUrl() {
@@ -226,7 +231,7 @@ public class EpubAccess {
 	}
 	
 	public XsltTransformer getOutputTransformer() throws SaxonApiException {
-		return getXmlAccess().getOutputTransformer();
+		return getEpubXmlAccess().getOutputTransformer();
 	}
 	
 	public XsltTransformer getOutputTransformer(ErrorListener errorListener,
@@ -248,10 +253,6 @@ public class EpubAccess {
 	public XsltTransformer getSplitTransformer(ErrorListener errorListener,
 			MessageListener messageListener) throws SaxonApiException {
 		return getOpfTransformer("split.xsl", errorListener, messageListener);
-	}
-	
-	public XmlAccess getXmlAccess() {
-		return xmlAccess;
 	}
 	
 	public void reloadContentDocuments() throws IOException, SaxonApiException {

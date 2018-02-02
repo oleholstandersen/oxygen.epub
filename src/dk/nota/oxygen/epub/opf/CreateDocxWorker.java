@@ -36,7 +36,7 @@ public class CreateDocxWorker extends CreateDtbWorker {
 	protected Object doInBackground() throws Exception {
 		XdmNode dtbDocument = (XdmNode)super.doInBackground();
 		getResultsView().writeResult("CONVERTING TO DOCX...");
-		XsltTransformer docxTransformer = getEpubAccess().getXmlAccess()
+		XsltTransformer docxTransformer = getEpubAccess().getEpubXmlAccess()
 				.getXsltTransformer("dtbook2docx/dtbook2docx.xsl");
 		docxTransformer.setInitialContextNode(dtbDocument);
 		docxTransformer.setDestination(new XdmDestination());

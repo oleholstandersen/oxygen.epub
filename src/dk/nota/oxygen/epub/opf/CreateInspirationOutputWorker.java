@@ -30,26 +30,26 @@ public class CreateInspirationOutputWorker extends CreateDtbWorker {
 		XsltTransformer outputTransformer = null;
 		switch (outputType) {
 		case INSP_AUDIO:
-			outputTransformer = getEpubAccess().getXmlAccess()
+			outputTransformer = getEpubAccess().getEpubXmlAccess()
 					.getXsltTransformer("inspiration/inspiration-audio.xsl");
 			break;
 		case INSP_BRAILLE:
-			outputTransformer = getEpubAccess().getXmlAccess()
+			outputTransformer = getEpubAccess().getEpubXmlAccess()
 					.getXsltTransformer("inspiration/inspiration-braille.xsl");
 			break;
 		case INSP_ETEXT:
-			outputTransformer = getEpubAccess().getXmlAccess()
+			outputTransformer = getEpubAccess().getEpubXmlAccess()
 					.getXsltTransformer("inspiration/inspiration-etext.xsl");
 			break;
 		case INSP_PRINT:
-			outputTransformer = getEpubAccess().getXmlAccess()
+			outputTransformer = getEpubAccess().getEpubXmlAccess()
 					.getXsltTransformer("inspiration/inspiration-print.xsl");
 			outputTransformer.setBaseOutputURI(getOutputFile().toURI()
 					.toString());
 			break;
 		case INSP_PROOF:
 			// TODO: Improve dtb-inspiration-proof.xsl
-			outputTransformer = getEpubAccess().getXmlAccess()
+			outputTransformer = getEpubAccess().getEpubXmlAccess()
 					.getXsltTransformer("inspiration/inspiration-proof.xsl");
 		}
 		outputTransformer.setErrorListener(new ResultsViewListener(
@@ -58,7 +58,7 @@ public class CreateInspirationOutputWorker extends CreateDtbWorker {
 				getResultsView()));
 		outputTransformer.setInitialContextNode(dtbDocument);
 		outputTransformer.setDestination(outputType != InspOutputType.INSP_PRINT ?
-				getEpubAccess().getXmlAccess().getSerializer(getOutputFile()) :
+				getEpubAccess().getEpubXmlAccess().getSerializer(getOutputFile()) :
 				new XdmDestination());
 		outputTransformer.transform();
 		setSuccess();
