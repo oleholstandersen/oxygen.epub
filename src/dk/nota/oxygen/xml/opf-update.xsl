@@ -45,7 +45,14 @@
         <xsl:copy>
             <xsl:copy-of select="@*|node()"/>
             <xsl:for-each select="$IDS">
-                <itemref idref="{.}"/>
+            	<xsl:variable name="index" as="xs:integer"
+                    select="position()"/>
+                <itemref idref="{.}">
+                    <xsl:if
+                    	test="matches($HREFS[$index], '(cover|notes)\.xhtml$')">
+                        <xsl:attribute name="linear" select="'no'"/>
+                    </xsl:if>
+                </itemref>
             </xsl:for-each>
         </xsl:copy>
     </xsl:template>
