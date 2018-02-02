@@ -39,10 +39,11 @@ public class WorkspaceSetupListener extends WSEditorChangeListener {
 			WSEditor editor = pluginWorkspace.getEditorAccess(editorUrl,
 					StandalonePluginWorkspace.MAIN_EDITING_AREA);
 			hideAllEpubToolbars();
-			if (editor == null || editor.getDocumentTypeInformation() == null ||
-					!setupEpubAccess(editorUrl)) return;
+			if (editor == null || editor.getDocumentTypeInformation() == null)
+				return;
 			switch (editor.getDocumentTypeInformation().getName()) {
 			case "XHTML [EPUB 3]":
+				if (!setupEpubAccess(editorUrl)) return;
 				if (editorUrl.toString().endsWith("/nav\\.xhtml"))
 					pluginWorkspace.showToolbar(EpubPluginExtension
 							.NAV_TOOLBAR);
@@ -50,9 +51,11 @@ public class WorkspaceSetupListener extends WSEditorChangeListener {
 						.XHTML_TOOLBAR);
 				break;
 			case "OPF":
+				if (!setupEpubAccess(editorUrl)) return;
 				pluginWorkspace.showToolbar(EpubPluginExtension.OPF_TOOLBAR);
 				break;
 			case "NCX":
+				if (!setupEpubAccess(editorUrl)) return;
 				pluginWorkspace.showToolbar(EpubPluginExtension.NAV_TOOLBAR);
 			}
 		}
@@ -76,7 +79,6 @@ public class WorkspaceSetupListener extends WSEditorChangeListener {
 				epubAccessMap.put(epubUrl, epubAccess);
 				return true;
 			} catch (IOException | SaxonApiException e) {
-				pluginWorkspace.showErrorMessage(e.getMessage());
 				return false;
 			}
 		}
