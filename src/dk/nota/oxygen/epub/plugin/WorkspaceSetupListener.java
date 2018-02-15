@@ -58,9 +58,13 @@ public class WorkspaceSetupListener extends WSEditorChangeListener {
 				if (!setupEpubAccess(editorUrl)) return;
 				pluginWorkspace.showToolbar(EpubPluginExtension.NAV_TOOLBAR);
 			}
+			EpubPluginExtension.getQuickbaseMenu().updateForEpub(getEpubAccess(
+					editorUrl.toString()));
 		}
 		
 		public EpubAccess getEpubAccess(String url) {
+			url = url.replaceFirst("^zip:", "").replaceFirst("\\.epub!/*.*?$",
+					".epub");
 			return epubAccessMap.get(url);
 		}
 		
@@ -79,6 +83,7 @@ public class WorkspaceSetupListener extends WSEditorChangeListener {
 				epubAccessMap.put(epubUrl, epubAccess);
 				return true;
 			} catch (IOException | SaxonApiException e) {
+				e.printStackTrace();
 				return false;
 			}
 		}

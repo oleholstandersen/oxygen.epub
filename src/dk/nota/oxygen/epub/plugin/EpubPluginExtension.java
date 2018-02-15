@@ -1,6 +1,7 @@
 package dk.nota.oxygen.epub.plugin;
 
 import javax.swing.JComponent;
+import javax.swing.JMenuBar;
 
 import dk.nota.oxygen.common.EditorAccess;
 import dk.nota.oxygen.epub.common.ImportDocxAction;
@@ -15,9 +16,13 @@ import dk.nota.oxygen.epub.opf.InspOutputType;
 import dk.nota.oxygen.epub.opf.ReloadDocumentsAction;
 import dk.nota.oxygen.epub.opf.SplitAction;
 import dk.nota.oxygen.epub.xhtml.ImportCatListAction;
+import dk.nota.oxygen.quickbase.QuickbaseAccess;
+import dk.nota.oxygen.quickbase.QuickbaseMenu;
 import ro.sync.exml.plugin.workspace.WorkspaceAccessPluginExtension;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.editor.WSEditor;
+import ro.sync.exml.workspace.api.options.WSOptionsStorage;
+import ro.sync.exml.workspace.api.standalone.MenuBarCustomizer;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.ToolbarComponentsCustomizer;
 import ro.sync.exml.workspace.api.standalone.ToolbarInfo;
@@ -31,6 +36,13 @@ public class EpubPluginExtension implements WorkspaceAccessPluginExtension {
 	public static final String OPF_TOOLBAR = "dk.nota.oxygen.epub.toolbar.opf";
 	public static final String XHTML_TOOLBAR = "dk.nota.oxygen.epub.toolbar.xhtml";
 	
+	public static final String QB_ENABLED_OPTION = "dk.nota.oxygen.quickbase.enabled";
+	public static final String QB_EMAIL_OPTION = "dk.nota.oxygen.quickbase.userid";
+	public static final String QB_PASSWORD_OPTION = "dk.nota.oxygen.quickbase.password";
+	
+	private static QuickbaseAccess quickbaseAccess;
+	private static QuickbaseMenu quickbaseMenu;
+	
 	@Override
 	public boolean applicationClosing() {
 		return true;
@@ -38,10 +50,17 @@ public class EpubPluginExtension implements WorkspaceAccessPluginExtension {
 
 	@Override
 	public void applicationStarted(StandalonePluginWorkspace pluginWorkspace) {
+		WSOptionsStorage optionsStorage = pluginWorkspace.getOptionsStorage();
+		quickbaseAccess = new QuickbaseAccess(optionsStorage);
+		quickbaseMenu = new QuickbaseMenu();
+		if (optionsStorage.getOption(QB_ENABLED_OPTION, "false").equals("true")) {
+			quickbaseMenu.populateQueue(quickbaseAccess);
+		} else quickbaseMenu.disableActions();
 		pluginWorkspace.addEditorChangeListener(new WorkspaceSetupListener(
 				pluginWorkspace), StandalonePluginWorkspace.MAIN_EDITING_AREA);
 		pluginWorkspace.addToolbarComponentsCustomizer(
 				new EpubToolbarCustomizer());
+		pluginWorkspace.addMenuBarCustomizer(new EpubMenuBarCustomizer());
 	}
 	
 	public static WSEditor getCurrentEditor() {
@@ -52,6 +71,14 @@ public class EpubPluginExtension implements WorkspaceAccessPluginExtension {
 	
 	public static EditorAccess getEditorAccess() {
 		return new EditorAccess(getCurrentEditor());
+	}
+	
+	public static QuickbaseAccess getQuickbaseAccess() {
+		return quickbaseAccess;
+	}
+	
+	public static QuickbaseMenu getQuickbaseMenu() {
+		return quickbaseMenu;
 	}
 	
 	private class EpubToolbarCustomizer implements ToolbarComponentsCustomizer {
@@ -114,8 +141,8 @@ public class EpubPluginExtension implements WorkspaceAccessPluginExtension {
 		
 		private void setupXhtmlToolbar(ToolbarInfo toolbar) {
 			Menu importMenu = new Menu("Import");
-			importMenu.insert(new ImportDocxAction(), 0);
-			importMenu.insert(new ImportCatListAction(), 1);
+			importMenu.insertAction(new ImportDocxAction(), 0);
+			importMenu.insertAction(new ImportCatListAction(), 1);
 			JComponent[] xhtmlComponents = new JComponent[] {
 				new ToolbarButton(new UpdateNavigationAction(), true),
 				importMenu
@@ -123,6 +150,16 @@ public class EpubPluginExtension implements WorkspaceAccessPluginExtension {
 			toolbar.setTitle("EPUB XHTML");
 			toolbar.setComponents(xhtmlComponents);
 		}
+		
+	}
+	
+	private class EpubMenuBarCustomizer implements MenuBarCustomizer {
+
+		@Override
+		public void customizeMainMenu(JMenuBar menuBar) {
+			menuBar.add(quickbaseMenu);
+		}
+		
 		
 	}
 
