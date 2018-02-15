@@ -47,10 +47,10 @@ public class ResultsViewListener implements ErrorListener, MessageListener {
 	public final void message(XdmNode message, boolean terminate,
 			SourceLocator sourceLocator) {
 		XdmSequenceIterator messageIterator = message.axisIterator(Axis
-				.DESCENDANT_OR_SELF, new QName(XmlAccess.NOTA_NAMESPACE,
+				.DESCENDANT_OR_SELF, new QName(EpubXmlAccess.NOTA_NAMESPACE,
 						"out"));
 		XdmSequenceIterator idIterator = message.axisIterator(Axis
-				.DESCENDANT_OR_SELF, new QName(XmlAccess.NOTA_NAMESPACE,
+				.DESCENDANT_OR_SELF, new QName(EpubXmlAccess.NOTA_NAMESPACE,
 						"systemid"));
 		String systemId = "";
 		if (idIterator.hasNext()) systemId = idIterator.next().getStringValue();

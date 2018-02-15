@@ -11,7 +11,7 @@ import javax.swing.text.BadLocationException;
 import dk.nota.oxygen.common.EditorAccess;
 import dk.nota.oxygen.epub.common.EpubAccess;
 import dk.nota.oxygen.epub.plugin.EpubPluginExtension;
-import dk.nota.oxygen.xml.XmlAccess;
+import dk.nota.oxygen.xml.EpubXmlAccess;
 import net.sf.saxon.s9api.DocumentBuilder;
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.SaxonApiException;
@@ -29,7 +29,7 @@ public class ImportCatListAction extends AbstractAction {
 	
 	private String countXpath =
 			"count(ancestor-or-self::body|ancestor-or-self::section)";
-	private XmlAccess xmlAccess;
+	private EpubXmlAccess EpubXmlAccess;
 	
 	public ImportCatListAction() {
 		super("Import cat list");
@@ -39,7 +39,7 @@ public class ImportCatListAction extends AbstractAction {
 	public void actionPerformed(ActionEvent event) {
 		EditorAccess editorAccess = EpubPluginExtension.getEditorAccess();
 		EpubAccess epubAccess = editorAccess.getEpubAccess();
-		xmlAccess = epubAccess.getXmlAccess();
+		EpubXmlAccess = epubAccess.getEpubXmlAccess();
 		File catListFile = editorAccess.getWorkspace().chooseFile(
 				"Import cat list", new String[] { "kat" }, "Cat lists");
 		try {
@@ -81,13 +81,13 @@ public class ImportCatListAction extends AbstractAction {
 	private String getFragment(File catListFile, int depth)
 			throws SaxonApiException {
 		StringWriter resultWriter = new StringWriter();
-		Serializer resultSerializer = xmlAccess.getSerializer(resultWriter);
+		Serializer resultSerializer = EpubXmlAccess.getSerializer(resultWriter);
 		resultSerializer.setOutputProperty(Serializer.Property
 				.OMIT_XML_DECLARATION, "yes");
-		DocumentBuilder documentBuilder = xmlAccess.getDocumentBuilder();
+		DocumentBuilder documentBuilder = EpubXmlAccess.getDocumentBuilder();
 		documentBuilder.setBaseURI(catListFile.toURI());
 		XdmNode documentNode = documentBuilder.build(catListFile);
-		XsltTransformer catListTransformer = xmlAccess.getXsltTransformer(
+		XsltTransformer catListTransformer = EpubXmlAccess.getXsltTransformer(
 				"import-cat-list.xsl");
 		catListTransformer.setDestination(resultSerializer);
 		catListTransformer.setInitialContextNode(documentNode);

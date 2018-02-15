@@ -4,8 +4,8 @@ import java.util.LinkedList;
 
 import javax.xml.transform.SourceLocator;
 
+import dk.nota.oxygen.xml.EpubXmlAccess;
 import dk.nota.oxygen.xml.ResultsViewListener;
-import dk.nota.oxygen.xml.XmlAccess;
 import net.sf.saxon.s9api.Axis;
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.XdmNode;
@@ -27,7 +27,7 @@ public class ResultsViewDocumentListener extends ResultsViewListener {
 	public void handleMessage(XdmNode message, boolean terminate,
 			SourceLocator sourceLocator) {
 		XdmSequenceIterator messageIterator = message.axisIterator(Axis
-				.DESCENDANT_OR_SELF, new QName(XmlAccess.NOTA_NAMESPACE,
+				.DESCENDANT_OR_SELF, new QName(EpubXmlAccess.NOTA_NAMESPACE,
 						"document"));
 		while (messageIterator.hasNext()) documentPaths.add(messageIterator
 				.next().getStringValue());						

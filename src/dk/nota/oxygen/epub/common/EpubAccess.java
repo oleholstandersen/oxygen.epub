@@ -1,22 +1,22 @@
 package dk.nota.oxygen.epub.common;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import javax.xml.transform.ErrorListener;
 
-import de.schlichtherle.io.File;
-import dk.nota.oxygen.common.ZipArchiveDetector;
-import dk.nota.oxygen.xml.XmlAccess;
+import dk.nota.oxygen.xml.EpubXmlAccess;
 import net.sf.saxon.s9api.MessageListener;
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.SaxonApiException;
@@ -35,9 +35,10 @@ public class EpubAccess {
 	private URL navigationUrl;
 	private URL opfUrl;
 	private String pid;
-	private XmlAccess xmlAccess = new XmlAccess();
+	private EpubXmlAccess epubXmlAccess;
 	
 	public EpubAccess(URL editorUrl) throws IOException, SaxonApiException {
+		epubXmlAccess = new EpubXmlAccess(this);
 		determineUrls(editorUrl);
 	}
 	
@@ -61,17 +62,22 @@ public class EpubAccess {
 	}
 	
 	public void backupArchive() throws IOException {
-		File archiveFile = getArchiveFile();
-		archiveFile.copyTo(new File(archiveFile.getPath() + ".bak"));
+		Path archivePath = getArchiveFile().toPath();
+		Files.copy(archivePath, archivePath.resolveSibling(archivePath
+				.getFileName() + ".bak"), StandardCopyOption.REPLACE_EXISTING);
 	}
 	
-	public boolean copyFileToArchive(java.io.File file, String relativePath) {
-		File zipFile = new ZipArchiveDetector().createFile(
-				getArchiveFileUrl().getPath() + "/" + relativePath);
-		return zipFile.archiveCopyFrom(file);
+	public boolean copyFileToArchive(java.io.File file, String internalFilePath)
+			throws IOException {
+		FileSystem epubFileSystem = getEpubAsFileSystem();
+		Path newFilePath = Files.createFile(epubFileSystem.getPath(
+				internalFilePath));
+		boolean result = Files.exists(Files.copy(file.toPath(), newFilePath));
+		epubFileSystem.close();
+		return result;
 	}
 	
-	public boolean copyFileToImageFolder(java.io.File file) {
+	public boolean copyFileToImageFolder(java.io.File file) throws IOException {
 		return copyFileToArchive(file, "EPUB/images/" + file.getName());
 	}
 	
@@ -82,22 +88,22 @@ public class EpubAccess {
 				"(^zip:|!.+$)", ""));
 		archiveContentUrl = new URL(editorUrl.toString().replaceFirst("!/.+$",
 				"!/"));
-		XdmNode metaDocument = getXmlAccess().getDocument(makeArchiveBasedUrl(
+		XdmNode metaDocument = getEpubXmlAccess().getDocument(makeArchiveBasedUrl(
 				"META-INF/container.xml"));
 		String opfReferenceXpath =
 				"//info:rootfile[@media-type = 'application/oebps-package+xml']";
-		XdmNode opfReferenceNode = getXmlAccess().getFirstNodeByXpath(
+		XdmNode opfReferenceNode = getEpubXmlAccess().getFirstNodeByXpath(
 				opfReferenceXpath, metaDocument);
 		opfUrl = new URL(getArchiveContentUrl(), opfReferenceNode
 				.getAttributeValue(new QName("full-path")));
 		contentFolderUrl = new URL(opfUrl, "./");
 		XdmNode opfDocument = getOpfDocument();
-		XdmNode navReferenceNode = getXmlAccess().getFirstNodeByXpath(
+		XdmNode navReferenceNode = getEpubXmlAccess().getFirstNodeByXpath(
 				"/opf:package/opf:manifest/opf:item[@properties eq 'nav']",
 				opfDocument);
 		navigationUrl = new URL(contentFolderUrl, navReferenceNode
 				.getAttributeValue(new QName("href")));
-		pid = getXmlAccess().getFirstNodeByXpath(
+		pid = getEpubXmlAccess().getFirstNodeByXpath(
 				"/opf:package/opf:metadata/dc:identifier", opfDocument)
 				.getStringValue();
 	}
@@ -107,11 +113,7 @@ public class EpubAccess {
 	}
 	
 	public File getArchiveFile() throws IOException {
-		try {
-			return new File(getArchiveFileUrl().toURI());
-		} catch (URISyntaxException e) {
-			throw new IOException(e.toString());
-		}
+		return new File(URI.create(getArchiveFileUrl().toString()));
 	}
 	
 	public URL getArchiveFileUrl() {
@@ -136,7 +138,7 @@ public class EpubAccess {
 	}
 	
 	public XsltTransformer getDtbConverter() throws SaxonApiException {
-		XsltTransformer dtbConverter = getXmlAccess().getXsltTransformer(
+		XsltTransformer dtbConverter = getEpubXmlAccess().getXsltTransformer(
 				"xhtml-to-dtb.xsl");
 		dtbConverter.setParameter(new QName("OPF_DOCUMENT"), getOpfDocument());
 		return dtbConverter;
@@ -152,9 +154,9 @@ public class EpubAccess {
 	
 	public XsltTransformer getEditorTransformer(String xsltFileName)
 			throws SaxonApiException {
-		XsltTransformer editorTransformer = getXmlAccess().getXsltTransformer(
+		XsltTransformer editorTransformer = getEpubXmlAccess().getXsltTransformer(
 				xsltFileName);
-		editorTransformer.setSource(getXmlAccess().getStreamSource(
+		editorTransformer.setSource(getEpubXmlAccess().getStreamSource(
 				getEditorUrl()));
 		return editorTransformer;
 	}
@@ -163,17 +165,26 @@ public class EpubAccess {
 		return editorUrl;
 	}
 	
+	public FileSystem getEpubAsFileSystem() throws IOException {
+		Map<String, String> environment = new HashMap<String,String>();
+        environment.put("create", "true");
+        return FileSystems.newFileSystem(URI.create("jar:"
+				+ getArchiveFileUrl()), environment);
+	}
+	
+	public EpubXmlAccess getEpubXmlAccess() {
+		return epubXmlAccess;
+	}
+	
 	public File getFileFromContentFolder(String filePath) throws IOException {
-		try {
-			return new ZipArchiveDetector().createFile(getArchiveFileUrl()
-						.toURI().getPath() + "/EPUB/" + filePath);
-		} catch (URISyntaxException e) {
-			throw new IOException(e.getMessage());
-		}
+		FileSystem epubFileSystem = getEpubAsFileSystem();
+		File result = epubFileSystem.getPath(filePath).toFile();
+		epubFileSystem.close();
+		return result;
 	}
 	
 	public XdmNode getNavigationDocument() throws SaxonApiException {
-		return getXmlAccess().getDocument(navigationUrl);
+		return getEpubXmlAccess().getDocument(navigationUrl);
 	}
 	
 	public XsltTransformer getNavigationTransformer()
@@ -193,9 +204,9 @@ public class EpubAccess {
 	
 	public XsltTransformer getOpfTransformer(String xsltFileName)
 			throws SaxonApiException {
-		XsltTransformer opfTransformer = getXmlAccess().getXsltTransformer(
+		XsltTransformer opfTransformer = getEpubXmlAccess().getXsltTransformer(
 				xsltFileName);
-		opfTransformer.setSource(getXmlAccess().getStreamSource(opfUrl));
+		opfTransformer.setSource(getEpubXmlAccess().getStreamSource(opfUrl));
 		opfTransformer.setParameter(new QName("CONTENT_FOLDER_URL"),
 				new XdmAtomicValue(getContentFolderUrl().toString()));
 		return opfTransformer;
@@ -211,7 +222,7 @@ public class EpubAccess {
 	}
 	
 	public XdmNode getOpfDocument() throws SaxonApiException {
-		return getXmlAccess().getDocument(getOpfUrl());
+		return getEpubXmlAccess().getDocument(getOpfUrl());
 	}
 	
 	public URL getOpfUrl() {
@@ -219,7 +230,7 @@ public class EpubAccess {
 	}
 	
 	public XsltTransformer getOutputTransformer() throws SaxonApiException {
-		return getXmlAccess().getOutputTransformer();
+		return getEpubXmlAccess().getOutputTransformer();
 	}
 	
 	public XsltTransformer getOutputTransformer(ErrorListener errorListener,
@@ -243,15 +254,9 @@ public class EpubAccess {
 		return getOpfTransformer("split.xsl", errorListener, messageListener);
 	}
 	
-	public XmlAccess getXmlAccess() {
-		return xmlAccess;
-	}
-	
-	public FileSystem getEpubAsFileSystem() throws IOException {
-		Map<String, String> environment = new HashMap<String,String>();
-        environment.put("create", "true");
-        return FileSystems.newFileSystem(URI.create("jar:"
-				+ getArchiveFileUrl()), environment);
+	public URL makeArchiveBasedUrl(String relativePath)
+			throws MalformedURLException {
+		return new URL(getArchiveContentUrl(), relativePath);
 	}
 	
 	public void reloadContentDocuments() throws IOException, SaxonApiException {
@@ -269,11 +274,6 @@ public class EpubAccess {
 				});
 		addItemReferencesToOpf(fileTypes, "document", true);
 		epubFileSystem.close();
-	}
-	
-	public URL makeArchiveBasedUrl(String relativePath)
-			throws MalformedURLException {
-		return new URL(getArchiveContentUrl(), relativePath);
 	}
 	
 }
