@@ -47,6 +47,7 @@ public class CreateDtbWorker extends AbstractEpubResultsWorker {
 	
 	public void copyImages(URI outputFolderUri) throws IOException {
 		getListener().writeToResultsView("COPYING IMAGE FILES...");
+		Files.createDirectories(Paths.get(outputFolderUri));
 		FileSystem epubFileSystem = getEpubAccess().getEpubAsFileSystem();
 		for (String imagePathString : getImagePaths()) {
 			Path imagePath = epubFileSystem.getPath("/EPUB/", imagePathString);
