@@ -13,7 +13,7 @@
     xmlns="http://www.w3.org/1999/xhtml"
     exclude-result-prefixes="#all"
     version="2.0">
-    <xsl:output method="xml" indent="yes" saxon:indent-spaces="4"/>
+    <xsl:output method="xml" indent="no"/>
     <xsl:strip-space elements="body div imggroup level list table"/>
     <xsl:param name="ALLOWED_CLASSES" as="xs:string*"
         select="'frontcover', 'leftflap', 'note_identifier', 'poem',

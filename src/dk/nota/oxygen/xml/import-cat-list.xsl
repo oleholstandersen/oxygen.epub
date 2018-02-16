@@ -5,7 +5,7 @@
     xmlns="http://www.w3.org/1999/xhtml"
     exclude-result-prefixes="#all"
     version="2.0">
-    <xsl:output method="xml" indent="yes"/>
+    <xsl:output method="xml" indent="no"/>
     <xsl:strip-space elements="*"/>
     <xsl:param name="DEPTH" as="xs:integer" select="2"/>
     <xsl:template match="/dtbook">

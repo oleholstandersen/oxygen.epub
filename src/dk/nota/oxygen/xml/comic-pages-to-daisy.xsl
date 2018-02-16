@@ -7,7 +7,7 @@
     xmlns="http://www.w3.org/1999/xhtml"
     exclude-result-prefixes="#all"
     version="2.0">
-    <xsl:output method="xml" indent="yes"/>
+    <xsl:output method="xml" indent="no"/>
     <xsl:param name="OUTPUT_FOLDER_URL" as="xs:string?"/>
     <xsl:param name="PID" as="xs:string"
     	select="//html:html/html:head/html:meta[@name eq 'dc:identifier']/

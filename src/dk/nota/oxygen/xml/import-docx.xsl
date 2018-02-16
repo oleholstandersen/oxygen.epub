@@ -16,7 +16,7 @@
     exclude-result-prefixes="#all"
     version="2.0">
     <xsl:import href="import-cat-list.xsl"/>
-    <xsl:output method="xml" indent="yes"/>
+    <xsl:output method="xml" indent="no"/>
     <xsl:param name="IMPORT_TO_CONCAT" as="xs:boolean"
         select="matches(document-uri(/), 'concat\.xhtml$')"/>
     <xsl:param name="SEPARATE_DOCUMENTS" as="xs:boolean" select="true()"/>

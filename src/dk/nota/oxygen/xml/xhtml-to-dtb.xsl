@@ -9,7 +9,7 @@
     xmlns:xhtml="http://www.w3.org/1999/xhtml"
     exclude-result-prefixes="#all"
     version="2.0">
-    <xsl:output method="xml" indent="yes" saxon:indent-spaces="4"/>
+    <xsl:output method="xml" indent="no"/>
     <xsl:param name="IDENTIFIER" as="xs:string?"
         select="$OPF_DOCUMENT/opf:package/opf:metadata/dc:identifier[1]/text()"/>
     <xsl:param name="NAV_DOCUMENT" as="document-node()*"
