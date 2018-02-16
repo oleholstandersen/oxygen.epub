@@ -8,7 +8,10 @@ import java.nio.file.StandardCopyOption;
 
 import javax.swing.SwingWorker;
 
-import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.util.EntityUtils;
 
 import dk.nota.oxygen.epub.plugin.EpubPluginExtension;
 import net.sf.saxon.s9api.SaxonApiException;
@@ -25,21 +28,24 @@ public class DownloadFromQuickbaseWorker extends SwingWorker<File,File> {
 			boolean openAfterDownload) {
 		this.openAfterDownload = openAfterDownload;
 		this.outputFile = outputFile;
+		pid = outputFile.getName().replaceFirst("\\..*$", "");
 	}
 
 	@Override
 	protected File doInBackground() throws Exception {
 		try {
-			pid = outputFile.getName().replaceFirst("\\..*$", "");
 			QuickbaseAccess quickbaseAccess = EpubPluginExtension
 					.getQuickbaseAccess();
 			QuickbaseRecord quickbaseRecord = quickbaseAccess.queryByPid(pid,
 					18);
-			GetMethod get = new GetMethod(quickbaseRecord.getEpubFileUrl()
+			HttpGet get = new HttpGet(quickbaseRecord.getEpubFileUrl()
 					+ "?ticket=" + quickbaseAccess.getTicket());
-			quickbaseAccess.getHttpClient().executeMethod(get);
-			Files.copy(get.getResponseBodyAsStream(), outputFile.toPath(),
+			HttpResponse response = quickbaseAccess.getHttpClient().execute(get);
+			if (response.getEntity() == null)
+				throw new ClientProtocolException("HTTP response is null");
+			Files.copy(response.getEntity().getContent(), outputFile.toPath(),
 					StandardCopyOption.REPLACE_EXISTING);
+			EntityUtils.consume(response.getEntity());
 			Files.copy(outputFile.toPath(), outputFile.toPath().resolveSibling(
 					pid + ".epub.orig"), StandardCopyOption.REPLACE_EXISTING);
 			return outputFile;

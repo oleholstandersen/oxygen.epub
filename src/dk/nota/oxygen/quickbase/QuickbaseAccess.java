@@ -1,20 +1,17 @@
 package dk.nota.oxygen.quickbase;
 
 import java.io.IOException;
-import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.xml.transform.stream.StreamSource;
-
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpException;
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.methods.StringRequestEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 
 import dk.nota.oxygen.epub.plugin.EpubPluginExtension;
-import dk.nota.oxygen.xml.XmlAccess;
 import net.sf.saxon.s9api.Axis;
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.SaxonApiException;
@@ -31,10 +28,11 @@ public class QuickbaseAccess {
 	protected static final String QB_APP_TOKEN = EditorVariables
 			.expandEditorVariables("${quickbaseAppToken}", null);
 	
-	private HttpClient httpClient = new HttpClient();
+	private CloseableHttpClient httpClient = HttpClients.createDefault();
 	private String ticket;
 	private String userEmail;
 	private String userId;
+	private XmlHttpResponseHandler xmlResponseHandler = new XmlHttpResponseHandler();
 	
 	public QuickbaseAccess(WSOptionsStorage optionsStorage) {
 		String userEmail = optionsStorage.getOption(EpubPluginExtension
@@ -52,52 +50,44 @@ public class QuickbaseAccess {
 	}
 	
 	public void authenticate(String userEmail, char[] password)
-			throws HttpException, IOException, SaxonApiException {
+			throws IOException, SaxonApiException {
 		authenticate(userEmail, String.valueOf(password));
 	}
 	
 	public void authenticate(String userEmail, String password)
-			throws HttpException, IOException, SaxonApiException {
+			throws IOException, SaxonApiException {
 		String callBody = String.format(
 				"<username>%s</username>"
 				+ "<password>%s</password>"
 				+ "<hours>10</hours>", userEmail, password);
-		PostMethod post = getApiCallAsPost(QB_MAIN_URL, "API_Authenticate",
+		HttpPost post = getApiCallAsPost(QB_MAIN_URL, "API_Authenticate",
 				callBody);
-		getHttpClient().executeMethod(post);
-		XdmNode response = getResponseAsNode(post.getResponseBodyAsString());
+		XdmNode response = httpClient.execute(post, xmlResponseHandler);
 		ticket = response.axisIterator(Axis.DESCENDANT, new QName("ticket"))
 				.next().getStringValue();
 		userId = response.axisIterator(Axis.DESCENDANT, new QName("userid"))
 				.next().getStringValue();
 		this.userEmail = userEmail;
-		post.releaseConnection();
 	}
 	
-	private PostMethod getApiCallAsPost(String destination, String callName,
+	private HttpPost getApiCallAsPost(String destination, String callName,
 			String callBody) throws UnsupportedEncodingException {
-		PostMethod post = new PostMethod(destination);
-		post.addRequestHeader("Content-Type", "application/xml");
-		post.addRequestHeader("QUICKBASE-ACTION", callName);
-		post.setRequestEntity(new StringRequestEntity(String.format(
-				"<qdbapi>%s</qdbapi>", callBody), "application/xml", "UTF-8"));
+		HttpPost post = new HttpPost(destination);
+		post.addHeader("Content-Type", "application/xml");
+		post.addHeader("QUICKBASE-ACTION", callName);
+		post.setEntity(new StringEntity(String.format("<qdbapi>%s</qdbapi>",
+				callBody), ContentType.APPLICATION_XML));
 		return post;
 	}
 	
-	public HttpClient getHttpClient() {
+	public CloseableHttpClient getHttpClient() {
 		return httpClient;
 	}
 	
-	public int getRidFromPid(String pid) throws HttpException, IOException,
+	public int getRidFromPid(String pid) throws IOException,
 			SaxonApiException {
 		return queryForSingleRecord(String.format("{'14'.EX.'%s'}", pid), 3)
 				.getRid();
-	}
-	
-	public XdmNode getResponseAsNode(String response) throws SaxonApiException {
-		XmlAccess xmlAccess = new XmlAccess();
-		return xmlAccess.getDocumentBuilder().build(new StreamSource(
-				new StringReader(response)));
 	}
 	
 	public String getTicket() {
@@ -108,31 +98,28 @@ public class QuickbaseAccess {
 		return userEmail;
 	}
 	
-	public String getUserId() throws HttpException, IOException,
-			SaxonApiException {
+	public String getUserId() throws IOException, SaxonApiException {
 		return userId;
 	}
 	
-	public String getUserIdByEmail(String email) throws HttpException,
-			IOException, SaxonApiException {
+	public String getUserIdByEmail(String email) throws IOException, SaxonApiException {
 		String userInfoCall = String.format(
 				"<ticket>%s</ticket>"
 				+ "<email>%s</email>", ticket, email);
-		PostMethod post = getApiCallAsPost(QB_MAIN_URL, "API_GetUserInfo",
+		HttpPost post = getApiCallAsPost(QB_MAIN_URL, "API_GetUserInfo",
 				userInfoCall);
-		getHttpClient().executeMethod(post);
-		XdmNode response = getResponseAsNode(post.getResponseBodyAsString());
+		XdmNode response = httpClient.execute(post, xmlResponseHandler);
 		return ((XdmNode)response.axisIterator(Axis.DESCENDANT, new QName(
 				"user")).next()).getAttributeValue(new QName("id"));
 	}
 	
 	public Map<String,QuickbaseRecord> query(String query, int... fieldIds)
-			throws HttpException, IOException, SaxonApiException {
+			throws IOException, SaxonApiException {
 		return query(query, "", "", fieldIds);
 	}
 	
 	public Map<String,QuickbaseRecord> query(String query, String sorting,
-			String options, int... fieldIds) throws HttpException, IOException,
+			String options, int... fieldIds) throws IOException,
 			SaxonApiException {
 		HashMap<String,QuickbaseRecord> records =
 				new HashMap<String,QuickbaseRecord>();
@@ -153,11 +140,9 @@ public class QuickbaseAccess {
 				queryCall += (fieldIds[i] == 14 ? "" : fieldIds[i])
 					+ (i < fieldIds.length - 1 ? "." : "</clist>");
 		} else queryCall += "<clist>a</clist>";
-		PostMethod post = getApiCallAsPost(QB_TABLE_URL, "API_DoQuery",
+		HttpPost post = getApiCallAsPost(QB_TABLE_URL, "API_DoQuery",
 				queryCall);
-		getHttpClient().executeMethod(post);
-		System.out.println(post.getResponseBodyAsString());
-		XdmNode response = getResponseAsNode(post.getResponseBodyAsString());
+		XdmNode response = httpClient.execute(post, xmlResponseHandler);
 		response.axisIterator(Axis.DESCENDANT, new QName("record"))
 			.forEachRemaining(
 					record -> {
@@ -165,23 +150,22 @@ public class QuickbaseAccess {
 						quickbaseRecord.parseRecordNode((XdmNode)record);
 						records.put(quickbaseRecord.getPid(), quickbaseRecord);
 					});
-		post.releaseConnection();
 		return records;
 	}
 	
 	public QuickbaseRecord queryByPid(String pid, int... fieldIds)
-			throws HttpException, IOException, SaxonApiException {
+			throws IOException, SaxonApiException {
 		pid = pid.startsWith("dk-nota-") ? pid : "dk-nota-" + pid;
 		return queryForSingleRecord(String.format("{'14'.EX.'%s'}", pid), fieldIds);
 	}
 	
 	public QuickbaseRecord queryForSingleRecord(String query, int... fieldIds)
-			throws HttpException, IOException, SaxonApiException {
+			throws IOException, SaxonApiException {
 		return query(query, fieldIds).values().iterator().next();
 	}
 	
 	public boolean updateFields(int rid, Map<Integer,String> updateMap)
-			throws HttpException, IOException {
+			throws IOException {
 		String updateCallBody = String.format(
 				"<apptoken>%s</apptoken>"
 				+ "<ticket>%s</ticket>"
@@ -190,15 +174,14 @@ public class QuickbaseAccess {
 		for (int key : updateMap.keySet())
 			updateCallBody += String.format("<field fid='%s'>%s</field>", key,
 					updateMap.get(key));
-		PostMethod post = getApiCallAsPost(QB_TABLE_URL, "API_EditRecord",
+		HttpPost post = getApiCallAsPost(QB_TABLE_URL, "API_EditRecord",
 				updateCallBody);
-		getHttpClient().executeMethod(post);
-		post.releaseConnection();
+		getHttpClient().execute(post);
 		return true;
 	}
 	
 	public boolean updateFields(String pid, Map<Integer,String> updateMap)
-			throws HttpException, IOException, SaxonApiException {
+			throws IOException, SaxonApiException {
 		pid = pid.startsWith("dk-nota-") ? pid : "dk-nota-" + pid;
 		return updateFields(getRidFromPid(pid), updateMap);
 	}
