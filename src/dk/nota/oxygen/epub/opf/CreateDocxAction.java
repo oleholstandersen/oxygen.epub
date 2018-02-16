@@ -18,7 +18,8 @@ public class CreateDocxAction extends ArchiveSensitiveAction {
 	public void actionPerformed(EditorAccess editorAccess) {
 		try {
 			EpubAccess epubAccess = editorAccess.getEpubAccess();
-			String docxFileName = "./" + epubAccess.getPid() + ".docx";
+			String docxFileName = "./" + epubAccess.getPid().replaceFirst(
+					"dk-nota-", "") + ".docx";
 			File docxFile = editorAccess.getWorkspace().chooseFile(new File(
 					epubAccess.getArchiveFileUrl().toURI().resolve(
 					docxFileName)), "Export [Docx]", new String[] {"docx"},

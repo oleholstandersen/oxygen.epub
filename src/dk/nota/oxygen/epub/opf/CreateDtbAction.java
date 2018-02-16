@@ -18,7 +18,8 @@ public class CreateDtbAction extends ArchiveSensitiveAction {
 	public void actionPerformed(EditorAccess editorAccess) {
 		try {
 			EpubAccess epubAccess = editorAccess.getEpubAccess();
-			String dtbFileName = "./" + epubAccess.getPid() + ".xml";
+			String dtbFileName = "./" + epubAccess.getPid().replaceFirst(
+					"dk-nota-", "") + ".xml";
 			File dtbFile = editorAccess.getWorkspace().chooseFile(new File(
 					epubAccess.getArchiveFileUrl().toURI().resolve(dtbFileName)),
 					"Export [DTBook]", new String[] {"xml"}, "DTBook files",
