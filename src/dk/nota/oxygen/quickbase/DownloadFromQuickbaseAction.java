@@ -10,18 +10,14 @@ import dk.nota.oxygen.epub.plugin.EpubPluginExtension;
 
 public class DownloadFromQuickbaseAction extends AbstractAction {
 	
-	private boolean openAfterDownload = false;
 	private String pid;
 	
-	public DownloadFromQuickbaseAction(boolean openAfterDownload) {
-		super(openAfterDownload ? "Download production and open..." :
-			"Download production...");
-		this.openAfterDownload = openAfterDownload;
+	public DownloadFromQuickbaseAction() {
+		super("Download production...");
 	}
 	
-	public DownloadFromQuickbaseAction(String pid, boolean openAfterDownload) {
-		super(openAfterDownload ? String.format("Download %s and open...", pid) :
-				String.format("Download %s...", pid));
+	public DownloadFromQuickbaseAction(String pid) {
+		super(String.format("Download %s..."));
 		this.pid = pid;
 	}
 
@@ -33,13 +29,20 @@ public class DownloadFromQuickbaseAction extends AbstractAction {
 				"Download from QuickBase", new String[] { "epub" },
 				"EPUB files", true);
 		if (outputFile == null) return;
+		if (pid == null) pid = outputFile.getName().replaceFirst("\\..*$", "");
 		DownloadFromQuickbaseWorker downloadFromQuickbaseWorker =
-				new DownloadFromQuickbaseWorker(outputFile, openAfterDownload);
+				new DownloadFromQuickbaseWorker(pid, outputFile);
+		QuickbaseDownloadDialog quickbaseDownloadDialog =
+				new QuickbaseDownloadDialog(downloadFromQuickbaseWorker,
+						editorAccess, pid, outputFile);
+		downloadFromQuickbaseWorker.addPropertyChangeListener(
+				quickbaseDownloadDialog);
 		try {
-			editorAccess.getWorkspace().open(downloadFromQuickbaseWorker
-					.doInBackground().toURI().toURL());
+			downloadFromQuickbaseWorker.execute();
+			quickbaseDownloadDialog.setVisible(true);
 		} catch (Exception e) {
-			editorAccess.showStatusMessage("Could not download " + outputFile.getName());
+			editorAccess.showErrorMessage(String.format(
+					"Could not download %s: %s", pid, e.toString()));
 			e.printStackTrace();
 		}
 		
