@@ -26,12 +26,12 @@ public class ShowQuickbaseProductionAction extends AbstractAction {
 	public void actionPerformed(ActionEvent event) {
 		String url = QuickbaseAccess.QB_TABLE_URL;
 		if (rid == 0) {
-			// If we don't have the record ID we can't link directly to the
-			// record, so we show a report based on the production ID instead.
+			// Without the record ID we can't link directly to the record, so
+			// we show a report based on the production ID instead.
 			// TODO: Find workaround if possible - maybe query for the RID if
 			// that's not too time-consuming?
 			url += String.format("?a=q&qt=tab&query=({'14'.EX.'%s'})", pid);
-		} else url += "?a=dr&rid=%s" + rid;
+		} else url += "?a=dr&rid=" + rid;
 		PluginWorkspaceProvider.getPluginWorkspace()
 			.openInExternalApplication(url, true, "text/html");
 	}
