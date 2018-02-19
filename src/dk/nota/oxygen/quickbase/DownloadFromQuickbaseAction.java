@@ -36,8 +36,7 @@ public class DownloadFromQuickbaseAction extends AbstractAction {
 		DownloadFromQuickbaseWorker downloadFromQuickbaseWorker =
 				new DownloadFromQuickbaseWorker(outputFile, openAfterDownload);
 		try {
-			editorAccess.getWorkspace().open(downloadFromQuickbaseWorker
-					.doInBackground().toURI().toURL());
+			downloadFromQuickbaseWorker.execute();
 		} catch (Exception e) {
 			editorAccess.showStatusMessage("Could not download " + outputFile.getName());
 			e.printStackTrace();

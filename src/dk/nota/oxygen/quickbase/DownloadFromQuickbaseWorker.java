@@ -19,7 +19,6 @@ import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
 public class DownloadFromQuickbaseWorker extends SwingWorker<File,File> {
 	
-	
 	private boolean openAfterDownload;
 	private File outputFile;
 	private String pid;
