@@ -87,7 +87,6 @@ public class QuickbaseDownloadDialog extends JDialog
 	private JProgressBar createProgressBar() {
 		progressBar = new JProgressBar();
 		progressBar.setPreferredSize(new Dimension(300, 25));
-		progressBar.setIndeterminate(true);
 		return progressBar;
 	}
 	
@@ -98,11 +97,7 @@ public class QuickbaseDownloadDialog extends JDialog
 			progressBar.setValue((Integer)event.getNewValue());
 			break;
 		case "state":
-			switch ((SwingWorker.StateValue)event.getNewValue()) {
-			case STARTED:
-				progressBar.setIndeterminate(false);
-				break;
-			case DONE:
+			if (event.getNewValue() == SwingWorker.StateValue.DONE) {
 				progressBar.setValue(100); // Just to be sure
 				updateButtons();
 			}
