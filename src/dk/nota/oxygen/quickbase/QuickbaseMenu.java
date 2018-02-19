@@ -25,8 +25,7 @@ public class QuickbaseMenu extends Menu {
 	
 	public QuickbaseMenu() {
 		super("QuickBase");
-		actionMenuItems.add(add(new DownloadFromQuickbaseAction(true)));
-		actionMenuItems.add(add(new DownloadFromQuickbaseAction(false)));
+		actionMenuItems.add(add(new DownloadFromQuickbaseAction()));
 		addSeparator();
 		actionMenuItems.add(add(approveProductionAction));
 		actionMenuItems.add(add(showProductionAction));
@@ -84,8 +83,7 @@ public class QuickbaseMenu extends Menu {
 					String pid = quickbaseRecord.getPid().replaceFirst(
 							"^dk-nota-", "");
 					Menu recordMenu = new Menu(pid);
-					recordMenu.add(new DownloadFromQuickbaseAction(pid, true));
-					recordMenu.add(new DownloadFromQuickbaseAction(pid, false));
+					recordMenu.add(new DownloadFromQuickbaseAction(pid));
 					recordMenu.addSeparator();
 					recordMenu.add(new ShowQuickbaseProductionAction(pid,
 							quickbaseRecord.getRid()));
