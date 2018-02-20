@@ -2,11 +2,11 @@ package dk.nota.oxygen.quickbase;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -75,10 +75,10 @@ public class QuickbaseAccess {
 	private HttpPost getApiCallAsPost(String destination, String callName,
 			String callBody) throws UnsupportedEncodingException {
 		HttpPost post = new HttpPost(destination);
-		post.addHeader("Content-Type", "application/xml");
+		post.addHeader("Content-Type", "application/xml;charset=UTF-8");
 		post.addHeader("QUICKBASE-ACTION", callName);
 		post.setEntity(new StringEntity(String.format("<qdbapi>%s</qdbapi>",
-				callBody), ContentType.APPLICATION_XML));
+				callBody), StandardCharsets.UTF_8));
 		return post;
 	}
 	
