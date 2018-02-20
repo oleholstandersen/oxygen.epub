@@ -21,6 +21,11 @@ public class WorkspaceSetupListener extends WSEditorChangeListener {
 		}
 		
 		@Override
+		public void editorClosed(URL editorUrl) {
+			EpubPluginExtension.getQuickbaseMenu().updateForEpub(null);
+		}
+		
+		@Override
 		public void editorOpened(URL editorUrl) {
 			establishWorkspace(editorUrl);
 		}

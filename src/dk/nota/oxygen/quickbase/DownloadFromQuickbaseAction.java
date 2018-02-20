@@ -17,7 +17,7 @@ public class DownloadFromQuickbaseAction extends AbstractAction {
 	}
 	
 	public DownloadFromQuickbaseAction(String pid) {
-		super(String.format("Download %s..."));
+		super(String.format("Download %s...", pid));
 		this.pid = pid;
 	}
 

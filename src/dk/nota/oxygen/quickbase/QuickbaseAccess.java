@@ -28,6 +28,7 @@ public class QuickbaseAccess {
 	protected static final String QB_APP_TOKEN = EditorVariables
 			.expandEditorVariables("${quickbaseAppToken}", null);
 	
+	private boolean connected = false;
 	private CloseableHttpClient httpClient = HttpClients.createDefault();
 	private String ticket;
 	private String userEmail;
@@ -68,6 +69,7 @@ public class QuickbaseAccess {
 		userId = response.axisIterator(Axis.DESCENDANT, new QName("userid"))
 				.next().getStringValue();
 		this.userEmail = userEmail;
+		connected = true;
 	}
 	
 	private HttpPost getApiCallAsPost(String destination, String callName,
@@ -111,6 +113,10 @@ public class QuickbaseAccess {
 		XdmNode response = httpClient.execute(post, xmlResponseHandler);
 		return ((XdmNode)response.axisIterator(Axis.DESCENDANT, new QName(
 				"user")).next()).getAttributeValue(new QName("id"));
+	}
+	
+	public boolean isConnected() {
+		return connected;
 	}
 	
 	public Map<String,QuickbaseRecord> query(String query, int... fieldIds)

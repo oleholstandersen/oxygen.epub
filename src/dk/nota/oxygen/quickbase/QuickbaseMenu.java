@@ -96,10 +96,12 @@ public class QuickbaseMenu extends Menu {
 	}
 	
 	public void updateForEpub(EpubAccess epubAccess) {
-		if (epubAccess == null) return;
-		String pid = epubAccess.getPid();
+		String pid = epubAccess == null ? "" : epubAccess.getPid();
 		approveProductionAction.update(pid);
+		approveProductionAction.setEnabled(epubAccess != null &&
+				EpubPluginExtension.getQuickbaseAccess().isConnected());
 		showProductionAction.update(pid);
+		showProductionAction.setEnabled(epubAccess != null);
 	}
 
 }
