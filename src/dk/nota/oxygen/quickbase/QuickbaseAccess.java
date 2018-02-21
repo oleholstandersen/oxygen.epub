@@ -157,23 +157,22 @@ public class QuickbaseAccess {
 				queryCall += (fieldIds[i] == 14 ? "" : fieldIds[i])
 					+ (i < fieldIds.length - 1 ? "." : "</clist>");
 		} else queryCall += "<clist>a</clist>";
-			HttpPost post = getApiCallAsPost(QB_TABLE_URL, "API_DoQuery",
-					queryCall);
-			try {
-				XdmNode response = httpClient.execute(post, xmlResponseHandler);
-				response.axisIterator(Axis.DESCENDANT, new QName("record"))
-				.forEachRemaining(
-						record -> {
-							QuickbaseRecord quickbaseRecord = new QuickbaseRecord();
-							quickbaseRecord.parseRecordNode((XdmNode)record);
-							records.put(quickbaseRecord.getPid(), quickbaseRecord);
-						});
-			return records;
-			} catch (IOException e) {
-				throw new QuickbaseException(
-						"Query failed due to IO or XML error", e);
-			}
-		
+		HttpPost post = getApiCallAsPost(QB_TABLE_URL, "API_DoQuery",
+				queryCall);
+		try {
+			XdmNode response = httpClient.execute(post, xmlResponseHandler);
+			response.axisIterator(Axis.DESCENDANT, new QName("record"))
+			.forEachRemaining(
+					record -> {
+						QuickbaseRecord quickbaseRecord = new QuickbaseRecord();
+						quickbaseRecord.parseRecordNode((XdmNode)record);
+						records.put(quickbaseRecord.getPid(), quickbaseRecord);
+					});
+		return records;
+		} catch (IOException e) {
+			throw new QuickbaseException(
+					"Query failed due to IO or XML error", e);
+		}
 	}
 	
 	public QuickbaseRecord queryByPid(String pid, int... fieldIds)
@@ -185,7 +184,9 @@ public class QuickbaseAccess {
 	
 	public QuickbaseRecord queryForSingleRecord(String query, int... fieldIds)
 			throws QuickbaseException {
-		return query(query, fieldIds).values().iterator().next();
+		Map<String,QuickbaseRecord> records = query(query, fieldIds);
+		if (records.size() == 0) return null;
+		return records.values().iterator().next();
 	}
 	
 	public boolean updateFields(int rid, Map<Integer,String> updateMap)
