@@ -52,7 +52,7 @@ public class QuickbaseOptionPagePluginExtension
 				listener -> {
 					try {
 						EpubPluginExtension.getQuickbaseAccess()
-							.authenticate(emailField.getText(), passwordField
+							.connect(emailField.getText(), passwordField
 									.getPassword());
 						EpubPluginExtension.getQuickbaseMenu().enableActions();
 					} catch (IOException | SaxonApiException e) {

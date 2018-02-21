@@ -44,18 +44,18 @@ public class QuickbaseAccess {
 		if (optionsStorage.getOption(EpubPluginExtension.QB_ENABLED_OPTION,
 				"false").equals("false")) return;
 		try {
-			authenticate(userEmail, password);
+			connect(userEmail, password);
 		} catch (IOException | SaxonApiException e) {
 			e.printStackTrace();
 		}
 	}
 	
-	public void authenticate(String userEmail, char[] password)
+	public void connect(String userEmail, char[] password)
 			throws IOException, SaxonApiException {
-		authenticate(userEmail, String.valueOf(password));
+		connect(userEmail, String.valueOf(password));
 	}
 	
-	public void authenticate(String userEmail, String password)
+	public void connect(String userEmail, String password)
 			throws IOException, SaxonApiException {
 		String callBody = String.format(
 				"<username>%s</username>"
@@ -104,7 +104,8 @@ public class QuickbaseAccess {
 		return userId;
 	}
 	
-	public String getUserIdByEmail(String email) throws IOException, SaxonApiException {
+	public String getUserIdByEmail(String email) throws IOException,
+			SaxonApiException {
 		String userInfoCall = String.format(
 				"<ticket>%s</ticket>"
 				+ "<email>%s</email>", ticket, email);
@@ -162,7 +163,8 @@ public class QuickbaseAccess {
 	public QuickbaseRecord queryByPid(String pid, int... fieldIds)
 			throws IOException, SaxonApiException {
 		pid = pid.startsWith("dk-nota-") ? pid : "dk-nota-" + pid;
-		return queryForSingleRecord(String.format("{'14'.EX.'%s'}", pid), fieldIds);
+		return queryForSingleRecord(String.format("{'14'.EX.'%s'}", pid),
+				fieldIds);
 	}
 	
 	public QuickbaseRecord queryForSingleRecord(String query, int... fieldIds)
