@@ -1,7 +1,6 @@
 package dk.nota.oxygen.quickbase;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
@@ -10,7 +9,6 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-
 import dk.nota.oxygen.epub.plugin.EpubPluginExtension;
 import net.sf.saxon.s9api.Axis;
 import net.sf.saxon.s9api.QName;
@@ -33,7 +31,8 @@ public class QuickbaseAccess {
 	private String ticket;
 	private String userEmail;
 	private String userId;
-	private XmlHttpResponseHandler xmlResponseHandler = new XmlHttpResponseHandler();
+	private XmlHttpResponseHandler xmlResponseHandler =
+			new XmlHttpResponseHandler();
 	
 	public QuickbaseAccess(WSOptionsStorage optionsStorage) {
 		String userEmail = optionsStorage.getOption(EpubPluginExtension
@@ -72,8 +71,13 @@ public class QuickbaseAccess {
 		connected = true;
 	}
 	
+	public void disconnect() {
+		ticket = null;
+		connected = false;
+	}
+	
 	private HttpPost getApiCallAsPost(String destination, String callName,
-			String callBody) throws UnsupportedEncodingException {
+			String callBody) {
 		HttpPost post = new HttpPost(destination);
 		post.addHeader("Content-Type", "application/xml;charset=UTF-8");
 		post.addHeader("QUICKBASE-ACTION", callName);
@@ -86,8 +90,7 @@ public class QuickbaseAccess {
 		return httpClient;
 	}
 	
-	public int getRidFromPid(String pid) throws IOException,
-			SaxonApiException {
+	public int getRidFromPid(String pid) throws QuickbaseException {
 		return queryForSingleRecord(String.format("{'14'.EX.'%s'}", pid), 3)
 				.getRid();
 	}
@@ -100,20 +103,26 @@ public class QuickbaseAccess {
 		return userEmail;
 	}
 	
-	public String getUserId() throws IOException, SaxonApiException {
+	public String getUserId() {
 		return userId;
 	}
 	
-	public String getUserIdByEmail(String email) throws IOException,
-			SaxonApiException {
+	public String getUserIdByEmail(String email) throws QuickbaseException {
+		if (!isConnected())
+			throw new QuickbaseException("Not connected to QuickBase");
 		String userInfoCall = String.format(
 				"<ticket>%s</ticket>"
 				+ "<email>%s</email>", ticket, email);
-		HttpPost post = getApiCallAsPost(QB_MAIN_URL, "API_GetUserInfo",
-				userInfoCall);
-		XdmNode response = httpClient.execute(post, xmlResponseHandler);
-		return ((XdmNode)response.axisIterator(Axis.DESCENDANT, new QName(
-				"user")).next()).getAttributeValue(new QName("id"));
+		try {
+			HttpPost post = getApiCallAsPost(QB_MAIN_URL, "API_GetUserInfo",
+					userInfoCall);
+			XdmNode response = httpClient.execute(post, xmlResponseHandler);
+			return ((XdmNode)response.axisIterator(Axis.DESCENDANT, new QName(
+					"user")).next()).getAttributeValue(new QName("id"));
+		} catch (IOException e) {
+			throw new QuickbaseException("Unable to retrieve user ID", e);
+		}
+		
 	}
 	
 	public boolean isConnected() {
@@ -121,13 +130,14 @@ public class QuickbaseAccess {
 	}
 	
 	public Map<String,QuickbaseRecord> query(String query, int... fieldIds)
-			throws IOException, SaxonApiException {
+			throws QuickbaseException {
 		return query(query, "", "", fieldIds);
 	}
 	
 	public Map<String,QuickbaseRecord> query(String query, String sorting,
-			String options, int... fieldIds) throws IOException,
-			SaxonApiException {
+			String options, int... fieldIds) throws QuickbaseException {
+		if (!isConnected())
+			throw new QuickbaseException("Not connected to QuickBase");
 		HashMap<String,QuickbaseRecord> records =
 				new HashMap<String,QuickbaseRecord>();
 		String queryCall = String.format(
@@ -147,33 +157,41 @@ public class QuickbaseAccess {
 				queryCall += (fieldIds[i] == 14 ? "" : fieldIds[i])
 					+ (i < fieldIds.length - 1 ? "." : "</clist>");
 		} else queryCall += "<clist>a</clist>";
-		HttpPost post = getApiCallAsPost(QB_TABLE_URL, "API_DoQuery",
-				queryCall);
-		XdmNode response = httpClient.execute(post, xmlResponseHandler);
-		response.axisIterator(Axis.DESCENDANT, new QName("record"))
-			.forEachRemaining(
-					record -> {
-						QuickbaseRecord quickbaseRecord = new QuickbaseRecord();
-						quickbaseRecord.parseRecordNode((XdmNode)record);
-						records.put(quickbaseRecord.getPid(), quickbaseRecord);
-					});
-		return records;
+			HttpPost post = getApiCallAsPost(QB_TABLE_URL, "API_DoQuery",
+					queryCall);
+			try {
+				XdmNode response = httpClient.execute(post, xmlResponseHandler);
+				response.axisIterator(Axis.DESCENDANT, new QName("record"))
+				.forEachRemaining(
+						record -> {
+							QuickbaseRecord quickbaseRecord = new QuickbaseRecord();
+							quickbaseRecord.parseRecordNode((XdmNode)record);
+							records.put(quickbaseRecord.getPid(), quickbaseRecord);
+						});
+			return records;
+			} catch (IOException e) {
+				throw new QuickbaseException(
+						"Query failed due to IO or XML error", e);
+			}
+		
 	}
 	
 	public QuickbaseRecord queryByPid(String pid, int... fieldIds)
-			throws IOException, SaxonApiException {
+			throws QuickbaseException {
 		pid = pid.startsWith("dk-nota-") ? pid : "dk-nota-" + pid;
 		return queryForSingleRecord(String.format("{'14'.EX.'%s'}", pid),
 				fieldIds);
 	}
 	
 	public QuickbaseRecord queryForSingleRecord(String query, int... fieldIds)
-			throws IOException, SaxonApiException {
+			throws QuickbaseException {
 		return query(query, fieldIds).values().iterator().next();
 	}
 	
 	public boolean updateFields(int rid, Map<Integer,String> updateMap)
-			throws IOException {
+			throws QuickbaseException {
+		if (!isConnected())
+			throw new QuickbaseException("Not connected to QuickBase");
 		String updateCallBody = String.format(
 				"<apptoken>%s</apptoken>"
 				+ "<ticket>%s</ticket>"
@@ -184,12 +202,19 @@ public class QuickbaseAccess {
 					updateMap.get(key));
 		HttpPost post = getApiCallAsPost(QB_TABLE_URL, "API_EditRecord",
 				updateCallBody);
-		getHttpClient().execute(post);
-		return true;
+		try {
+			XdmNode response = getHttpClient().execute(post, xmlResponseHandler);
+			int updatedCount = Integer.parseInt(((XdmNode)response.axisIterator(
+					Axis.DESCENDANT, new QName("num_fields_changed")).next())
+					.getStringValue());
+			return (updateMap.keySet().size() == updatedCount);
+		} catch (IOException e) {
+			throw new QuickbaseException("Update failed due to IO or XML error", e);
+		}
 	}
 	
 	public boolean updateFields(String pid, Map<Integer,String> updateMap)
-			throws IOException, SaxonApiException {
+			throws QuickbaseException {
 		pid = pid.startsWith("dk-nota-") ? pid : "dk-nota-" + pid;
 		return updateFields(getRidFromPid(pid), updateMap);
 	}

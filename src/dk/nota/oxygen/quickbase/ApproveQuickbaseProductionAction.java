@@ -1,14 +1,12 @@
 package dk.nota.oxygen.quickbase;
 
 import java.awt.event.ActionEvent;
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 
 import javax.swing.AbstractAction;
 
 import dk.nota.oxygen.epub.plugin.EpubPluginExtension;
-import net.sf.saxon.s9api.SaxonApiException;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
 public class ApproveQuickbaseProductionAction extends AbstractAction {
@@ -31,8 +29,9 @@ public class ApproveQuickbaseProductionAction extends AbstractAction {
 			quickbaseAccess.updateFields(pid, updateMap);
 			PluginWorkspaceProvider.getPluginWorkspace().showStatusMessage(
 					String.format("%s approved", pid));
-		} catch (IOException | SaxonApiException e) {
-			e.printStackTrace();
+		} catch (QuickbaseException e) {
+			PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e
+					.getMessage(), e);
 		}
 	}
 	

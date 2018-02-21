@@ -24,7 +24,6 @@ public class QuickbaseDownloadDialog extends JDialog
 	
 	private Button cancelButton;
 	private DownloadFromQuickbaseWorker downloadFromQuickbaseWorker;
-	private EditorAccess editorAccess;
 	private Button openButton;
 	private URL outputFileUrl;
 	private JProgressBar progressBar;
@@ -35,7 +34,6 @@ public class QuickbaseDownloadDialog extends JDialog
 		super((JFrame)PluginWorkspaceProvider.getPluginWorkspace()
 				.getParentFrame(), "Downloading " + pid, true);
 		this.downloadFromQuickbaseWorker = downloadFromQuickbaseWorker;
-		this.editorAccess = editorAccess;
 		try {
 			this.outputFileUrl = outputFile.toURI().toURL();
 		} catch (MalformedURLException e) {
@@ -66,7 +64,8 @@ public class QuickbaseDownloadDialog extends JDialog
 					try {
 						downloadFromQuickbaseWorker.stopDownload();
 					} catch (IOException e) {
-						editorAccess.showErrorMessage(e.toString());
+						PluginWorkspaceProvider.getPluginWorkspace()
+							.showErrorMessage(e.getMessage(), e);
 					}
 					dispose();
 				});
@@ -78,7 +77,8 @@ public class QuickbaseDownloadDialog extends JDialog
 		openButton.addActionListener(
 				event -> {
 					dispose();
-					editorAccess.open(outputFileUrl);
+					PluginWorkspaceProvider.getPluginWorkspace().open(
+							outputFileUrl);
 				});
 		openButton.setEnabled(false);
 		return openButton;

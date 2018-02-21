@@ -2,7 +2,6 @@ package dk.nota.oxygen.quickbase;
 
 import java.awt.Font;
 import java.awt.event.ActionEvent;
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -11,7 +10,7 @@ import javax.swing.JMenuItem;
 
 import dk.nota.oxygen.epub.common.EpubAccess;
 import dk.nota.oxygen.epub.plugin.EpubPluginExtension;
-import net.sf.saxon.s9api.SaxonApiException;
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.Menu;
 
 public class QuickbaseMenu extends Menu {
@@ -90,8 +89,9 @@ public class QuickbaseMenu extends Menu {
 					queueMenuItems.add(add(recordMenu));
 				}
 			}
-		} catch (IOException | SaxonApiException e) {
-			e.printStackTrace();
+		} catch (QuickbaseException e) {
+			PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(e
+					.getMessage(), e);
 		}
 	}
 	
