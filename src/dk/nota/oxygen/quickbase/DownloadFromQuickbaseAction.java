@@ -5,8 +5,7 @@ import java.io.File;
 
 import javax.swing.AbstractAction;
 
-import dk.nota.oxygen.common.EditorAccess;
-import dk.nota.oxygen.epub.plugin.EpubPluginExtension;
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
 public class DownloadFromQuickbaseAction extends AbstractAction {
 	
@@ -23,29 +22,21 @@ public class DownloadFromQuickbaseAction extends AbstractAction {
 
 	@Override
 	public void actionPerformed(ActionEvent event) {
-		EditorAccess editorAccess = EpubPluginExtension.getEditorAccess();
-		File outputFile = editorAccess.getWorkspace().chooseFile(
-				new File("N:/XMLarkiv/" + (pid == null ? "" : pid + ".epub")),
-				"Download from QuickBase", new String[] { "epub" },
-				"EPUB files", true);
+		File outputFile = PluginWorkspaceProvider.getPluginWorkspace()
+				.chooseFile(new File("N:/XMLarkiv/" + (pid == null ? "" : pid +
+						".epub")), "Download from QuickBase",
+						new String[] { "epub" }, "EPUB files", true);
 		if (outputFile == null) return;
 		if (pid == null) pid = outputFile.getName().replaceFirst("\\..*$", "");
 		DownloadFromQuickbaseWorker downloadFromQuickbaseWorker =
 				new DownloadFromQuickbaseWorker(pid, outputFile);
 		QuickbaseDownloadDialog quickbaseDownloadDialog =
 				new QuickbaseDownloadDialog(downloadFromQuickbaseWorker,
-						editorAccess, pid, outputFile);
+						pid, outputFile);
 		downloadFromQuickbaseWorker.addPropertyChangeListener(
 				quickbaseDownloadDialog);
-		try {
-			downloadFromQuickbaseWorker.execute();
-			quickbaseDownloadDialog.setVisible(true);
-		} catch (Exception e) {
-			editorAccess.showErrorMessage(String.format(
-					"Could not download %s: %s", pid, e.toString()));
-			e.printStackTrace();
-		}
-		
+		quickbaseDownloadDialog.setVisible(true);
+		downloadFromQuickbaseWorker.execute();
 	}
 
 }

@@ -6,9 +6,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+
 import javax.swing.SwingWorker;
 
-import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
@@ -16,9 +16,8 @@ import org.apache.http.util.EntityUtils;
 
 import dk.nota.oxygen.epub.plugin.EpubPluginExtension;
 
-public class DownloadFromQuickbaseWorker extends SwingWorker<Path,Double> {
+public class DownloadFromQuickbaseWorker extends SwingWorker<Boolean,Double> {
 	
-	private HttpEntity httpEntity;
 	private Path outputPath;
 	private String pid;
 	
@@ -28,10 +27,12 @@ public class DownloadFromQuickbaseWorker extends SwingWorker<Path,Double> {
 	}
 
 	@Override
-	protected Path doInBackground() throws Exception {
+	protected Boolean doInBackground() throws Exception {
 		QuickbaseAccess quickbaseAccess = EpubPluginExtension
 				.getQuickbaseAccess();
 		QuickbaseRecord record = quickbaseAccess.queryByPid(pid, 18);
+		if (record == null)
+			throw new QuickbaseException("No QuickBase record for " + pid);
 		HttpGet get = new HttpGet(record.getEpubFileUrl() + "?ticket="
 				+ quickbaseAccess.getTicket());
 		HttpResponse response = quickbaseAccess.getHttpClient().execute(get);
@@ -53,23 +54,21 @@ public class DownloadFromQuickbaseWorker extends SwingWorker<Path,Double> {
 				setProgress((int)Math.ceil(
 						(createdFileSize / fileSize) * 100));
 			}
-			return outputPath;
+			return true;
+		} finally {
+			EntityUtils.consumeQuietly(response.getEntity());
 		}
-	}
-	
-	private void releaseHttpResources() {
-		EntityUtils.consumeQuietly(httpEntity);
-	}
-	
-	public boolean stopDownload() throws IOException {
-		releaseHttpResources();
-		Files.deleteIfExists(outputPath);
-		return cancel(false);
 	}
 	
 	@Override
 	protected void done() {
-		releaseHttpResources();
+		try {
+			if (isCancelled()) Files.delete(outputPath);
+		} catch (IOException e) {
+			System.err.print(String.format("Unable to delete %s: ",
+					outputPath));
+			e.printStackTrace();
+		}
 	}
 
 }

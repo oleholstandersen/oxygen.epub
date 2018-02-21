@@ -6,16 +6,15 @@ import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.concurrent.ExecutionException;
 
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JProgressBar;
 import javax.swing.SwingWorker;
 
-import dk.nota.oxygen.common.EditorAccess;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.Button;
 
@@ -26,14 +25,16 @@ public class QuickbaseDownloadDialog extends JDialog
 	private DownloadFromQuickbaseWorker downloadFromQuickbaseWorker;
 	private Button openButton;
 	private URL outputFileUrl;
+	private String pid;
 	private JProgressBar progressBar;
 	
 	public QuickbaseDownloadDialog(
 			DownloadFromQuickbaseWorker downloadFromQuickbaseWorker,
-			EditorAccess editorAccess, String pid, File outputFile) {
+			String pid, File outputFile) {
 		super((JFrame)PluginWorkspaceProvider.getPluginWorkspace()
-				.getParentFrame(), "Downloading " + pid, true);
+				.getParentFrame(), "Downloading " + pid, false);
 		this.downloadFromQuickbaseWorker = downloadFromQuickbaseWorker;
+		this.pid = pid;
 		try {
 			this.outputFileUrl = outputFile.toURI().toURL();
 		} catch (MalformedURLException e) {
@@ -46,13 +47,8 @@ public class QuickbaseDownloadDialog extends JDialog
 		add(createOpenButton());
 		addWindowStateListener(
 				event -> {
-					if (event.getNewState() == WindowEvent.WINDOW_CLOSED) {
-						try {
-							downloadFromQuickbaseWorker.stopDownload();
-						} catch (IOException e) {
-							editorAccess.showErrorMessage(e.toString());
-						}
-					}
+					if (event.getNewState() == WindowEvent.WINDOW_CLOSING)
+						downloadFromQuickbaseWorker.cancel(true);
 				});
 		pack();
 	}
@@ -61,13 +57,7 @@ public class QuickbaseDownloadDialog extends JDialog
 		cancelButton = new Button("Cancel");
 		cancelButton.addActionListener(
 				event -> {
-					try {
-						downloadFromQuickbaseWorker.stopDownload();
-					} catch (IOException e) {
-						PluginWorkspaceProvider.getPluginWorkspace()
-							.showErrorMessage(e.getMessage(), e);
-					}
-					dispose();
+					downloadFromQuickbaseWorker.cancel(true);
 				});
 		return cancelButton;
 	}
@@ -98,11 +88,29 @@ public class QuickbaseDownloadDialog extends JDialog
 			break;
 		case "state":
 			if (event.getNewValue() == SwingWorker.StateValue.DONE) {
-				progressBar.setValue(100); // Just to be sure
-				updateButtons();
+				updateOrDispose();
 			}
 		}
 			
+	}
+	
+	private void updateOrDispose() {
+		try {
+			if (downloadFromQuickbaseWorker.isCancelled()) {
+				dispose();
+				PluginWorkspaceProvider.getPluginWorkspace().showStatusMessage(
+						"Cancelled download of " + pid);
+				return;
+			}
+			if (downloadFromQuickbaseWorker.get())
+				updateButtons();
+			else dispose();
+		} catch (ExecutionException | InterruptedException e) {
+			dispose();
+			PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(
+					String.format("Failed to download %s:\n%s", pid, e
+							.getCause().toString()));
+		}
 	}
 	
 	public void updateButtons() {
