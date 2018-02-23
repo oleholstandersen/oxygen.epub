@@ -7,6 +7,7 @@ import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.LinkedList;
 
 import dk.nota.oxygen.common.ResultsView;
@@ -18,6 +19,7 @@ import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.XdmAtomicValue;
 import net.sf.saxon.s9api.XdmDestination;
 import net.sf.saxon.s9api.XsltTransformer;
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
 public class CreateDtbWorker extends AbstractEpubResultsWorker {
 	
@@ -52,7 +54,7 @@ public class CreateDtbWorker extends AbstractEpubResultsWorker {
 		for (String imagePathString : getImagePaths()) {
 			Path imagePath = epubFileSystem.getPath("/EPUB/", imagePathString);
 			Files.copy(imagePath, Paths.get(outputFolderUri.resolve(imagePath
-					.getFileName().toString())));
+					.getFileName().toString())), StandardCopyOption.REPLACE_EXISTING);
 		}
 		epubFileSystem.close();
 		getListener().writeToResultsView("IMAGE FILES COPIED");
@@ -78,7 +80,12 @@ public class CreateDtbWorker extends AbstractEpubResultsWorker {
 		concatTransformer.setParameter(new QName("UPDATE_EPUB"),
 				new XdmAtomicValue(false));
 		concatTransformer.transform();
-		if (copyImages) copyImages(outputFile.getParentFile().toURI());
+		try {
+			if (copyImages) copyImages(outputFile.getParentFile().toURI());
+		} catch (IOException e) {
+			PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(
+					"Unable to copy images due to IO error", e);
+		}
 		setSuccess();
 		if (returnDtbDocument) return ((XdmDestination)dtbConverter
 				.getDestination()).getXdmNode();

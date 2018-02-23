@@ -6,6 +6,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.nio.file.FileSystem;
+import java.nio.file.FileSystemNotFoundException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -72,7 +73,8 @@ public class EpubAccess {
 		FileSystem epubFileSystem = getEpubAsFileSystem();
 		Path newFilePath = Files.createFile(epubFileSystem.getPath(
 				internalFilePath));
-		boolean result = Files.exists(Files.copy(file.toPath(), newFilePath));
+		boolean result = Files.exists(Files.copy(file.toPath(), newFilePath,
+				StandardCopyOption.REPLACE_EXISTING));
 		epubFileSystem.close();
 		return result;
 	}
@@ -166,10 +168,17 @@ public class EpubAccess {
 	}
 	
 	public FileSystem getEpubAsFileSystem() throws IOException {
-		Map<String, String> environment = new HashMap<String,String>();
-        environment.put("create", "true");
-        return FileSystems.newFileSystem(URI.create("jar:"
-				+ getArchiveFileUrl()), environment);
+		URI epubArchiveUri = URI.create("jar:" + getArchiveFileUrl());
+		FileSystem epubFileSystem;
+		try {
+			epubFileSystem = FileSystems.getFileSystem(epubArchiveUri);
+		} catch (FileSystemNotFoundException e) {
+			Map<String, String> environment = new HashMap<String,String>();
+			environment.put("create", "true");
+			epubFileSystem = FileSystems.newFileSystem(epubArchiveUri,
+	        		environment);
+		}
+		return epubFileSystem;
 	}
 	
 	public EpubXmlAccess getEpubXmlAccess() {

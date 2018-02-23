@@ -65,7 +65,11 @@ public class EpubXmlAccess extends XmlAccess {
 						.getWidth())).append(new XdmAtomicValue(imageInfo
 								.getHeight()));
 			} catch (IOException e) {
-				throw new SaxonApiException(e.getMessage());
+				System.err.print(String.format(
+						"Image sizing failed due to %s: ", e.toString()));
+				e.printStackTrace();
+				return new XdmValue(new XdmAtomicValue(-1).append(
+						new XdmAtomicValue(-1)));
 			}
 		}
 
