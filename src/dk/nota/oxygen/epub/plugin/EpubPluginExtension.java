@@ -36,10 +36,6 @@ public class EpubPluginExtension implements WorkspaceAccessPluginExtension {
 	public static final String OPF_TOOLBAR = "dk.nota.oxygen.epub.toolbar.opf";
 	public static final String XHTML_TOOLBAR = "dk.nota.oxygen.epub.toolbar.xhtml";
 	
-	public static final String QB_ENABLED_OPTION = "dk.nota.oxygen.quickbase.enabled";
-	public static final String QB_EMAIL_OPTION = "dk.nota.oxygen.quickbase.userid";
-	public static final String QB_PASSWORD_OPTION = "dk.nota.oxygen.quickbase.password";
-	
 	private static QuickbaseAccess quickbaseAccess;
 	private static QuickbaseMenu quickbaseMenu;
 	
@@ -50,12 +46,9 @@ public class EpubPluginExtension implements WorkspaceAccessPluginExtension {
 
 	@Override
 	public void applicationStarted(StandalonePluginWorkspace pluginWorkspace) {
-		WSOptionsStorage optionsStorage = pluginWorkspace.getOptionsStorage();
-		quickbaseAccess = new QuickbaseAccess(optionsStorage);
+		quickbaseAccess = new QuickbaseAccess(pluginWorkspace);
 		quickbaseMenu = new QuickbaseMenu();
-		if (optionsStorage.getOption(QB_ENABLED_OPTION, "false").equals("true")) {
-			quickbaseMenu.populateQueue(quickbaseAccess);
-		} else quickbaseMenu.disableActions();
+		quickbaseAccess.addListener(quickbaseMenu);
 		pluginWorkspace.addEditorChangeListener(new WorkspaceSetupListener(
 				pluginWorkspace), StandalonePluginWorkspace.MAIN_EDITING_AREA);
 		pluginWorkspace.addToolbarComponentsCustomizer(

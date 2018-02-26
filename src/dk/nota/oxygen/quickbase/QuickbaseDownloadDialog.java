@@ -96,12 +96,6 @@ public class QuickbaseDownloadDialog extends JDialog
 	
 	private void updateOrDispose() {
 		try {
-			if (downloadFromQuickbaseWorker.isCancelled()) {
-				dispose();
-				PluginWorkspaceProvider.getPluginWorkspace().showStatusMessage(
-						"Cancelled download of " + pid);
-				return;
-			}
 			if (downloadFromQuickbaseWorker.get())
 				updateButtons();
 			else dispose();

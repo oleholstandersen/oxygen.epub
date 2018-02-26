@@ -13,7 +13,7 @@ import dk.nota.oxygen.epub.plugin.EpubPluginExtension;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.Menu;
 
-public class QuickbaseMenu extends Menu {
+public class QuickbaseMenu extends Menu implements QuickbaseAccessListener {
 
 	private LinkedList<JMenuItem> actionMenuItems = new LinkedList<JMenuItem>();
 	private ApproveQuickbaseProductionAction approveProductionAction =
@@ -27,7 +27,7 @@ public class QuickbaseMenu extends Menu {
 		actionMenuItems.add(add(new DownloadFromQuickbaseAction()));
 		addSeparator();
 		actionMenuItems.add(add(approveProductionAction));
-		actionMenuItems.add(add(showProductionAction));
+		add(showProductionAction).setEnabled(false);
 		addSeparator();
 		actionMenuItems.add(add(
 				new AbstractAction("Refresh queue") {
@@ -48,9 +48,21 @@ public class QuickbaseMenu extends Menu {
 		queueMenuItems.add(add(emptyMenuItem));
 	}
 	
+	@Override
+	public void connected(QuickbaseAccess quickbaseAccess) {
+		enableActions();
+		updateForEpub(EpubPluginExtension.getEditorAccess().getEpubAccess());
+		populateQueue(quickbaseAccess);
+	}
+	
 	public void disableActions() {
 		for (JMenuItem actionMenuItem : actionMenuItems)
 			actionMenuItem.setEnabled(false);
+	}
+	
+	@Override
+	public void disconnected(QuickbaseAccess quickbaseAccess) {
+		disableActions();
 	}
 	
 	public void enableActions() {
