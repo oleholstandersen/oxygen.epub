@@ -21,7 +21,6 @@ import dk.nota.oxygen.quickbase.QuickbaseMenu;
 import ro.sync.exml.plugin.workspace.WorkspaceAccessPluginExtension;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.editor.WSEditor;
-import ro.sync.exml.workspace.api.options.WSOptionsStorage;
 import ro.sync.exml.workspace.api.standalone.MenuBarCustomizer;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 import ro.sync.exml.workspace.api.standalone.ToolbarComponentsCustomizer;
@@ -100,31 +99,34 @@ public class EpubPluginExtension implements WorkspaceAccessPluginExtension {
 		}
 		
 		private void setupOpfToolbar(ToolbarInfo toolbar) {
+			Menu contentMenu = new Menu("Content");
+			contentMenu.add(new ConcatAction());
+			contentMenu.add(new SplitAction());
+			contentMenu.addSeparator();
+			contentMenu.add(new ReloadDocumentsAction());
 			Menu exportMenu = new Menu("Export");
-			exportMenu.insertAction(new CreateDtbAction(), 0);
-			exportMenu.insertSeparator(1);
-			exportMenu.insertAction(new CreateInspirationOutputAction(
-					"Inspiration: E-tekst", InspOutputType.INSP_ETEXT), 2);
-			exportMenu.insertAction(new CreateInspirationOutputAction(
-					"Inspiration: Korrektur", InspOutputType.INSP_PROOF), 3);
-			exportMenu.insertAction(new CreateInspirationOutputAction(
-					"Inspiration: Lyd", InspOutputType.INSP_AUDIO), 4);
-			exportMenu.insertAction(new CreateInspirationOutputAction(
-					"Inspiration: Punkt", InspOutputType.INSP_BRAILLE), 5);
-			exportMenu.insertAction(new CreateInspirationOutputAction(
-					"Inspiration: Tryk", InspOutputType.INSP_PRINT), 6);
-			exportMenu.insertSeparator(7);
-			exportMenu.insertAction(new CreateDocxAction(), 8);
-			exportMenu.insertSeparator(9);
-			exportMenu.insertAction(new CreateDaisyComicAction(), 10);
+			exportMenu.add(new CreateDtbAction());
+			exportMenu.addSeparator();
+			exportMenu.add(new CreateInspirationOutputAction(
+					"Inspiration: E-tekst", InspOutputType.INSP_ETEXT));
+			exportMenu.add(new CreateInspirationOutputAction(
+					"Inspiration: Korrektur", InspOutputType.INSP_PROOF));
+			exportMenu.add(new CreateInspirationOutputAction(
+					"Inspiration: Lyd", InspOutputType.INSP_AUDIO));
+			exportMenu.add(new CreateInspirationOutputAction(
+					"Inspiration: Punkt", InspOutputType.INSP_BRAILLE));
+			exportMenu.add(new CreateInspirationOutputAction(
+					"Inspiration: Tryk", InspOutputType.INSP_PRINT));
+			exportMenu.addSeparator();
+			exportMenu.add(new CreateDocxAction());
+			exportMenu.addSeparator();
+			exportMenu.add(new CreateDaisyComicAction());
 			Menu importMenu = new Menu("Import");
-			importMenu.insertAction(new ImportDocxAction(), 0);
-			importMenu.insertSeparator(1);
-			importMenu.insertAction(new ImportDtbAction(), 2);
+			importMenu.add(new ImportDocxAction());
+//			importMenu.addSeparator();
+//			importMenu.add(new ImportDtbAction());
 			JComponent[] opfComponents = new JComponent[] {
-				new ToolbarButton(new ConcatAction(), true),
-				new ToolbarButton(new SplitAction(), true),
-				new ToolbarButton(new ReloadDocumentsAction(), true),
+				contentMenu,
 				importMenu,
 				exportMenu
 			};
@@ -134,8 +136,8 @@ public class EpubPluginExtension implements WorkspaceAccessPluginExtension {
 		
 		private void setupXhtmlToolbar(ToolbarInfo toolbar) {
 			Menu importMenu = new Menu("Import");
-			importMenu.insertAction(new ImportDocxAction(), 0);
-			importMenu.insertAction(new ImportCatListAction(), 1);
+			importMenu.add(new ImportDocxAction());
+			importMenu.add(new ImportCatListAction());
 			JComponent[] xhtmlComponents = new JComponent[] {
 				new ToolbarButton(new UpdateNavigationAction(), true),
 				importMenu
