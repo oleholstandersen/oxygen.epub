@@ -24,9 +24,9 @@ public class XmlHttpResponseHandler extends AbstractResponseHandler<XdmNode> {
 			return xmlAccess.getDocumentBuilder().build(new StreamSource(entity
 					.getContent()));
 		} catch (UnsupportedOperationException e) {
-			throw new IOException(e);
+			throw e;
 		} catch (SaxonApiException e) {
-			throw new IOException("Unable to generate result node", e);
+			throw new IOException("S9API unable to generate result node", e);
 		}
 	}
 

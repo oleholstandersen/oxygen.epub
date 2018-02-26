@@ -20,8 +20,8 @@ import ro.sync.exml.workspace.api.util.UtilAccess;
 
 public class QuickbaseAccess {
 	
-	public static final String QB_AUTO_OPTION = "dk.nota.oxygen.quickbase.enabled";
-	public static final String QB_EMAIL_OPTION = "dk.nota.oxygen.quickbase.userid";
+	public static final String QB_AUTO_OPTION = "dk.nota.oxygen.quickbase.auto";
+	public static final String QB_EMAIL_OPTION = "dk.nota.oxygen.quickbase.useremail";
 	public static final String QB_PASSWORD_OPTION = "dk.nota.oxygen.quickbase.password";
 	public static final String QB_TOKEN_OPTION = "dk.nota.oxygen.quickbase.token";
 	public static final String QB_URL_MAIN_OPTION = "dk.nota.oxygen.quickbase.url.main";

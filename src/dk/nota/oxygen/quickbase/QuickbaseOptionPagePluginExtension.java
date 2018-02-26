@@ -40,7 +40,7 @@ public class QuickbaseOptionPagePluginExtension
 		optionsStorage.setOption(QuickbaseAccess.QB_PASSWORD_OPTION,
 				utilAccess.encrypt(String.valueOf(passwordField
 						.getPassword())));
-		optionsStorage.setOption(QuickbaseAccess.QB_ENABLED_OPTION,
+		optionsStorage.setOption(QuickbaseAccess.QB_AUTO_OPTION,
 				enabledCheckbox.isSelected() ? "true" : "false");
 		optionsStorage.setOption(QuickbaseAccess.QB_URL_MAIN_OPTION,
 				mainUrlField.getText());
@@ -190,7 +190,7 @@ public class QuickbaseOptionPagePluginExtension
 		passwordField.setText(utilAccess.decrypt(optionsStorage.getOption(
 				QuickbaseAccess.QB_PASSWORD_OPTION, "")));
 		enabledCheckbox.setSelected(optionsStorage.getOption(QuickbaseAccess
-				.QB_ENABLED_OPTION, "false").equals("true"));
+				.QB_AUTO_OPTION, "false").equals("true"));
 		mainUrlField.setText(optionsStorage.getOption(QuickbaseAccess
 				.QB_URL_MAIN_OPTION, "https://cnpxml.quickbase.com/db/main"));
 		tableUrlField.setText(optionsStorage.getOption(QuickbaseAccess
