@@ -20,7 +20,7 @@ import ro.sync.exml.workspace.api.util.UtilAccess;
 
 public class QuickbaseAccess {
 	
-	public static final String QB_ENABLED_OPTION = "dk.nota.oxygen.quickbase.enabled";
+	public static final String QB_AUTO_OPTION = "dk.nota.oxygen.quickbase.enabled";
 	public static final String QB_EMAIL_OPTION = "dk.nota.oxygen.quickbase.userid";
 	public static final String QB_PASSWORD_OPTION = "dk.nota.oxygen.quickbase.password";
 	public static final String QB_TOKEN_OPTION = "dk.nota.oxygen.quickbase.token";
@@ -50,6 +50,11 @@ public class QuickbaseAccess {
 				""));
 		String password = utilAccess.decrypt(optionsStorage.getOption(
 				QB_PASSWORD_OPTION, ""));
+		// This constructor is only called when the application starts, which
+		// means we check here whether the user has enabled auto connect
+		// (disabled by default)
+		if (optionsStorage.getOption(QB_AUTO_OPTION, "false").equals("false"))
+			return;
 		try {
 			connect(userEmail, password);
 		} catch (QuickbaseException e) {
