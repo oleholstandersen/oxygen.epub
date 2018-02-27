@@ -4,6 +4,9 @@ import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+
+import javax.swing.AbstractAction;
 import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
@@ -22,8 +25,10 @@ import ro.sync.exml.workspace.api.standalone.ui.Button;
 import ro.sync.exml.workspace.api.util.UtilAccess;
 
 public class QuickbaseOptionPagePluginExtension
-		extends OptionPagePluginExtension {
+		extends OptionPagePluginExtension implements QuickbaseAccessListener {
 	
+	private Button connectButton;
+	private JPanel credentialsPanel;
 	private JTextField emailField;
 	private JCheckBox enabledCheckbox;
 	private JTextField mainUrlField;
@@ -57,30 +62,15 @@ public class QuickbaseOptionPagePluginExtension
 		panel.add(component);
 	}
 	
-	private Button createConnectButton() {
-		QuickbaseAccess quickbaseAccess = EpubPluginExtension.getQuickbaseAccess();
-		boolean quickbaseConnected = quickbaseAccess.isConnected();
-		Button connectButton = new Button(quickbaseConnected ? "Disconnect" :
-				"Connect");
-		connectButton.addActionListener(
-				listener -> {
-					try {
-						if (quickbaseConnected) quickbaseAccess.disconnect();
-						else quickbaseAccess.connect(emailField.getText(),
-								passwordField.getPassword());
-					} catch (QuickbaseException e) {
-						PluginWorkspaceProvider.getPluginWorkspace()
-							.showErrorMessage("A QuickBase error occurred", e);
-					}
-				});
-		return connectButton;
+	@Override
+	public void connected(QuickbaseAccess quickbaseAccess) {
+		updateConnectButton(quickbaseAccess);
 	}
 	
 	private JPanel createCredentialsPanel() {
 		JPanel credentialsPanel = createPanel("Connection");
 		JLabel emailLabel = new JLabel("Email");
 		JLabel passwordLabel = new JLabel("Password");
-		Button connectButton = createConnectButton();
 		// Create constant constraints
 		GridBagConstraints constraints = new GridBagConstraints();
 		constraints.fill = GridBagConstraints.HORIZONTAL;
@@ -158,6 +148,11 @@ public class QuickbaseOptionPagePluginExtension
 		panel.setLayout(layout);
 		return panel;
 	}
+	
+	@Override
+	public void disconnected(QuickbaseAccess quickbaseAccess) {
+		updateConnectButton(quickbaseAccess);
+	}
 
 	@Override
 	public String getTitle() {
@@ -166,16 +161,23 @@ public class QuickbaseOptionPagePluginExtension
 
 	@Override
 	public JComponent init(PluginWorkspace pluginWorkspace) {
+		QuickbaseAccess quickbaseAccess = EpubPluginExtension.getQuickbaseAccess();
+		// Attach as listener to QuickbaseAccess
+		quickbaseAccess.addListener(this);
+		connectButton = new Button();
 		emailField = new JTextField(20);
 		enabledCheckbox = new JCheckBox();
 		mainUrlField = new JTextField(20);
 		passwordField = new JPasswordField(20);
 		tableUrlField = new JTextField(20);
 		tokenField = new JTextField(20);
+		// Update connect button
+		updateConnectButton(quickbaseAccess);
 		// Assemble panels
 		JPanel optionPanel = new JPanel();
 		optionPanel.setLayout(new BoxLayout(optionPanel, BoxLayout.Y_AXIS));
-		optionPanel.add(createCredentialsPanel());
+		credentialsPanel = createCredentialsPanel();
+		optionPanel.add(credentialsPanel);
 		optionPanel.add(createUserSettingsPanel());
 		optionPanel.add(createQuickbaseSettingsPanel());
 		// Workaround to avoid vertical expansion of panels in a BoxLayout
@@ -208,6 +210,34 @@ public class QuickbaseOptionPagePluginExtension
 		mainUrlField.setText("https://cnpxml.quickbase.com/db/main");
 		tableUrlField.setText("https://cnpxml.quickbase.com/db/bjcv74iq3");
 		tokenField.setText("");
+	}
+	
+	private void updateConnectButton(QuickbaseAccess quickbaseAccess) {
+		if (quickbaseAccess.isConnected()) {
+			connectButton.setAction(
+					new AbstractAction("Disconnect") {
+						@Override
+						public void actionPerformed(ActionEvent event) {
+							EpubPluginExtension.getQuickbaseAccess()
+								.disconnect();
+						}
+					});
+		} else {
+			connectButton.setAction(
+					new AbstractAction("Connect") {
+						@Override
+						public void actionPerformed(ActionEvent event) {
+							try {
+								EpubPluginExtension.getQuickbaseAccess()
+									.connect(emailField.getText(),
+											passwordField.getPassword());
+							} catch (QuickbaseException e) {
+								PluginWorkspaceProvider.getPluginWorkspace()
+									.showErrorMessage(e.getMessage(), e);
+							}
+						}
+					});
+		}
 	}
 
 }
