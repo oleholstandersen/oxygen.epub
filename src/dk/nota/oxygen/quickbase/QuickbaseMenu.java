@@ -51,7 +51,6 @@ public class QuickbaseMenu extends Menu implements QuickbaseAccessListener {
 	@Override
 	public void connected(QuickbaseAccess quickbaseAccess) {
 		enableActions();
-		updateForEpub(EpubPluginExtension.getEditorAccess().getEpubAccess());
 		populateQueue(quickbaseAccess);
 	}
 	
