@@ -11,7 +11,6 @@ import dk.nota.oxygen.epub.opf.CreateDaisyComicAction;
 import dk.nota.oxygen.epub.opf.CreateDocxAction;
 import dk.nota.oxygen.epub.opf.CreateDtbAction;
 import dk.nota.oxygen.epub.opf.CreateInspirationOutputAction;
-import dk.nota.oxygen.epub.opf.ImportDtbAction;
 import dk.nota.oxygen.epub.opf.InspOutputType;
 import dk.nota.oxygen.epub.opf.ReloadDocumentsAction;
 import dk.nota.oxygen.epub.opf.SplitAction;

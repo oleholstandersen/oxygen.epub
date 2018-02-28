@@ -34,6 +34,7 @@ public class EditorAccess {
 	}
 	
 	public URL getCurrentEditorUrl() {
+		if (editor == null) return null;
 		return editor.getEditorLocation();
 	}
 	

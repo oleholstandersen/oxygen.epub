@@ -26,7 +26,7 @@ public class QuickbaseMenu extends Menu implements QuickbaseAccessListener {
 		super("QuickBase");
 		actionMenuItems.add(add(new DownloadFromQuickbaseAction()));
 		addSeparator();
-		actionMenuItems.add(add(approveProductionAction));
+		add(approveProductionAction).setEnabled(false);
 		add(showProductionAction).setEnabled(false);
 		addSeparator();
 		actionMenuItems.add(add(
@@ -37,6 +37,8 @@ public class QuickbaseMenu extends Menu implements QuickbaseAccessListener {
 					}
 				}));
 		addEmptyQueueLabel();
+		if (!EpubPluginExtension.getQuickbaseAccess().isConnected())
+			enableActions(false);
 	}
 	
 	private void addEmptyQueueLabel() {
@@ -50,23 +52,23 @@ public class QuickbaseMenu extends Menu implements QuickbaseAccessListener {
 	
 	@Override
 	public void connected(QuickbaseAccess quickbaseAccess) {
-		enableActions();
+		enableActions(true);
 		populateQueue(quickbaseAccess);
-	}
-	
-	public void disableActions() {
-		for (JMenuItem actionMenuItem : actionMenuItems)
-			actionMenuItem.setEnabled(false);
+		if (EpubPluginExtension.getEditorAccess().getCurrentEditorUrl() == null)
+			return;
+		updateForEpub(EpubPluginExtension.getEditorAccess().getEpubAccess());
 	}
 	
 	@Override
 	public void disconnected(QuickbaseAccess quickbaseAccess) {
-		disableActions();
+		enableActions(false);
 	}
 	
-	public void enableActions() {
+	public void enableActions(boolean enable) {
 		for (JMenuItem actionMenuItem : actionMenuItems)
-			actionMenuItem.setEnabled(true);
+			actionMenuItem.setEnabled(enable);
+		for (JMenuItem queueMenuItem : queueMenuItems)
+			queueMenuItem.setEnabled(enable);
 	}
 	
 	public void emptyQueue() {
