@@ -7,6 +7,7 @@ import dk.nota.oxygen.common.EditorAccess;
 import dk.nota.oxygen.common.ResultsView;
 import dk.nota.oxygen.epub.common.ArchiveSensitiveAction;
 import dk.nota.oxygen.epub.common.EpubAccess;
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
 public class CreateDtbAction extends ArchiveSensitiveAction {
 	
@@ -16,22 +17,25 @@ public class CreateDtbAction extends ArchiveSensitiveAction {
 
 	@Override
 	public void actionPerformed(EditorAccess editorAccess) {
+		EpubAccess epubAccess = editorAccess.getEpubAccess();
+		String dtbFileName = "./" + epubAccess.getPid().replaceFirst(
+				"dk-nota-", "") + ".xml";
+		File dtbFile = null;
 		try {
-			EpubAccess epubAccess = editorAccess.getEpubAccess();
-			String dtbFileName = "./" + epubAccess.getPid().replaceFirst(
-					"dk-nota-", "") + ".xml";
-			File dtbFile = editorAccess.getWorkspace().chooseFile(new File(
+			dtbFile = editorAccess.getWorkspace().chooseFile(new File(
 					epubAccess.getArchiveFileUrl().toURI().resolve(dtbFileName)),
 					"Export [DTBook]", new String[] {"xml"}, "DTBook files",
 					true);
-			if (dtbFile == null) return;
-			CreateDtbWorker createDtbWorker = new CreateDtbWorker(editorAccess,
-					epubAccess, new ResultsView(epubAccess.getPid() +
-							" - Export [DTBook]"), dtbFile, false);
-			createDtbWorker.execute();
 		} catch (URISyntaxException e) {
-			editorAccess.showErrorMessage(e.toString());
+			PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(
+					"Unable to generate URI for output file", e);
 		}
+		if (dtbFile == null) return;
+		CreateDtbListener createDtbListener = new CreateDtbListener(
+				new ResultsView(epubAccess.getPid() + " - Export [DTBook]"));
+		CreateDtbWorker createDtbWorker = new CreateDtbWorker(
+				"DTBOOK CONVERSION", createDtbListener, epubAccess, dtbFile);
+		createDtbWorker.execute();
 	}
 
 }

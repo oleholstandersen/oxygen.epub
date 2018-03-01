@@ -1,5 +1,6 @@
 package dk.nota.oxygen.epub.opf;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -8,68 +9,52 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.LinkedList;
+import java.util.concurrent.ExecutionException;
 
-import dk.nota.oxygen.common.ResultsView;
-import dk.nota.oxygen.common.ResultsViewImageListener;
-import dk.nota.oxygen.common.EditorAccess;
-import dk.nota.oxygen.epub.common.AbstractEpubResultsWorker;
+import dk.nota.oxygen.epub.common.AbstractEpubWorkerWithResults;
 import dk.nota.oxygen.epub.common.EpubAccess;
 import net.sf.saxon.s9api.QName;
+import net.sf.saxon.s9api.SaxonApiException;
+import net.sf.saxon.s9api.Serializer;
 import net.sf.saxon.s9api.XdmAtomicValue;
 import net.sf.saxon.s9api.XdmDestination;
+import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XsltTransformer;
+import ro.sync.document.DocumentPositionedInfo;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
-public class CreateDtbWorker extends AbstractEpubResultsWorker {
+public class CreateDtbWorker
+		extends AbstractEpubWorkerWithResults<XdmNode,Object> {
 	
-	private boolean copyImages = true;
-	private java.io.File outputFile;
+	private File outputFile;
 	private String dtbIdentifier;
-	private EditorAccess editorAccess;
-	private boolean returnDtbDocument = false;
 	
-	public CreateDtbWorker(EditorAccess editorAccess, EpubAccess epubAccess,
-			ResultsView resultsView, java.io.File outputFile,
-			boolean returnDtbDocument) {
-		super(resultsView, new ResultsViewImageListener(resultsView),
-				epubAccess);
+	public CreateDtbWorker(String title, CreateDtbListener createDtbListener,
+			EpubAccess epubAccess, File outputFile) {
+		super(title, createDtbListener, epubAccess);
 		this.outputFile = outputFile;
-		this.editorAccess = editorAccess;
-		this.returnDtbDocument = returnDtbDocument;
-	}
-	
-	public CreateDtbWorker(EditorAccess editorAccess, EpubAccess epubAccess,
-			ResultsView resultsView, java.io.File outputFile,
-			boolean returnDtbDocument, boolean copyImages) {
-		this(editorAccess, epubAccess, resultsView, outputFile,
-				returnDtbDocument);
-		this.copyImages = copyImages;
 	}
 	
 	public void copyImages(URI outputFolderUri) throws IOException {
-		getListener().writeToResultsView("COPYING IMAGE FILES...");
+		fireResultsUpdate("COPYING IMAGES...");
 		Files.createDirectories(Paths.get(outputFolderUri));
 		FileSystem epubFileSystem = getEpubAccess().getEpubAsFileSystem();
-		for (String imagePathString : getImagePaths()) {
-			Path imagePath = epubFileSystem.getPath("/EPUB/", imagePathString);
+		for (String imageUrl : ((CreateDtbListener)getResultsListener())
+				.getImageUrls()) {
+			Path imagePath = epubFileSystem.getPath("/EPUB/", imageUrl);
 			Files.copy(imagePath, Paths.get(outputFolderUri.resolve(imagePath
 					.getFileName().toString())), StandardCopyOption.REPLACE_EXISTING);
 		}
 		epubFileSystem.close();
-		getListener().writeToResultsView("IMAGE FILES COPIED");
 	}
 
 	@Override
-	protected Object doInBackground() throws Exception {
+	protected XdmNode doInBackground() throws Exception {
 		XsltTransformer concatTransformer = getEpubAccess()
-				.getConcatTransformer(getListener(), getListener());
+				.getConcatTransformer(getResultsListener(), getResultsListener());
 		XsltTransformer dtbConverter = getEpubAccess().getDtbConverter(
-				getListener(), getListener());
-		if (returnDtbDocument) {
-			dtbConverter.setDestination(new XdmDestination());
-		} else dtbConverter.setDestination(getEpubAccess().getEpubXmlAccess()
-				.getSerializer(outputFile));
+				getResultsListener(), getResultsListener());
+		dtbConverter.setDestination(new XdmDestination());
 		if (dtbIdentifier != null) dtbConverter.setParameter(new QName(
 				"IDENTIFIER"), new XdmAtomicValue(dtbIdentifier));
 		dtbConverter.setParameter(new QName("NAV_DOCUMENT"), getEpubAccess()
@@ -80,50 +65,51 @@ public class CreateDtbWorker extends AbstractEpubResultsWorker {
 		concatTransformer.setParameter(new QName("UPDATE_EPUB"),
 				new XdmAtomicValue(false));
 		concatTransformer.transform();
+		return ((XdmDestination)dtbConverter.getDestination()).getXdmNode();
+	}
+	
+	@Override
+	protected void done() {
+		// The following operations ought not to be executed on the EDT;
+		// however, it makes sense to have doInBackground() return the DTBook
+		// document in the current setup, which makes this the logical place
+		// for creating the file and copying images for the time being.
+		// TODO: Create classes - Concatter, DtbConverter - with just the
+		// relevant functionality and use the workers to combine them, rather
+		// than relying on SwingWorker output
+		Serializer serializer = getEpubAccess().getEpubXmlAccess()
+				.getSerializer(outputFile);
 		try {
-			if (copyImages) copyImages(outputFile.getParentFile().toURI());
-		} catch (IOException e) {
+			// Serialize output of doInBackground() to file
+			serializer.serializeNode(get());
+			serializer.close();
+			// Copy images
+			copyImages(outputFile.getParentFile().toURI());
+			// Notify listener that we're done
+			fireResultsUpdate("DTBOOK CONVERSION DONE");
+			// Open DTBook file in editor
+			PluginWorkspaceProvider.getPluginWorkspace().open(outputFile.toURI()
+					.toURL());
+		} catch (ExecutionException | InterruptedException |
+				SaxonApiException e) {
+			getResultsListener().writeException(
+					e instanceof ExecutionException ? e.getCause() : e,
+					DocumentPositionedInfo.SEVERITY_FATAL);
+		} catch (MalformedURLException e) {
 			PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(
-					"Unable to copy images due to IO error", e);
+					"Unable to open DTBook file due to malformed URL", e);
+		} catch (IOException e) {
+			getResultsListener().writeException(e,
+					DocumentPositionedInfo.SEVERITY_ERROR);
 		}
-		setSuccess();
-		if (returnDtbDocument) return ((XdmDestination)dtbConverter
-				.getDestination()).getXdmNode();
-		return null;
 	}
 	
-	public EditorAccess getEditorAccess() {
-		return editorAccess;
-	}
-	
-	public LinkedList<String> getImagePaths() {
-		return ((ResultsViewImageListener)getListener()).getImagePaths();
-	}
-	
-	public java.io.File getOutputFile() {
+	public File getFile() {
 		return outputFile;
 	}
 	
 	public void setDtbIdentifier(String identifier) {
 		dtbIdentifier = identifier;
-	}
-	
-	@Override
-	protected void done() {
-		if (getSuccess()) {
-			try {
-				if (returnDtbDocument) {
-					getListener().writeToResultsView("DTBOOK CONVERSION DONE");
-				} else {
-					getListener().writeToResultsView("DTBOOK CONVERSION DONE",
-							outputFile.toURI().toString());
-					editorAccess.getWorkspace().open(outputFile.toURI()
-							.toURL());
-				}
-			} catch (MalformedURLException e) {
-				editorAccess.showErrorMessage(e.toString());
-			}
-		}
 	}
 
 }

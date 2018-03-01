@@ -7,6 +7,7 @@ import dk.nota.oxygen.common.EditorAccess;
 import dk.nota.oxygen.common.ResultsView;
 import dk.nota.oxygen.epub.common.ArchiveSensitiveAction;
 import dk.nota.oxygen.epub.common.EpubAccess;
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
 public class CreateInspirationOutputAction extends ArchiveSensitiveAction {
 	
@@ -21,12 +22,12 @@ public class CreateInspirationOutputAction extends ArchiveSensitiveAction {
 	@Override
 	public void actionPerformed(EditorAccess editorAccess) {
 		EpubAccess epubAccess = editorAccess.getEpubAccess();
+		String identifier = outputType.getPrefix() + epubAccess.getPid()
+				.substring(4);
+		String processName = String.format("Export [%s]", outputType
+				.getName());
+		File outputFile = null;
 		try {
-			String identifier = outputType.getPrefix() + epubAccess.getPid()
-					.substring(4);
-			String processName = String.format("Export [%s]", outputType
-					.getName());
-			File outputFile = null;
 			switch (outputType) {
 			case INSP_PRINT:
 				outputFile = editorAccess.getWorkspace().chooseDirectory();
@@ -35,25 +36,28 @@ public class CreateInspirationOutputAction extends ArchiveSensitiveAction {
 				outputFile = editorAccess.getWorkspace().chooseFile(new File(
 						epubAccess.getArchiveFileUrl().toURI().resolve(
 						identifier + ".htm")), processName,
-						new String[] {"htm", "html", "xhtml"}, "HTML files",
+						new String[] { "htm", "html", "xhtml" }, "HTML files",
 						true);
 				break;
 			default:
 				outputFile = editorAccess.getWorkspace().chooseFile(new File(
 						epubAccess.getArchiveFileUrl().toURI().resolve(
-						identifier + ".xml")), processName, new String[] {"xml"},
-						"DTBook files", true);
+						identifier + ".xml")), processName, new String[] {
+								"xml" }, "DTBook files", true);
 			}
-			if (outputFile == null) return;
-			CreateInspirationOutputWorker outputWorker =
-				new CreateInspirationOutputWorker(editorAccess, epubAccess,
-						new ResultsView(epubAccess.getPid() + " - " +
-								processName), outputFile, outputType);
-			outputWorker.setDtbIdentifier(identifier);
-			outputWorker.execute();
 		} catch (URISyntaxException e) {
-			editorAccess.showErrorMessage(e.toString());
+			PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(
+					"Unable to generate URI for output file(s)", e);
 		}
+		if (outputFile == null) return;
+		CreateDtbListener createDtbListener = new CreateDtbListener(new ResultsView(
+				epubAccess.getPid() + " - " + processName));
+		CreateInspirationOutputWorker outputWorker =
+			new CreateInspirationOutputWorker(createDtbListener, epubAccess,
+					outputFile, outputType);
+		outputWorker.setDtbIdentifier(identifier);
+		outputWorker.execute();
+		
 	}
 
 }

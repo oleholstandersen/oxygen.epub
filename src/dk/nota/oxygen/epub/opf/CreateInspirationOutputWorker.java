@@ -2,31 +2,31 @@ package dk.nota.oxygen.epub.opf;
 
 import java.io.File;
 import java.net.MalformedURLException;
+import java.util.concurrent.ExecutionException;
 
-import dk.nota.oxygen.common.ResultsView;
-import dk.nota.oxygen.common.EditorAccess;
 import dk.nota.oxygen.epub.common.EpubAccess;
-import dk.nota.oxygen.xml.ResultsViewListener;
 import net.sf.saxon.s9api.XdmDestination;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XsltTransformer;
+import ro.sync.document.DocumentPositionedInfo;
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
 public class CreateInspirationOutputWorker extends CreateDtbWorker {
 	
 	private InspOutputType outputType;
 
-	public CreateInspirationOutputWorker(EditorAccess editorAccess,
-			EpubAccess epubAccess, ResultsView resultsView,
-			File outputFile, InspOutputType outputType) {
-		super(editorAccess, epubAccess, resultsView, outputFile, true);
+	public CreateInspirationOutputWorker(CreateDtbListener createDtbListener,
+			EpubAccess epubAccess, File outputFile, InspOutputType outputType) {
+		super("INSPIRATION CONVERSION", createDtbListener, epubAccess,
+				outputFile);
 		this.outputType = outputType;
 	}
 	
 	@Override
-	protected Object doInBackground() throws Exception {
-		XdmNode dtbDocument = (XdmNode)super.doInBackground();
-		getResultsView().writeResult(String.format("CONVERTING TO %s...",
-				outputType.getName().toUpperCase()));
+	protected XdmNode doInBackground() throws Exception {
+		XdmNode dtbDocument = super.doInBackground();
+		fireResultsUpdate(String.format("CONVERTING TO %s...", outputType
+				.getName().toUpperCase()));
 		XsltTransformer outputTransformer = null;
 		switch (outputType) {
 		case INSP_AUDIO:
@@ -44,7 +44,7 @@ public class CreateInspirationOutputWorker extends CreateDtbWorker {
 		case INSP_PRINT:
 			outputTransformer = getEpubAccess().getEpubXmlAccess()
 					.getXsltTransformer("inspiration/inspiration-print.xsl");
-			outputTransformer.setBaseOutputURI(getOutputFile().toURI()
+			outputTransformer.setBaseOutputURI(getFile().toURI()
 					.toString());
 			break;
 		case INSP_PROOF:
@@ -52,30 +52,32 @@ public class CreateInspirationOutputWorker extends CreateDtbWorker {
 			outputTransformer = getEpubAccess().getEpubXmlAccess()
 					.getXsltTransformer("inspiration/inspiration-proof.xsl");
 		}
-		outputTransformer.setErrorListener(new ResultsViewListener(
-				getResultsView()));
-		outputTransformer.setMessageListener(new ResultsViewListener(
-				getResultsView()));
+		outputTransformer.setErrorListener(getResultsListener());
+		outputTransformer.setMessageListener(getResultsListener());
 		outputTransformer.setInitialContextNode(dtbDocument);
-		outputTransformer.setDestination(outputType != InspOutputType.INSP_PRINT ?
-				getEpubAccess().getEpubXmlAccess().getSerializer(getOutputFile()) :
+		outputTransformer.setDestination(
+				outputType != InspOutputType.INSP_PRINT ?
+				getEpubAccess().getEpubXmlAccess().getSerializer(getFile()) :
 				new XdmDestination());
 		outputTransformer.transform();
-		setSuccess();
 		return null;
 	}
 	
 	@Override
 	protected void done() {
-		if (getSuccess()) {
-			getResultsView().writeResult("CONVERSION DONE");
-			try {
-				if (outputType != InspOutputType.INSP_PRINT)
-					getEditorAccess().getWorkspace().open(getOutputFile().toURI()
-						.toURL());
-			} catch (MalformedURLException e) {
-				getEditorAccess().showErrorMessage(e.toString());
-			}
+		try {
+			get();
+			fireResultsUpdate("INSPIRATION CONVERSION DONE");
+			if (outputType != InspOutputType.INSP_PRINT)
+				PluginWorkspaceProvider.getPluginWorkspace().open(
+						getFile().toURI().toURL());
+		} catch (InterruptedException | ExecutionException e) {
+			getResultsListener().writeException(
+					e instanceof ExecutionException ? e.getCause() : e,
+					DocumentPositionedInfo.SEVERITY_FATAL);
+		} catch (MalformedURLException e) {
+			PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(
+					"Unable to open DTBook file due to malformed URL", e);
 		}
 	}
 

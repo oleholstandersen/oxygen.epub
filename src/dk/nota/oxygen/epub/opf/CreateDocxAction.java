@@ -7,6 +7,7 @@ import dk.nota.oxygen.common.ResultsView;
 import dk.nota.oxygen.common.EditorAccess;
 import dk.nota.oxygen.epub.common.ArchiveSensitiveAction;
 import dk.nota.oxygen.epub.common.EpubAccess;
+import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
 public class CreateDocxAction extends ArchiveSensitiveAction {
 
@@ -16,22 +17,25 @@ public class CreateDocxAction extends ArchiveSensitiveAction {
 
 	@Override
 	public void actionPerformed(EditorAccess editorAccess) {
+		EpubAccess epubAccess = editorAccess.getEpubAccess();
+		String docxFileName = "./" + epubAccess.getPid().replaceFirst(
+				"dk-nota-", "") + ".docx";
+		File docxFile = null;
 		try {
-			EpubAccess epubAccess = editorAccess.getEpubAccess();
-			String docxFileName = "./" + epubAccess.getPid().replaceFirst(
-					"dk-nota-", "") + ".docx";
-			File docxFile = editorAccess.getWorkspace().chooseFile(new File(
+			docxFile = editorAccess.getWorkspace().chooseFile(new File(
 					epubAccess.getArchiveFileUrl().toURI().resolve(
 					docxFileName)), "Export [Docx]", new String[] {"docx"},
 					"Word documents", true);
-			if (docxFile == null) return;
-			CreateDocxWorker createDocxWorker = new CreateDocxWorker(
-					editorAccess, epubAccess, new ResultsView(epubAccess
-							.getPid() + " - Create Docx"), docxFile);
-			createDocxWorker.execute();
 		} catch (URISyntaxException e) {
-			editorAccess.showErrorMessage(e.toString());
+			PluginWorkspaceProvider.getPluginWorkspace().showErrorMessage(
+					"Unable to generate URI for output file", e);
 		}
+		if (docxFile == null) return;
+		CreateDtbListener createDtbListener = new CreateDtbListener(
+				new ResultsView(epubAccess.getPid() + " - Create Docx"));
+		CreateDocxWorker createDocxWorker = new CreateDocxWorker(
+					createDtbListener, epubAccess, docxFile);
+		createDocxWorker.execute();
 	}
 
 }

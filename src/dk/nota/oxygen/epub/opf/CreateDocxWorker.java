@@ -8,34 +8,30 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
+import java.util.concurrent.ExecutionException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import dk.nota.oxygen.common.ResultsView;
-import dk.nota.oxygen.common.EditorAccess;
 import dk.nota.oxygen.epub.common.EpubAccess;
 import net.sf.saxon.s9api.XdmDestination;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XsltTransformer;
+import ro.sync.document.DocumentPositionedInfo;
 
 public class CreateDocxWorker extends CreateDtbWorker {
 	
-	private File docxFile;
-	private String docxFileName;
 	private URI tempDocxFolderUri;
 	
-	public CreateDocxWorker(EditorAccess editorAccess, EpubAccess epubAccess,
-			ResultsView resultsView, File docxFile) {
-		super(editorAccess, epubAccess, resultsView, docxFile, true, false);
-		this.docxFile = docxFile;
-		docxFileName = docxFile.getName();
-		tempDocxFolderUri = docxFile.toURI().resolve(docxFileName + ".tmp/");
+	public CreateDocxWorker(CreateDtbListener createDtbListener,
+			EpubAccess epubAccess, File docxFile) {
+		super("DOCX CONVERSION", createDtbListener, epubAccess, docxFile);
+		tempDocxFolderUri = docxFile.toURI().resolve(docxFile.getName() + ".tmp/");
 	}
 
 	@Override
-	protected Object doInBackground() throws Exception {
-		XdmNode dtbDocument = (XdmNode)super.doInBackground();
-		getResultsView().writeResult("CONVERTING TO DOCX...");
+	protected XdmNode doInBackground() throws Exception {
+		XdmNode dtbDocument = super.doInBackground();
+		fireResultsUpdate("CONVERTING TO DOCX...");
 		XsltTransformer docxTransformer = getEpubAccess().getEpubXmlAccess()
 				.getXsltTransformer("dtbook2docx/dtbook2docx.xsl");
 		docxTransformer.setInitialContextNode(dtbDocument);
@@ -44,7 +40,8 @@ public class CreateDocxWorker extends CreateDtbWorker {
 		docxTransformer.transform();
 		copyImages(tempDocxFolderUri.resolve("word/media/"));
 		Path tempDocxFolderPath = Paths.get(tempDocxFolderUri);
-		Path docxFilePath = tempDocxFolderPath.resolve("../" + docxFileName);
+		Path docxFilePath = getFile().toPath();
+		fireResultsUpdate("ZIPPING FILES...");
 		try (ZipOutputStream zipOutputStream = new ZipOutputStream(
 				Files.newOutputStream(docxFilePath))) {
 					Files.walk(tempDocxFolderPath)
@@ -58,10 +55,12 @@ public class CreateDocxWorker extends CreateDtbWorker {
 								zipOutputStream.closeEntry();
 								Files.delete(path);
 							} catch (Exception e) {
-								getEditorAccess().showErrorMessage(e.toString());
+								getResultsListener().writeException(e,
+										DocumentPositionedInfo.SEVERITY_FATAL);
 							}
 				});
 		}
+		fireResultsUpdate("DELETING TEMPORARY FILES...");
 		Files.walkFileTree(tempDocxFolderPath, new SimpleFileVisitor<Path>() {
 			@Override
 			public FileVisitResult postVisitDirectory(Path folder,
@@ -75,8 +74,18 @@ public class CreateDocxWorker extends CreateDtbWorker {
 	
 	@Override
 	protected void done() {
-		getResultsView().writeResult("DOCX CONVERSION DONE", docxFile.toURI()
-				.toString());
+		// Default behaviour: Write to results view that the task is done, or
+		// print out exceptions
+		try {
+			// Catch exceptions from doInBackground()
+			get();
+			// Write to results view that update is done
+			fireResultsUpdate("DOCX CONVERSION DONE");
+		} catch (ExecutionException | InterruptedException e) {
+			getResultsListener().writeException(
+					e instanceof ExecutionException ? e.getCause() : e,
+					DocumentPositionedInfo.SEVERITY_FATAL);
+		}
 	}
 
 }
