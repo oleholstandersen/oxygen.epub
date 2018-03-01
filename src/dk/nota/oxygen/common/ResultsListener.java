@@ -18,6 +18,9 @@ import ro.sync.document.DocumentPositionedInfo;
 public class ResultsListener implements ErrorListener, MessageListener,
 		PropertyChangeListener {
 	
+	public final static String UPDATE_RESULTS_PROPERTY =
+			"dk.nota.oxygen.results.update";
+	
 	private ResultsView resultsView;
 	
 	public ResultsListener(ResultsView resultsView) {
@@ -45,6 +48,10 @@ public class ResultsListener implements ErrorListener, MessageListener,
 		// Subclasses can override this method if they need to do more with the
 		// message received by message()
 	}
+	
+	protected void handlePropertyChange(PropertyChangeEvent event) {
+		
+	}
 
 	@Override
 	public final void message(XdmNode message, boolean terminate,
@@ -71,7 +78,10 @@ public class ResultsListener implements ErrorListener, MessageListener,
 
 	@Override
 	public void propertyChange(PropertyChangeEvent event) {
-		// Subclasses should override this method
+		// Print the NEW values of relevant properties
+		if (event.getPropertyName().equals(UPDATE_RESULTS_PROPERTY))
+			resultsView.writeResult(event.getNewValue().toString());
+		handlePropertyChange(event);
 	}
 
 	@Override

@@ -15,6 +15,7 @@ public abstract class AbstractWorkerWithResults<T,E> extends SwingWorker<T,E> {
 			ResultsListener resultsListener) {
 		this.resultsListener = resultsListener;
 		this.title = title;
+		addPropertyChangeListener(resultsListener);
 	}
 	
 	@Override
@@ -35,6 +36,11 @@ public abstract class AbstractWorkerWithResults<T,E> extends SwingWorker<T,E> {
 	
 	public ResultsListener getResultsListener() {
 		return resultsListener;
+	}
+	
+	public void fireResultsUpdate(String result) {
+		firePropertyChange(ResultsListener.UPDATE_RESULTS_PROPERTY, "",
+				result);
 	}
 
 }
