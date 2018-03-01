@@ -12,6 +12,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import dk.nota.oxygen.common.ImageStoringResultsListener;
 import dk.nota.oxygen.epub.common.EpubAccess;
 import net.sf.saxon.s9api.XdmDestination;
 import net.sf.saxon.s9api.XdmNode;
@@ -22,10 +23,11 @@ public class CreateDocxWorker extends CreateDtbWorker {
 	
 	private URI tempDocxFolderUri;
 	
-	public CreateDocxWorker(CreateDtbListener createDtbListener,
+	public CreateDocxWorker(ImageStoringResultsListener imageListener,
 			EpubAccess epubAccess, File docxFile) {
-		super("DOCX CONVERSION", createDtbListener, epubAccess, docxFile);
-		tempDocxFolderUri = docxFile.toURI().resolve(docxFile.getName() + ".tmp/");
+		super("DOCX CONVERSION", imageListener, epubAccess, docxFile);
+		tempDocxFolderUri = docxFile.toURI().resolve(docxFile.getName() +
+				".tmp/");
 	}
 
 	@Override

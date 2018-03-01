@@ -11,6 +11,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.concurrent.ExecutionException;
 
+import dk.nota.oxygen.common.ImageStoringResultsListener;
 import dk.nota.oxygen.epub.common.AbstractEpubWorkerWithResults;
 import dk.nota.oxygen.epub.common.EpubAccess;
 import net.sf.saxon.s9api.QName;
@@ -29,9 +30,9 @@ public class CreateDtbWorker
 	private File outputFile;
 	private String dtbIdentifier;
 	
-	public CreateDtbWorker(String title, CreateDtbListener createDtbListener,
+	public CreateDtbWorker(String title, ImageStoringResultsListener imageListener,
 			EpubAccess epubAccess, File outputFile) {
-		super(title, createDtbListener, epubAccess);
+		super(title, imageListener, epubAccess);
 		this.outputFile = outputFile;
 	}
 	
@@ -39,11 +40,12 @@ public class CreateDtbWorker
 		fireResultsUpdate("COPYING IMAGES...");
 		Files.createDirectories(Paths.get(outputFolderUri));
 		FileSystem epubFileSystem = getEpubAccess().getEpubAsFileSystem();
-		for (String imageUrl : ((CreateDtbListener)getResultsListener())
-				.getImageUrls()) {
+		for (String imageUrl : ((ImageStoringResultsListener)
+				getResultsListener()).getImageUrls()) {
 			Path imagePath = epubFileSystem.getPath("/EPUB/", imageUrl);
 			Files.copy(imagePath, Paths.get(outputFolderUri.resolve(imagePath
-					.getFileName().toString())), StandardCopyOption.REPLACE_EXISTING);
+					.getFileName().toString())), StandardCopyOption
+					.REPLACE_EXISTING);
 		}
 		epubFileSystem.close();
 	}

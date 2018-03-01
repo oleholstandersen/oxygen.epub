@@ -4,6 +4,7 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.util.concurrent.ExecutionException;
 
+import dk.nota.oxygen.common.ImageStoringResultsListener;
 import dk.nota.oxygen.epub.common.EpubAccess;
 import net.sf.saxon.s9api.XdmDestination;
 import net.sf.saxon.s9api.XdmNode;
@@ -15,9 +16,10 @@ public class CreateInspirationOutputWorker extends CreateDtbWorker {
 	
 	private InspOutputType outputType;
 
-	public CreateInspirationOutputWorker(CreateDtbListener createDtbListener,
-			EpubAccess epubAccess, File outputFile, InspOutputType outputType) {
-		super("INSPIRATION CONVERSION", createDtbListener, epubAccess,
+	public CreateInspirationOutputWorker(
+			ImageStoringResultsListener imageListener, EpubAccess epubAccess,
+			File outputFile, InspOutputType outputType) {
+		super("INSPIRATION CONVERSION", imageListener, epubAccess,
 				outputFile);
 		this.outputType = outputType;
 	}

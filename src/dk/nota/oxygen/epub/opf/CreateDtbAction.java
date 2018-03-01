@@ -4,6 +4,7 @@ import java.io.File;
 import java.net.URISyntaxException;
 
 import dk.nota.oxygen.common.EditorAccess;
+import dk.nota.oxygen.common.ImageStoringResultsListener;
 import dk.nota.oxygen.common.ResultsView;
 import dk.nota.oxygen.epub.common.ArchiveSensitiveAction;
 import dk.nota.oxygen.epub.common.EpubAccess;
@@ -31,10 +32,10 @@ public class CreateDtbAction extends ArchiveSensitiveAction {
 					"Unable to generate URI for output file", e);
 		}
 		if (dtbFile == null) return;
-		CreateDtbListener createDtbListener = new CreateDtbListener(
+		ImageStoringResultsListener imageListener = new ImageStoringResultsListener(
 				new ResultsView(epubAccess.getPid() + " - Export [DTBook]"));
 		CreateDtbWorker createDtbWorker = new CreateDtbWorker(
-				"DTBOOK CONVERSION", createDtbListener, epubAccess, dtbFile);
+				"DTBOOK CONVERSION", imageListener, epubAccess, dtbFile);
 		createDtbWorker.execute();
 	}
 
