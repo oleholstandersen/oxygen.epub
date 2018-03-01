@@ -6,8 +6,7 @@ import javax.swing.SwingWorker;
 
 import ro.sync.document.DocumentPositionedInfo;
 
-public abstract class AbstractWorkerWithResults
-		extends SwingWorker<Object,Object>{
+public abstract class AbstractWorkerWithResults<T,E> extends SwingWorker<T,E> {
 	
 	private ResultsListener resultsListener;
 	private String title;

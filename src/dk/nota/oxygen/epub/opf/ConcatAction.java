@@ -41,9 +41,9 @@ public class ConcatAction extends ArchiveSensitiveAction {
 						messageIterator.next().getStringValue());
 			}
 		};
-		AbstractEpubWorkerWithResults concatWorker =
-				new AbstractEpubWorkerWithResults("CONCAT", resultsListener,
-						epubAccess) {
+		AbstractEpubWorkerWithResults<Object,Object> concatWorker =
+				new AbstractEpubWorkerWithResults<Object,Object>("CONCAT",
+						resultsListener, epubAccess) {
 					@Override
 					protected Object doInBackground() throws Exception {
 						XsltTransformer concatTransformer = getEpubAccess()

@@ -3,8 +3,8 @@ package dk.nota.oxygen.epub.common;
 import dk.nota.oxygen.common.AbstractWorkerWithResults;
 import dk.nota.oxygen.common.ResultsListener;
 
-public abstract class AbstractEpubWorkerWithResults
-		extends AbstractWorkerWithResults {
+public abstract class AbstractEpubWorkerWithResults<T,E>
+		extends AbstractWorkerWithResults<T,E> {
 
 	private EpubAccess epubAccess;
 	

@@ -20,9 +20,9 @@ public class UpdateNavigationAction extends ArchiveSensitiveAction {
 		EpubAccess epubAccess = editorAccess.getEpubAccess();
 		ResultsListener resultsListener = new ResultsListener(
 				new ResultsView(epubAccess.getPid() + " - Update navigation"));
-		AbstractEpubWorkerWithResults updateNavigationWorker =
-				new AbstractEpubWorkerWithResults("NAVIGATION UPDATE",
-						resultsListener, epubAccess) {
+		AbstractEpubWorkerWithResults<Object,Object> updateNavigationWorker =
+				new AbstractEpubWorkerWithResults<Object,Object>(
+						"NAVIGATION UPDATE", resultsListener, epubAccess) {
 					@Override
 					protected Object doInBackground() throws Exception {
 						XsltTransformer navigationTransformer = getEpubAccess()

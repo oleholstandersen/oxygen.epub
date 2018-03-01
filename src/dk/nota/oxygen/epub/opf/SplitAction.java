@@ -19,8 +19,8 @@ public class SplitAction extends ArchiveSensitiveAction {
 		EpubAccess epubAccess = editorAccess.getEpubAccess();
 		ResultsListener resultsListener = new ResultsListener(new ResultsView(
 				epubAccess.getPid() + " - Split"));
-		AbstractEpubWorkerWithResults splitWorker =
-				new AbstractEpubWorkerWithResults("SPLIT", resultsListener,
+		AbstractEpubWorkerWithResults<Object,Object> splitWorker =
+				new AbstractEpubWorkerWithResults<Object,Object>("SPLIT", resultsListener,
 						epubAccess) {
 					@Override
 					protected Object doInBackground() throws Exception {
