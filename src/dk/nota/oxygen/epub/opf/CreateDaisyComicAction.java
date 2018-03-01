@@ -9,7 +9,7 @@ import java.nio.file.Paths;
 
 import dk.nota.oxygen.common.EditorAccess;
 import dk.nota.oxygen.common.ResultsView;
-import dk.nota.oxygen.common.ResultsViewImageListener;
+import dk.nota.oxygen.common.ImageStoringResultsListener;
 import dk.nota.oxygen.epub.common.ArchiveSensitiveAction;
 import dk.nota.oxygen.epub.common.EpubAccess;
 import net.sf.saxon.s9api.QName;
@@ -28,12 +28,11 @@ public class CreateDaisyComicAction extends ArchiveSensitiveAction {
 	public void actionPerformed(EditorAccess editorAccess) {
 		try {
 			EpubAccess epubAccess = editorAccess.getEpubAccess();
-			File outputDir = editorAccess.getWorkspace()
-					.chooseDirectory();
+			File outputDir = editorAccess.getWorkspace().chooseDirectory();
 			if (outputDir == null) return;
-			ResultsViewImageListener imageListener =
-					new ResultsViewImageListener(new ResultsView(
-							epubAccess.getPid() + " - Create DAISY comic"));
+			ImageStoringResultsListener imageListener = 
+					new ImageStoringResultsListener(new ResultsView(epubAccess
+							.getPid() + " - Create DAISY comic"));
 			XsltTransformer concatTransformer = epubAccess.getConcatTransformer(
 					imageListener, imageListener);
 			XsltTransformer daisyComicTransformer = epubAccess.getEpubXmlAccess()
@@ -45,10 +44,11 @@ public class CreateDaisyComicAction extends ArchiveSensitiveAction {
 			daisyComicTransformer.setParameter(new QName("OUTPUT_FOLDER_URL"),
 					new XdmAtomicValue(outputDir.toURI().toString()));
 			concatTransformer.transform();
+			daisyComicTransformer.close();
 			FileSystem epubFileSystem = epubAccess.getEpubAsFileSystem();
-			for (String imagePathString : imageListener.getImagePaths()) {
+			for (String imageUrl : imageListener.getImageUrls()) {
 				Path imagePath = epubFileSystem.getPath("/EPUB/",
-						imagePathString);
+						imageUrl);
 				Files.copy(imagePath, Paths.get(outputDir.toURI().resolve(
 						imagePath.getFileName().toString())));
 			}

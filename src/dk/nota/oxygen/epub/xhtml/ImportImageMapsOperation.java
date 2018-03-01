@@ -14,7 +14,7 @@ import javax.xml.transform.stream.StreamSource;
 import dk.nota.oxygen.common.AbstractAuthorOperation;
 import dk.nota.oxygen.common.EditorAccess;
 import dk.nota.oxygen.common.ResultsView;
-import dk.nota.oxygen.common.ResultsViewImageListener;
+import dk.nota.oxygen.common.ImageStoringResultsListener;
 import dk.nota.oxygen.epub.common.EpubAccess;
 import dk.nota.oxygen.epub.plugin.EpubPluginExtension;
 import net.sf.saxon.s9api.QName;
@@ -30,11 +30,11 @@ public class ImportImageMapsOperation extends AbstractAuthorOperation {
 	private int depth;
 	private EditorAccess editorAccess;
 	private EpubAccess epubAccess;
-	private ResultsViewImageListener imageListener;
+	private ImageStoringResultsListener imageListener;
 	
 	private void insertImages() throws IOException, SaxonApiException {
 		HashMap<String,String> fileTypes = new HashMap<String,String>();
-		for (String imagePath : imageListener.getImagePaths()) {
+		for (String imagePath : imageListener.getImageUrls()) {
 			File file = new File(imagePath.substring(5));
 			fileTypes.put("images/" + file.getName(), Files
 					.probeContentType(file.toPath()));
@@ -86,7 +86,7 @@ public class ImportImageMapsOperation extends AbstractAuthorOperation {
 		try {
 			editorAccess = EpubPluginExtension.getEditorAccess();
 			epubAccess = editorAccess.getEpubAccess();
-			imageListener = new ResultsViewImageListener(new ResultsView(
+			imageListener = new ImageStoringResultsListener(new ResultsView(
 					epubAccess.getPid() + " - Import image maps"));
 			File[] imageMapFiles = getWorkspace().chooseFiles(null, "Insert",
 					new String[] { "html" }, "Image maps");
