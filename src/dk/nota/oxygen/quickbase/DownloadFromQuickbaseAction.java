@@ -27,12 +27,13 @@ public class DownloadFromQuickbaseAction extends AbstractAction {
 						".epub")), "Download from QuickBase",
 						new String[] { "epub" }, "EPUB files", true);
 		if (outputFile == null) return;
-		if (pid == null) pid = outputFile.getName().replaceFirst("\\..*$", "");
+		String derivedPid = outputFile.getName().replaceFirst("\\..*$", "");
 		DownloadFromQuickbaseWorker downloadFromQuickbaseWorker =
-				new DownloadFromQuickbaseWorker(pid, outputFile);
+				new DownloadFromQuickbaseWorker(pid == null ? derivedPid : pid,
+						outputFile);
 		QuickbaseDownloadDialog quickbaseDownloadDialog =
 				new QuickbaseDownloadDialog(downloadFromQuickbaseWorker,
-						pid, outputFile);
+						pid == null ? derivedPid : pid, outputFile);
 		downloadFromQuickbaseWorker.addPropertyChangeListener(
 				quickbaseDownloadDialog);
 		quickbaseDownloadDialog.setVisible(true);
