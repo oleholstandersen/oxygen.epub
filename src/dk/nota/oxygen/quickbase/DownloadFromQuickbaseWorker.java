@@ -6,6 +6,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import javax.swing.SwingWorker;
 
@@ -41,14 +43,25 @@ public class DownloadFromQuickbaseWorker extends SwingWorker<Boolean,Double> {
 		double fileSize = Double.parseDouble(response.getFirstHeader(
 				"Content-Length").getValue());
 		double createdFileSize = 0;
+		// Create a directory for the backup file
+		Files.createDirectories(outputPath.resolveSibling("fraEkstern/"));
+		// It's probably overkill, but timestamp the backup just in case
+		String timeStamp = LocalDateTime.now().format(DateTimeFormatter
+				.ofPattern("yyyyMMddHHmmss"));
+		String backupFileName = outputPath.getFileName().toString()
+				.replaceFirst("(\\..*?$)", ".original." + timeStamp + "$1");
+		Path backupPath = Files.createFile(outputPath.resolveSibling(
+				"fraEkstern/" + backupFileName));
 		try (
 			InputStream inputStream = response.getEntity().getContent();
 			OutputStream outputStream = Files.newOutputStream(outputPath);
+			OutputStream backupStream = Files.newOutputStream(backupPath)
 		) {
 			byte[] bytes = new byte[102400];
 			int bytesRead = inputStream.read(bytes);
 			while (bytesRead != -1) {
 				outputStream.write(bytes, 0, bytesRead);
+				backupStream.write(bytes, 0, bytesRead);
 				bytesRead = inputStream.read(bytes);
 				createdFileSize += bytesRead;
 				setProgress((int)Math.ceil(
