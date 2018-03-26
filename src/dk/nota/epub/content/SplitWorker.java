@@ -2,34 +2,40 @@ package dk.nota.epub.content;
 
 import java.io.OutputStream;
 import java.net.URI;
+import java.net.URL;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.util.LinkedList;
 
 import dk.nota.archive.ArchiveAccess;
 import dk.nota.epub.EpubAccess;
 import dk.nota.epub.xml.EpubDocumentMap;
 import dk.nota.epub.xml.EpubXmlAccessProvider;
+import dk.nota.oxygen.EditorAccessProvider;
 import dk.nota.oxygen.common.AbstractWorkerWithResults;
 import dk.nota.oxygen.common.ResultsListener;
 import net.sf.saxon.s9api.Serializer;
 import net.sf.saxon.s9api.XdmNode;
 
-public class SplitWorker extends AbstractWorkerWithResults<Object,Object> {
+public class SplitWorker
+		extends AbstractWorkerWithResults<EpubDocumentMap,Object> {
 	
+	private LinkedList<URL> affectedEditorUrls;
 	private EpubAccess epubAccess;
 	private XdmNode opfDocument;
 	
 	public SplitWorker(EpubAccess epubAccess, XdmNode opfDocument,
-			ResultsListener listener) {
+			ResultsListener listener, LinkedList<URL> affectedEditorUrls) {
 		super("SPLIT", listener);
+		this.affectedEditorUrls = affectedEditorUrls;
 		this.epubAccess = epubAccess;
 		this.opfDocument = opfDocument;
 	}
 
 	@Override
-	protected Object doInBackground() throws Exception {
+	protected EpubDocumentMap doInBackground() throws Exception {
 		fireResultsUpdate("SPLIT STARTING");
 		XdmNode concatDocument = EpubXmlAccessProvider.getEpubXmlAccess()
 				.getDocument(epubAccess.makeOpfBasedUri("concat.xhtml"));
@@ -60,7 +66,17 @@ public class SplitWorker extends AbstractWorkerWithResults<Object,Object> {
 			genericSerializer.close();
 			xhtmlSerializer.close();
 		}
-		return null;
+		return epubDocumentMap;
+	}
+	
+	@Override
+	protected void done() {
+		super.done();
+		affectedEditorUrls.forEach(
+				url -> {
+					if (url.getPath().endsWith("package.opf"))
+						EditorAccessProvider.getEditorAccess().open(url);
+				});
 	}
 
 }

@@ -2,34 +2,41 @@ package dk.nota.epub.content;
 
 import java.io.OutputStream;
 import java.net.URI;
+import java.net.URL;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.util.LinkedList;
 
 import dk.nota.archive.ArchiveAccess;
 import dk.nota.epub.EpubAccess;
 import dk.nota.epub.xml.EpubDocumentMap;
 import dk.nota.epub.xml.EpubXmlAccessProvider;
+import dk.nota.oxygen.EditorAccessProvider;
 import dk.nota.oxygen.common.AbstractWorkerWithResults;
 import dk.nota.oxygen.common.ResultsListener;
 import net.sf.saxon.s9api.Serializer;
 import net.sf.saxon.s9api.XdmNode;
 
-public class NavigationUpdateWorker extends AbstractWorkerWithResults<Object,Object> {
+public class NavigationUpdateWorker
+		extends AbstractWorkerWithResults<EpubDocumentMap,Object> {
 	
+	private LinkedList<URL> affectedEditorUrls;
 	private EpubAccess epubAccess;
 	private XdmNode opfDocument;
 
 	public NavigationUpdateWorker(EpubAccess epubAccess, XdmNode opfDocument,
-			ResultsListener resultsListener) {
+			ResultsListener resultsListener,
+			LinkedList<URL> affectedEditorUrls) {
 		super("NAVIGATION UPDATE", resultsListener);
+		this.affectedEditorUrls = affectedEditorUrls;
 		this.epubAccess = epubAccess;
 		this.opfDocument = opfDocument;
 	}
 
 	@Override
-	protected Object doInBackground() throws Exception {
+	protected EpubDocumentMap doInBackground() throws Exception {
 		fireResultsUpdate("NAVIGATION UPDATE STARTING");
 		NavigationUpdater navigationUpdater = new NavigationUpdater(
 				opfDocument);
@@ -60,7 +67,14 @@ public class NavigationUpdateWorker extends AbstractWorkerWithResults<Object,Obj
 			genericSerializer.close();
 			xhtmlSerializer.close();
 		}
-		return null;
+		return epubDocumentMap;
+	}
+	
+	@Override
+	protected void done() {
+		super.done();
+		affectedEditorUrls.forEach(
+				url -> EditorAccessProvider.getEditorAccess().open(url));
 	}
 
 }
