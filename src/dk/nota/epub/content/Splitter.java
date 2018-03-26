@@ -1,0 +1,18 @@
+package dk.nota.epub.content;
+
+import dk.nota.epub.xml.EpubXmlAccessProvider;
+import net.sf.saxon.s9api.SaxonApiException;
+import net.sf.saxon.s9api.XdmAtomicValue;
+import net.sf.saxon.s9api.XdmNode;
+
+public class Splitter extends AbstractContentTransformation {
+	
+	public Splitter(XdmNode concatDocument, XdmNode opfDocument)
+			throws SaxonApiException {
+		super(EpubXmlAccessProvider.getEpubXmlAccess().getXsltTransformer(
+				"/dk/nota/xml/xslt/epub-split.xsl"), opfDocument);
+		transformer.setGlobalContextItem(concatDocument);
+		addParameter("UPDATE_OPF", new XdmAtomicValue(true));
+	}
+
+}
