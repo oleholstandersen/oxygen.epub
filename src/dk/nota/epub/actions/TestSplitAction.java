@@ -6,8 +6,8 @@ import java.util.LinkedList;
 import dk.nota.epub.EpubException;
 import dk.nota.epub.content.SplitWorker;
 import dk.nota.oxygen.EditorAccess;
-import dk.nota.oxygen.common.ResultsListener;
-import dk.nota.oxygen.common.ResultsView;
+import dk.nota.oxygen.ResultsListener;
+import dk.nota.oxygen.ResultsView;
 import net.sf.saxon.s9api.XdmNode;
 
 public class TestSplitAction extends EpubAction {

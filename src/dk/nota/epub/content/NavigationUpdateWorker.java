@@ -13,9 +13,9 @@ import dk.nota.archive.ArchiveAccess;
 import dk.nota.epub.EpubAccess;
 import dk.nota.epub.xml.EpubDocumentMap;
 import dk.nota.epub.xml.EpubXmlAccessProvider;
+import dk.nota.oxygen.AbstractWorkerWithResults;
 import dk.nota.oxygen.EditorAccessProvider;
-import dk.nota.oxygen.common.AbstractWorkerWithResults;
-import dk.nota.oxygen.common.ResultsListener;
+import dk.nota.oxygen.ResultsListener;
 import net.sf.saxon.s9api.Serializer;
 import net.sf.saxon.s9api.XdmNode;
 
