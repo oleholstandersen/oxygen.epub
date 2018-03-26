@@ -1,7 +1,11 @@
 package dk.nota.epub;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -45,6 +49,13 @@ public class EpubAccess {
 					e);
 		}
 		epubContentAccess = new ContentAccess();
+	}
+	
+	public File backupArchive() throws IOException {
+		Path archivePath = epubArchiveAccess.getArchivePath();
+		return Files.copy(archivePath, archivePath.resolveSibling(archivePath
+				.getFileName() + ".bak"), StandardCopyOption.REPLACE_EXISTING)
+				.toFile();
 	}
 	
 	private void setupUris() throws IOException, SaxonApiException {
