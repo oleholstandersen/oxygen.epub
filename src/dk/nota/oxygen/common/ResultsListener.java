@@ -8,6 +8,7 @@ import javax.xml.transform.SourceLocator;
 import javax.xml.transform.TransformerException;
 
 import dk.nota.oxygen.xml.EpubXmlAccess;
+import dk.nota.xml.TransformationListener;
 import net.sf.saxon.s9api.Axis;
 import net.sf.saxon.s9api.MessageListener;
 import net.sf.saxon.s9api.QName;
@@ -16,7 +17,7 @@ import net.sf.saxon.s9api.XdmSequenceIterator;
 import ro.sync.document.DocumentPositionedInfo;
 
 public class ResultsListener implements ErrorListener, MessageListener,
-		PropertyChangeListener {
+		PropertyChangeListener, TransformationListener {
 	
 	public final static String UPDATE_RESULTS_PROPERTY =
 			"dk.nota.oxygen.results.update";
