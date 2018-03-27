@@ -19,16 +19,17 @@ public class TestSplitAction extends EpubAction {
 	@Override
 	public void actionPerformed(EditorAccess editorAccess,
 			LinkedList<URL> affectedEditorUrls) {
+		XdmNode opfDocument;
 		try {
-			XdmNode opfDocument = epubAccess.getContentAccess()
-					.getOpfDocument();
-			SplitWorker splitWorker = new SplitWorker(epubAccess,
-					opfDocument, new ResultsListener(new ResultsView(
-					epubAccess.getPid() + " - Split")), affectedEditorUrls);
-			splitWorker.execute();
+			opfDocument = epubAccess.getContentAccess().getOpfDocument();
 		} catch (EpubException e) {
-			editorAccess.showErrorMessage("An error occurred", e);
+			editorAccess.showErrorMessage("Unable to get OPF document", e);
+			return;
 		}
+		SplitWorker splitWorker = new SplitWorker(epubAccess,
+				opfDocument, new ResultsListener(new ResultsView(
+				epubAccess.getPid() + " - Split")), affectedEditorUrls);
+		splitWorker.execute();
 	}
 
 }

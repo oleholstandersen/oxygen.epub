@@ -19,16 +19,17 @@ public class TestConcatAction extends EpubAction {
 	@Override
 	public void actionPerformed(EditorAccess editorAccess,
 			LinkedList<URL> affectedEditorUrls) {
+		XdmNode opfDocument;
 		try {
-			XdmNode opfDocument = epubAccess.getContentAccess()
-					.getOpfDocument();
-			ConcatWorker concatWorker = new ConcatWorker(epubAccess,
-					opfDocument, new ResultsListener(new ResultsView(epubAccess
-					.getPid() + " - Concat")), affectedEditorUrls);
-			concatWorker.execute();
+			opfDocument = epubAccess.getContentAccess().getOpfDocument();
 		} catch (EpubException e) {
-			editorAccess.showErrorMessage("An error occurred", e);
+			editorAccess.showErrorMessage("Unable to get OPF document", e);
+			return;
 		}
+		ConcatWorker concatWorker = new ConcatWorker(epubAccess,
+				opfDocument, new ResultsListener(new ResultsView(epubAccess
+				.getPid() + " - Concat")), affectedEditorUrls);
+		concatWorker.execute();
 	}
 
 }

@@ -19,17 +19,18 @@ public class TestNavigationUpdateAction extends EpubAction {
 	@Override
 	public void actionPerformed(EditorAccess editorAccess,
 			LinkedList<URL> affectedEditorUrls) {
+		XdmNode opfDocument;
 		try {
-			XdmNode opfDocument = epubAccess.getContentAccess()
-					.getOpfDocument();
-			NavigationUpdateWorker navigationUpdateWorker =
-					new NavigationUpdateWorker(epubAccess, opfDocument,
-					new ResultsListener(new ResultsView(epubAccess.getPid() +
-					" - Update navigation")), affectedEditorUrls);
-			navigationUpdateWorker.execute();
+			opfDocument = epubAccess.getContentAccess().getOpfDocument();
 		} catch (EpubException e) {
-			editorAccess.showErrorMessage("An error occurred", e);
+			editorAccess.showErrorMessage("Unable to get OPF document", e);
+			return;
 		}
+		NavigationUpdateWorker navigationUpdateWorker =
+				new NavigationUpdateWorker(epubAccess, opfDocument,
+				new ResultsListener(new ResultsView(epubAccess.getPid() +
+				" - Update navigation")), affectedEditorUrls);
+		navigationUpdateWorker.execute();
 	}
 
 }
