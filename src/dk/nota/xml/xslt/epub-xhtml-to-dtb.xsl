@@ -10,17 +10,19 @@
     exclude-result-prefixes="#all"
     version="3.0">
     <xsl:import href="epub-parameters.xsl"/>
-    <xsl:param name="NAV_DOCUMENT" as="document-node(element:html:html)?"
+    <xsl:param name="CONCAT_DOCUMENT" as="element(html:html)?"
+    	select="/html:html"/>
+    <xsl:param name="NAV_DOCUMENT" as="document-node(element(html:html))?"
         select="doc('zip:' || resolve-uri('nav.xhtml', $OPF_URI_NO_ZIP))"/>
     <xsl:variable name="INLINE_ELEMENT_NAMES" as="xs:string+"
         select="('b', 'big', 'i', 'small', 'tt', 'abbr', 'acronym', 'cite',
                 'code', 'dfn', 'em', 'kbd', 'strong', 'samp', 'time', 'var',
                 'a', 'bdo', 'br', 'img', 'map', 'object', 'q', 'script', 'span',
                 'sub', 'sup', 'button', 'input', 'label', 'select', 'textarea')"/>
-    <xsl:template name="OUTPUT">
+    <xsl:template name="OUTPUT" as="element(document)">
         <xsl:variable name="frontmatter" as="element(level)*">
             <xsl:variable name="coverSection" as="element(html:section)?"
-                select="/html:html/html:body/html:section
+                select="$CONCAT_DOCUMENT/html:body/html:section
                         [nota:has-epub-types(., 'cover')]"/>
             <xsl:choose>
             	<!--  If there is no cover, do nothing  -->
@@ -39,7 +41,7 @@
             </xsl:choose>    
             <xsl:call-template name="LEVELS.GROUP">
                 <xsl:with-param name="sections" as="element(html:section)*"
-                    select="/html:html/html:body/html:section
+                    select="$CONCAT_DOCUMENT/html:body/html:section
                             [nota:has-epub-types(., 'frontmatter')]
                             except $coverSection"/>
             </xsl:call-template>
@@ -47,19 +49,19 @@
         <xsl:variable name="bodymatter" as="element(level)*">
             <xsl:call-template name="LEVELS.GROUP">
                 <xsl:with-param name="sections" as="element(html:section)*"
-                    select="/html:html/html:body/html:section
+                    select="$CONCAT_DOCUMENT/html:body/html:section
                             [nota:has-epub-types(., 'bodymatter')]"/>
             </xsl:call-template>
         </xsl:variable>
         <xsl:variable name="rearmatter" as="element(level)*">
             <xsl:call-template name="LEVELS.GROUP">
                 <xsl:with-param name="sections" as="element(html:section)*"
-                    select="/html:html/html:body/html:section
+                    select="$CONCAT_DOCUMENT/html:body/html:section
                             [nota:has-epub-types(., 'backmatter')]"/>
             </xsl:call-template>
         </xsl:variable>
-        <nota:document uri="{$OUTPUT_URI}">
-        	<dtbook version="1.1.0" xmlns="">
+        <document uri="{$OUTPUT_URI}">
+        	<dtbook version="1.1.0">
 	            <head>
 	                <title>
 	                    <xsl:value-of select="$TITLE"/>
@@ -87,7 +89,7 @@
 	                </xsl:if>
 	            </book>
         	</dtbook>
-        </nota:document>
+        </document>
         <xsl:variable name="text" as="xs:string"
             select="string-join($frontmatter//text()|$bodymatter//text()|
                     $rearmatter//text(), '')"/>

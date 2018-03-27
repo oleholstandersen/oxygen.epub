@@ -37,10 +37,11 @@
     </xsl:param>
     <xsl:param name="UPDATE_OPF" as="xs:boolean" select="false()"/>
     <!-- Concat document template -->
-    <xsl:template name="OUTPUT" as="element(nota:document)+">
-    	<nota:document
+    <xsl:template name="OUTPUT" as="element(document)+">
+    	<document xmlns=""
     	    uri="{'zip:' || resolve-uri('concat.xhtml', $OPF_URI_NO_ZIP)}">
-    		<html xmlns:epub="http://www.idpf.org/2007/ops"
+    		<html xmlns="http://www.w3.org/1999/xhtml"
+    			xmlns:epub="http://www.idpf.org/2007/ops"
             	xmlns:nordic="http://www.mtm.se/epub/"
             	epub:prefix="z3998: http://www.daisy.org/z3998/2012/vocab/structure/#"
             	lang="{$LANGUAGE}"
@@ -68,7 +69,7 @@
 	            		select="$firstPass/html:section"/>
 	            </body>
         	</html>
-    	</nota:document>
+    	</document>
         <xsl:if test="$UPDATE_OPF">
             <xsl:call-template name="OPF"/>
         </xsl:if>

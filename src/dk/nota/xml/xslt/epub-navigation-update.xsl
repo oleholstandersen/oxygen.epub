@@ -17,8 +17,7 @@
                 $OPF_DOCUMENT/opf:package/opf:spine/opf:itemref/@idref]/
                 doc('zip:' || resolve-uri(@href, $OPF_URI_NO_ZIP))"/>
     <!-- Content documents with all ids generated -->
-    <xsl:variable name="CONTENT_DOCUMENTS_WITH_IDS"
-        as="element(nota:document)*">
+    <xsl:variable name="CONTENT_DOCUMENTS_WITH_IDS" as="element(document)*">
         <xsl:for-each select="$CONTENT_DOCUMENTS">
         	<xsl:variable name="placement" as="xs:string"
         		select="nota:placement-from-type(html:html/html:body/
@@ -37,10 +36,10 @@
        				$uri
        			}</nota:systemid>
        		</xsl:message>
-            <nota:document name="{$name}" placement="{$placement}"
+            <document xmlns="" name="{$name}" placement="{$placement}"
             	position="{position()}" type="{$type}" uri="{$uri}">
                 <xsl:apply-templates mode="GENERATE_IDS"/>
-            </nota:document>
+            </document>
         </xsl:for-each> 
     </xsl:variable>
     <xsl:variable name="NAVIGATION" as="element(nota:navigation)">
@@ -162,16 +161,16 @@
             </body>
         </html>
     </xsl:variable>
-    <xsl:template name="OUTPUT" as="element(nota:document)+">
+    <xsl:template name="OUTPUT" as="element(document)+">
         <xsl:copy-of select="$CONTENT_DOCUMENTS_WITH_IDS"/>
-        <nota:document
+        <document xmlns=""
             uri="{'zip:' || resolve-uri('nav.xhtml', $OPF_URI_NO_ZIP)}">
             <xsl:copy-of select="$XHTML_NAVIGATION_DOCUMENT"/>
-        </nota:document>
-        <nota:document
+        </document>
+        <document xmlns=""
             uri="{'zip:' || resolve-uri('nav.ncx', $OPF_URI_NO_ZIP)}">
             <xsl:copy-of select="$NCX_NAVIGATION_DOCUMENT"/>
-        </nota:document>
+        </document>
     </xsl:template>
     <!-- XHTML: Generate ids -->
     <xsl:template mode="GENERATE_IDS" match="@*|node()">

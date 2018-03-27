@@ -11,7 +11,7 @@
     <xsl:param name="OPF_URI" as="xs:anyURI?" select="base-uri($OPF_DOCUMENT)"/>
     <xsl:variable name="OPF_URI_NO_ZIP" as="xs:string?"
         select="replace($OPF_URI, '^zip:', '')"/>
-    <xsl:variable name="OUTPUT_URI" as="xs:anyURI?"/>        
+    <xsl:param name="OUTPUT_URI" as="xs:anyURI?"/>        
     <xsl:param name="PID" as="xs:string?"
     	select="$OPF_DOCUMENT/opf:package/opf:metadata/dc:identifier/text()"/>
     <xsl:param name="STYLESHEET_REFERENCE" as="xs:string?"

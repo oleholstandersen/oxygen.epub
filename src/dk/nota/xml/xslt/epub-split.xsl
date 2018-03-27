@@ -19,7 +19,7 @@
         select="for $i in $ADDITION_REFS return 'application/xhtml+xml'"/>
     <xsl:param name="REMOVAL_REFS" as="xs:string*" select="'concat.xhtml'"/>
     <xsl:param name="UPDATE_OPF" as="xs:boolean" select="false()"/>
-    <xsl:template name="OUTPUT" as="element(nota:document)*">
+    <xsl:template name="OUTPUT" as="element(document)*">
         <xsl:for-each select="/html:html/html:body/html:section">
             <xsl:variable name="documentName" as="xs:string"
                 select="nota:create-document-name(.)"/>
@@ -36,10 +36,10 @@
                     }</nota:out>
                 </xsl:message>
             </xsl:if>
-            <nota:document
+            <document xmlns="" 
                 uri="{'zip:' || resolve-uri($documentName, $OPF_URI_NO_ZIP)}">
                 <xsl:call-template name="XHTML_DOCUMENT"/>
-            </nota:document>
+            </document>
         </xsl:for-each>
         <xsl:if test="$UPDATE_OPF">
             <xsl:call-template name="OPF"/>

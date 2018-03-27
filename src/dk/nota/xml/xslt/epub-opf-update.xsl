@@ -27,10 +27,10 @@
         select="$OPF_DOCUMENT/opf:package/opf:manifest/opf:item[@href =
         		$REMOVAL_REFS]/@id"/>
     <xsl:param name="REMOVAL_REFS" as="xs:string*"/>
-    <xsl:template name="OPF" as="element(nota:document)">
-    	<nota:document uri="{base-uri($OPF_DOCUMENT)}">
+    <xsl:template name="OPF" as="element(document)">
+    	<document xmlns="" uri="{base-uri($OPF_DOCUMENT)}">
     		<xsl:apply-templates mode="OPF" select="$OPF_DOCUMENT"/>
-    	</nota:document>
+    	</document>
    	</xsl:template>
     <xsl:template match="@*|node()" mode="OPF">
         <xsl:copy>
