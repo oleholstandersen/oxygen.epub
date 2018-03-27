@@ -19,13 +19,14 @@ import net.sf.saxon.s9api.XdmValue;
 
 public class Concatter extends AbstractContentTransformation {
 	
+	private LinkedList<URI> images = new LinkedList<URI>();
 	private LinkedList<URI> originalDocuments = new LinkedList<URI>();
 	
 	public Concatter(XdmNode opfDocument, boolean updateOpf)
 			throws SaxonApiException {
 		super(EpubXmlAccessProvider.getEpubXmlAccess().getXsltTransformer(
 				"/dk/nota/xml/xslt/epub-concat.xsl"), opfDocument);
-		addListener(new DocumentListener());
+		addListener(new ConcatListener());
 		addParameter("UPDATE_OPF", new XdmAtomicValue(updateOpf));
 	}
 	
@@ -35,13 +36,17 @@ public class Concatter extends AbstractContentTransformation {
 		addParameter("CONTENT_DOCUMENTS", new XdmValue(documentMap.values()));
 	}
 	
+	public LinkedList<URI> getImages() {
+		return images;
+	}
+	
 	public LinkedList<URI> getOriginalDocuments() {
 		return originalDocuments;
 	}
 	
-	private class DocumentListener extends AbstractTransformationListener {
+	private class ConcatListener extends AbstractTransformationListener {
 		
-		private DocumentListener() {
+		private ConcatListener() {
 		}
 		
 		@Override
@@ -53,6 +58,10 @@ public class Concatter extends AbstractContentTransformation {
 							"document"));
 			messageIterator.forEachRemaining(
 					i -> originalDocuments.add(URI.create(i.getStringValue())));
+			messageIterator = message.axisIterator(Axis.DESCENDANT_OR_SELF,
+					new QName(EpubXmlAccess.NOTA_NAMESPACE, "image"));
+			messageIterator.forEachRemaining(
+					i -> images.add(URI.create(i.getStringValue())));
 		}
 	}
 	

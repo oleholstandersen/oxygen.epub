@@ -104,12 +104,8 @@
         <xsl:variable name="originalDocumentName" as="xs:string"
             select="tokenize($originalDocumentUri, '/')[last()]"/>
        	<xsl:message expand-text="yes">
-            <nota:out>{
-                'Adding ' || $originalDocumentName
-            }</nota:out>
-            <nota:document>{
-            	$originalDocumentUri
-            }</nota:document>
+            <nota:out>{'Adding ' || $originalDocumentName}</nota:out>
+            <nota:document>{$originalDocumentUri}</nota:document>
         </xsl:message>
         <section nota:originalDocumentName="{$originalDocumentName}">
             <xsl:call-template name="ATTRIBUTE.ID"/>
@@ -124,6 +120,14 @@
             <xsl:call-template name="ATTRIBUTE.ID"/>
             <xsl:apply-templates mode="CONCAT_FIRST_PASS" select="@*|node()"/>
         </xsl:copy>
+    </xsl:template>
+    <xsl:template mode="CONCAT_FIRST_PASS" match="html:img">
+    	<xsl:next-match/>
+    	<xsl:message expand-text="yes">
+    		<nota:image>{
+    			'zip:' || resolve-uri(@src, $OPF_URI_NO_ZIP)
+    		}</nota:image>
+    	</xsl:message>
     </xsl:template>
     <!-- XHTML second pass: Update references -->
     <xsl:template mode="CONCAT_SECOND_PASS" match="html:a[@href]">
