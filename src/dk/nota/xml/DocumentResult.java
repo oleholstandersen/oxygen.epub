@@ -6,6 +6,7 @@ import java.net.URI;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -49,6 +50,17 @@ public class DocumentResult {
 	
 	public Set<URI> getUris() {
 		return resultMap.keySet();
+	}
+	
+	public void writeDocuments(Serializer serializer) throws IOException,
+			SaxonApiException {
+		for (URI uri : getUris()) {
+			Path path = Paths.get(uri);
+			try (OutputStream outputStream = Files.newOutputStream(path)) {
+				serializer.setOutputStream(outputStream);
+				serializer.serializeNode(getDocument(uri));
+			}
+		}
 	}
 	
 	public void writeDocumentsToArchive(ArchiveAccess archiveAccess)
