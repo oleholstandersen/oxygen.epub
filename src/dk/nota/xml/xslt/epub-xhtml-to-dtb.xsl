@@ -472,9 +472,6 @@
         <img>
             <xsl:call-template name="ATTRIBUTES.IMAGE"/>
         </img>
-        <xsl:message expand-text="yes">
-            <nota:image>{@src}</nota:image>
-        </xsl:message>
     </xsl:template>
     <!-- LI -->
     <xsl:template match="html:li">
