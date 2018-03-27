@@ -20,12 +20,12 @@ import net.sf.saxon.s9api.Serializer;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmValue;
 
-public class DocumentTransformationResult {
+public class DocumentResult {
 	
 	private LinkedHashMap<URI,XdmNode> resultMap =
 			new LinkedHashMap<URI,XdmNode>();
 	
-	public DocumentTransformationResult(XdmValue transformationResult) {
+	public DocumentResult(XdmValue transformationResult) {
 		transformationResult.iterator().forEachRemaining(
 				item -> {
 					if (item instanceof XdmNode) {

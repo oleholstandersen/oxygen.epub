@@ -15,12 +15,12 @@ import dk.nota.epub.xml.EpubXmlAccessProvider;
 import dk.nota.oxygen.AbstractWorkerWithResults;
 import dk.nota.oxygen.EditorAccessProvider;
 import dk.nota.oxygen.ResultsListener;
-import dk.nota.xml.DocumentTransformationResult;
+import dk.nota.xml.DocumentResult;
 import net.sf.saxon.s9api.Serializer;
 import net.sf.saxon.s9api.XdmNode;
 
 public class NavigationUpdateWorker
-		extends AbstractWorkerWithResults<DocumentTransformationResult,Object> {
+		extends AbstractWorkerWithResults<DocumentResult,Object> {
 	
 	private LinkedList<URL> affectedEditorUrls;
 	private EpubAccess epubAccess;
@@ -36,12 +36,12 @@ public class NavigationUpdateWorker
 	}
 
 	@Override
-	protected DocumentTransformationResult doInBackground() throws Exception {
+	protected DocumentResult doInBackground() throws Exception {
 		fireResultsUpdate("NAVIGATION UPDATE STARTING");
 		NavigationUpdater navigationUpdater = new NavigationUpdater(
 				opfDocument);
 		navigationUpdater.addListener(getResultsListener());
-		DocumentTransformationResult epubDocumentMap = new DocumentTransformationResult(navigationUpdater
+		DocumentResult documentResult = new DocumentResult(navigationUpdater
 				.call());
 		ArchiveAccess archiveAccess = epubAccess.getArchiveAccess();
 		Serializer genericSerializer = EpubXmlAccessProvider.getEpubXmlAccess()
@@ -51,7 +51,7 @@ public class NavigationUpdateWorker
 		Serializer serializer;
 		try (FileSystem epubFileSystem = archiveAccess
 				.getArchiveAsFileSystem()) {
-			for (URI uri : epubDocumentMap.getUris()) {
+			for (URI uri : documentResult.getUris()) {
 				Path path = epubFileSystem.getPath(archiveAccess
 						.relativizeUriToArchive(uri));
 				serializer = path.endsWith(".xhtml") ? xhtmlSerializer :
@@ -60,14 +60,14 @@ public class NavigationUpdateWorker
 				try (OutputStream outputStream = Files.newOutputStream(path,
 						StandardOpenOption.CREATE)) {
 					serializer.setOutputStream(outputStream);
-					serializer.serializeNode(epubDocumentMap.getDocument(uri));
+					serializer.serializeNode(documentResult.getDocument(uri));
 				}
 			}
 		} finally {
 			genericSerializer.close();
 			xhtmlSerializer.close();
 		}
-		return epubDocumentMap;
+		return documentResult;
 	}
 	
 	@Override

@@ -15,12 +15,12 @@ import dk.nota.epub.xml.EpubXmlAccessProvider;
 import dk.nota.oxygen.AbstractWorkerWithResults;
 import dk.nota.oxygen.EditorAccessProvider;
 import dk.nota.oxygen.ResultsListener;
-import dk.nota.xml.DocumentTransformationResult;
+import dk.nota.xml.DocumentResult;
 import net.sf.saxon.s9api.Serializer;
 import net.sf.saxon.s9api.XdmNode;
 
 public class SplitWorker
-		extends AbstractWorkerWithResults<DocumentTransformationResult,Object> {
+		extends AbstractWorkerWithResults<DocumentResult,Object> {
 	
 	private LinkedList<URL> affectedEditorUrls;
 	private EpubAccess epubAccess;
@@ -35,13 +35,13 @@ public class SplitWorker
 	}
 
 	@Override
-	protected DocumentTransformationResult doInBackground() throws Exception {
+	protected DocumentResult doInBackground() throws Exception {
 		fireResultsUpdate("SPLIT STARTING");
 		XdmNode concatDocument = EpubXmlAccessProvider.getEpubXmlAccess()
 				.getDocument(epubAccess.makeOpfBasedUri("concat.xhtml"));
 		Splitter splitter = new Splitter(concatDocument, opfDocument);
 		splitter.addListener(getResultsListener());
-		DocumentTransformationResult epubDocumentMap = new DocumentTransformationResult(splitter.call());
+		DocumentResult documentResult = new DocumentResult(splitter.call());
 		ArchiveAccess archiveAccess = epubAccess.getArchiveAccess();
 		Serializer genericSerializer = EpubXmlAccessProvider.getEpubXmlAccess()
 				.getSerializer();
@@ -50,7 +50,7 @@ public class SplitWorker
 		Serializer serializer;
 		try (FileSystem epubFileSystem = archiveAccess
 				.getArchiveAsFileSystem()) {
-			for (URI uri : epubDocumentMap.getUris()) {
+			for (URI uri : documentResult.getUris()) {
 				Path path = epubFileSystem.getPath(archiveAccess
 						.relativizeUriToArchive(uri));
 				fireResultsUpdate("Writing " + path.getFileName());
@@ -59,14 +59,14 @@ public class SplitWorker
 				try (OutputStream outputStream = Files.newOutputStream(path,
 						StandardOpenOption.CREATE)) {
 					serializer.setOutputStream(outputStream);
-					serializer.serializeNode(epubDocumentMap.getDocument(uri));
+					serializer.serializeNode(documentResult.getDocument(uri));
 				}
 			}
 		} finally {
 			genericSerializer.close();
 			xhtmlSerializer.close();
 		}
-		return epubDocumentMap;
+		return documentResult;
 	}
 	
 	@Override
