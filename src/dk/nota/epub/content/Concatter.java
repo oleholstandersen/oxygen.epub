@@ -51,9 +51,8 @@ public class Concatter extends AbstractContentTransformation {
 			XdmSequenceIterator messageIterator = message.axisIterator(Axis
 					.DESCENDANT_OR_SELF, new QName(EpubXmlAccess.NOTA_NAMESPACE,
 							"document"));
-			while (messageIterator.hasNext())
-				originalDocuments.add(URI.create(messageIterator.next()
-						.getStringValue()));
+			messageIterator.forEachRemaining(
+					i -> originalDocuments.add(URI.create(i.getStringValue())));
 		}
 	}
 	
