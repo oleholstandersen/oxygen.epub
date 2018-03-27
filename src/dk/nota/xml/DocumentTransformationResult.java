@@ -1,4 +1,4 @@
-package dk.nota.epub.xml;
+package dk.nota.xml;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -12,6 +12,7 @@ import java.util.LinkedHashMap;
 import java.util.Set;
 
 import dk.nota.archive.ArchiveAccess;
+import dk.nota.epub.xml.EpubXmlAccessProvider;
 import net.sf.saxon.s9api.Axis;
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.SaxonApiException;
@@ -19,12 +20,12 @@ import net.sf.saxon.s9api.Serializer;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmValue;
 
-public class EpubDocumentMap {
+public class DocumentTransformationResult {
 	
 	private LinkedHashMap<URI,XdmNode> resultMap =
 			new LinkedHashMap<URI,XdmNode>();
 	
-	public EpubDocumentMap(XdmValue transformationResult) {
+	public DocumentTransformationResult(XdmValue transformationResult) {
 		transformationResult.iterator().forEachRemaining(
 				item -> {
 					if (item instanceof XdmNode) {

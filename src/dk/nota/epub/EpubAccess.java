@@ -14,9 +14,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import dk.nota.archive.ArchiveAccess;
-import dk.nota.epub.xml.EpubDocumentMap;
 import dk.nota.epub.xml.EpubXmlAccess;
 import dk.nota.epub.xml.EpubXmlAccessProvider;
+import dk.nota.xml.DocumentTransformationResult;
 import net.sf.saxon.s9api.Axis;
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.SaxonApiException;
@@ -243,9 +243,9 @@ public class EpubAccess {
 						"Unable to set parameters for OPF updater", e);
 			}
 			opfUpdater.setGlobalContextItem(getOpfDocument());
-			EpubDocumentMap epubDocumentMap;
+			DocumentTransformationResult epubDocumentMap;
 			try {
-				epubDocumentMap = new EpubDocumentMap(opfUpdater.callTemplate(
+				epubDocumentMap = new DocumentTransformationResult(opfUpdater.callTemplate(
 						new QName("OPF")));
 			} catch (SaxonApiException e) {
 				throw new EpubException("Unable to transform OPF document", e);

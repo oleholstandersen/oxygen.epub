@@ -11,16 +11,16 @@ import java.util.LinkedList;
 
 import dk.nota.archive.ArchiveAccess;
 import dk.nota.epub.EpubAccess;
-import dk.nota.epub.xml.EpubDocumentMap;
 import dk.nota.epub.xml.EpubXmlAccessProvider;
 import dk.nota.oxygen.AbstractWorkerWithResults;
 import dk.nota.oxygen.EditorAccessProvider;
 import dk.nota.oxygen.ResultsListener;
+import dk.nota.xml.DocumentTransformationResult;
 import net.sf.saxon.s9api.Serializer;
 import net.sf.saxon.s9api.XdmNode;
 
 public class ConcatWorker
-		extends AbstractWorkerWithResults<EpubDocumentMap,Object> {
+		extends AbstractWorkerWithResults<DocumentTransformationResult,Object> {
 	
 	private LinkedList<URL> affectedEditorUrls;
 	private EpubAccess epubAccess;
@@ -35,11 +35,11 @@ public class ConcatWorker
 	}
 
 	@Override
-	protected EpubDocumentMap doInBackground() throws Exception {
+	protected DocumentTransformationResult doInBackground() throws Exception {
 		fireResultsUpdate("CONCAT STARTING");
 		Concatter concatter = new Concatter(opfDocument, true);
 		concatter.addListener(getResultsListener());
-		EpubDocumentMap epubDocumentMap = new EpubDocumentMap(concatter.call());
+		DocumentTransformationResult epubDocumentMap = new DocumentTransformationResult(concatter.call());
 		ArchiveAccess archiveAccess = epubAccess.getArchiveAccess();
 		Serializer genericSerializer = EpubXmlAccessProvider.getEpubXmlAccess()
 				.getSerializer();

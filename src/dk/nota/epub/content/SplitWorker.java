@@ -11,16 +11,16 @@ import java.util.LinkedList;
 
 import dk.nota.archive.ArchiveAccess;
 import dk.nota.epub.EpubAccess;
-import dk.nota.epub.xml.EpubDocumentMap;
 import dk.nota.epub.xml.EpubXmlAccessProvider;
 import dk.nota.oxygen.AbstractWorkerWithResults;
 import dk.nota.oxygen.EditorAccessProvider;
 import dk.nota.oxygen.ResultsListener;
+import dk.nota.xml.DocumentTransformationResult;
 import net.sf.saxon.s9api.Serializer;
 import net.sf.saxon.s9api.XdmNode;
 
 public class SplitWorker
-		extends AbstractWorkerWithResults<EpubDocumentMap,Object> {
+		extends AbstractWorkerWithResults<DocumentTransformationResult,Object> {
 	
 	private LinkedList<URL> affectedEditorUrls;
 	private EpubAccess epubAccess;
@@ -35,13 +35,13 @@ public class SplitWorker
 	}
 
 	@Override
-	protected EpubDocumentMap doInBackground() throws Exception {
+	protected DocumentTransformationResult doInBackground() throws Exception {
 		fireResultsUpdate("SPLIT STARTING");
 		XdmNode concatDocument = EpubXmlAccessProvider.getEpubXmlAccess()
 				.getDocument(epubAccess.makeOpfBasedUri("concat.xhtml"));
 		Splitter splitter = new Splitter(concatDocument, opfDocument);
 		splitter.addListener(getResultsListener());
-		EpubDocumentMap epubDocumentMap = new EpubDocumentMap(splitter.call());
+		DocumentTransformationResult epubDocumentMap = new DocumentTransformationResult(splitter.call());
 		ArchiveAccess archiveAccess = epubAccess.getArchiveAccess();
 		Serializer genericSerializer = EpubXmlAccessProvider.getEpubXmlAccess()
 				.getSerializer();
