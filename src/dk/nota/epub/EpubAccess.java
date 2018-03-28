@@ -73,7 +73,8 @@ public class EpubAccess {
 				"/opf:package/opf:manifest/opf:item[@properties eq 'nav']",
 				opfDocument);
 		XdmNode ncxReferenceNode = xmlAccess.getFirstNodeByXpath(
-				"/opf:package/opf:manifest/opf:item[@id eq 'ncx']",
+				"/opf:package/opf:manifest/opf:item"
+				+ "[@media-type eq 'application/x-dtbncx+xml']",
 				opfDocument);
 		navUri = opfUri.resolve(navReferenceNode.getAttributeValue(new QName(
 				"href")));
