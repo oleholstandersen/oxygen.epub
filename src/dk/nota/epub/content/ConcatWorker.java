@@ -1,12 +1,10 @@
 package dk.nota.epub.content;
 
-import java.io.OutputStream;
 import java.net.URI;
 import java.net.URL;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 import java.util.LinkedList;
 
 import dk.nota.archive.ArchiveAccess;
@@ -15,8 +13,6 @@ import dk.nota.oxygen.AbstractWorkerWithResults;
 import dk.nota.oxygen.EditorAccessProvider;
 import dk.nota.oxygen.ResultsListener;
 import dk.nota.xml.DocumentResult;
-import dk.nota.xml.XmlAccessProvider;
-import net.sf.saxon.s9api.Serializer;
 import net.sf.saxon.s9api.XdmNode;
 
 public class ConcatWorker
@@ -41,34 +37,15 @@ public class ConcatWorker
 		concatter.addListener(getResultsListener());
 		DocumentResult documentResult = new DocumentResult(concatter.call());
 		ArchiveAccess archiveAccess = epubAccess.getArchiveAccess();
-		Serializer genericSerializer = XmlAccessProvider.getXmlAccess()
-				.getSerializer();
-		Serializer xhtmlSerializer = XmlAccessProvider.getXmlAccess()
-				.getXhtmlSerializer();
-		Serializer serializer;
 		try (FileSystem epubFileSystem = archiveAccess
 				.getArchiveAsFileSystem()) {
-			for (URI uri : documentResult.getUris()) {
-				Path path = epubFileSystem.getPath(archiveAccess
-						.relativizeUriToArchive(uri));
-				fireResultsUpdate("Writing " + path.getFileName());
-				serializer = path.endsWith(".xhtml") ? xhtmlSerializer :
-					genericSerializer;
-				try (OutputStream outputStream = Files.newOutputStream(path,
-						StandardOpenOption.CREATE)) {
-					serializer.setOutputStream(outputStream);
-					serializer.serializeNode(documentResult.getDocument(uri));
-				}
-			}
+			documentResult.writeDocumentsToArchive(archiveAccess, epubFileSystem);
 			for (URI uri : concatter.getOriginalDocuments()) {
 				Path path = epubFileSystem.getPath(archiveAccess
 						.relativizeUriToArchive(uri));
 				fireResultsUpdate("Deleting " + path.getFileName());
 				Files.delete(path);
 			}
-		} finally {
-			genericSerializer.close();
-			xhtmlSerializer.close();
 		}
 		return documentResult;
 	}

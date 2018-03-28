@@ -7,7 +7,6 @@ import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Set;
@@ -65,28 +64,22 @@ public class DocumentResult {
 	
 	public void writeDocumentsToArchive(ArchiveAccess archiveAccess)
 			throws IOException, SaxonApiException {
+		try (FileSystem archiveFileSystem = archiveAccess
+				.getArchiveAsFileSystem()) {
+			writeDocumentsToArchive(archiveAccess, archiveFileSystem);
+		}
+	}
+	
+	public void writeDocumentsToArchive(ArchiveAccess archiveAccess,
+			FileSystem archiveFileSystem) throws IOException, SaxonApiException {
 		Serializer genericSerializer = XmlAccessProvider.getXmlAccess()
 				.getSerializer();
 		Serializer xhtmlSerializer = XmlAccessProvider.getXmlAccess()
 				.getXhtmlSerializer();
-		Serializer serializer;
-		try (FileSystem archiveFileSystem = archiveAccess
-				.getArchiveAsFileSystem()) {
-			for (URI uri : getUris()) {
-				Path path = archiveFileSystem.getPath(archiveAccess
-						.relativizeUriToArchive(uri));
-				serializer = path.endsWith(".xhtml") ? xhtmlSerializer :
-					genericSerializer;
-				try (OutputStream outputStream = Files.newOutputStream(path,
-						StandardOpenOption.CREATE)) {
-					
-					serializer.setOutputStream(outputStream);
-					serializer.serializeNode(getDocument(uri));
-				}
-			}
-		} finally {
-			genericSerializer.close();
-			xhtmlSerializer.close();
+		for (URI uri : getUris()) {
+			archiveAccess.serializeNodeToArchive(getDocument(uri), uri,
+					uri.toString().endsWith(".xhtml") ? xhtmlSerializer :
+					genericSerializer, archiveFileSystem);
 		}
 	}
 
