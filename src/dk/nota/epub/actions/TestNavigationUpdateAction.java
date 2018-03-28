@@ -13,7 +13,7 @@ import net.sf.saxon.s9api.XdmNode;
 public class TestNavigationUpdateAction extends EpubAction {
 	
 	public TestNavigationUpdateAction() {
-		super("Update navigation");
+		super("Update navigation", true);
 	}
 
 	@Override

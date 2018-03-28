@@ -14,7 +14,7 @@ import net.sf.saxon.s9api.XdmNode;
 public class TestEpubToDtbAction extends EpubAction {
 
 	public TestEpubToDtbAction() {
-		super("DTBook 1.1.0");
+		super("DTBook 1.1.0", false);
 	}
 
 	@Override

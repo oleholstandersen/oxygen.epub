@@ -13,7 +13,7 @@ import net.sf.saxon.s9api.XdmNode;
 public class TestSplitAction extends EpubAction {
 	
 	public TestSplitAction() {
-		super("Split");
+		super("Split", true);
 	}
 
 	@Override

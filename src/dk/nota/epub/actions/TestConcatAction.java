@@ -13,7 +13,7 @@ import net.sf.saxon.s9api.XdmNode;
 public class TestConcatAction extends EpubAction {
 	
 	public TestConcatAction() {
-		super("Concat");
+		super("Concat", true);
 	}
 
 	@Override

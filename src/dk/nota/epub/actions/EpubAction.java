@@ -17,10 +17,12 @@ import ro.sync.exml.workspace.api.editor.WSEditor;
 
 public abstract class EpubAction extends AbstractAction {
 	
+	private boolean closeEditors;
 	protected EpubAccess epubAccess;
 	
-	public EpubAction(String name) {
+	public EpubAction(String name, boolean closeEditors) {
 		super(name);
+		this.closeEditors = closeEditors;
 	}
 	
 	public abstract void actionPerformed(EditorAccess editorAccess,
@@ -41,7 +43,8 @@ public abstract class EpubAction extends AbstractAction {
 			}
 			affectedEditorUrls.add(url);
 		}
-		affectedEditorUrls.forEach(url -> editorAccess.close(url));
+		if (closeEditors)
+			affectedEditorUrls.forEach(url -> editorAccess.close(url));
 		try {
 			epubAccess = EpubAccessProvider.getEpubAccess(URI.create(
 					editorAccess.getArchiveUrlComponent(editorUrl)));
