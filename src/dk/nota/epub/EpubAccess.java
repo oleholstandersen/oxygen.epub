@@ -14,9 +14,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import dk.nota.archive.ArchiveAccess;
-import dk.nota.epub.xml.EpubXmlAccess;
-import dk.nota.epub.xml.EpubXmlAccessProvider;
 import dk.nota.xml.DocumentResult;
+import dk.nota.xml.XmlAccess;
+import dk.nota.xml.XmlAccessProvider;
 import net.sf.saxon.s9api.Axis;
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.SaxonApiException;
@@ -32,7 +32,7 @@ public class EpubAccess {
 	private ArchiveAccess epubArchiveAccess;
 	private ContentAccess epubContentAccess;
 	private URI epubArchiveUri;
-	private EpubXmlAccess epubXmlAccess;
+	private XmlAccess xmlAccess;
 	private URI navUri;
 	private URI ncxUri;
 	private URI opfUri;
@@ -41,7 +41,7 @@ public class EpubAccess {
 	public EpubAccess(URI epubArchiveUri) throws EpubException {
 		this.epubArchiveUri = epubArchiveUri;
 		epubArchiveAccess = new ArchiveAccess(epubArchiveUri);
-		epubXmlAccess = EpubXmlAccessProvider.getEpubXmlAccess();
+		xmlAccess = XmlAccessProvider.getXmlAccess();
 		try {
 			setupUris();
 		} catch (IOException | SaxonApiException e) {
@@ -61,25 +61,25 @@ public class EpubAccess {
 	private void setupUris() throws IOException, SaxonApiException {
 		URI containerUri = epubArchiveAccess.makeArchiveBasedUri(
 				"META-INF/container.xml");
-		XdmNode metaDocument = epubXmlAccess.getDocument(containerUri);
+		XdmNode metaDocument = xmlAccess.getDocument(containerUri);
 		String opfReferenceXpath =
 				"//info:rootfile[@media-type = 'application/oebps-package+xml']";
-		XdmNode opfReferenceNode = epubXmlAccess.getFirstNodeByXpath(
+		XdmNode opfReferenceNode = xmlAccess.getFirstNodeByXpath(
 				opfReferenceXpath, metaDocument);
 		opfUri = epubArchiveAccess.makeArchiveBasedUri(opfReferenceNode
 				.getAttributeValue(new QName("full-path")));
-		XdmNode opfDocument = epubXmlAccess.getDocument(opfUri);
-		XdmNode navReferenceNode = epubXmlAccess.getFirstNodeByXpath(
+		XdmNode opfDocument = xmlAccess.getDocument(opfUri);
+		XdmNode navReferenceNode = xmlAccess.getFirstNodeByXpath(
 				"/opf:package/opf:manifest/opf:item[@properties eq 'nav']",
 				opfDocument);
-		XdmNode ncxReferenceNode = epubXmlAccess.getFirstNodeByXpath(
+		XdmNode ncxReferenceNode = xmlAccess.getFirstNodeByXpath(
 				"/opf:package/opf:manifest/opf:item[@id eq 'ncx']",
 				opfDocument);
 		navUri = opfUri.resolve(navReferenceNode.getAttributeValue(new QName(
 				"href")));
 		ncxUri = opfUri.resolve(ncxReferenceNode.getAttributeValue(new QName(
 				"href")));
-		pid = epubXmlAccess.getFirstNodeByXpath(
+		pid = xmlAccess.getFirstNodeByXpath(
 				"/opf:package/opf:metadata/dc:identifier", opfDocument)
 				.getStringValue();
 	}
@@ -125,19 +125,19 @@ public class EpubAccess {
 			LinkedHashMap<URI,XdmNode> contentDocumentsMap =
 					new LinkedHashMap<URI,XdmNode>();
 			XdmNode manifest = (XdmNode)opfDocument.axisIterator(Axis
-					.DESCENDANT, new QName(EpubXmlAccess.NAMESPACE_OPF,
+					.DESCENDANT, new QName(XmlAccess.NAMESPACE_OPF,
 							"manifest")).next();
 			XdmNode spine = (XdmNode)opfDocument.axisIterator(Axis.DESCENDANT,
-					new QName(EpubXmlAccess.NAMESPACE_OPF, "spine")).next();
+					new QName(XmlAccess.NAMESPACE_OPF, "spine")).next();
 			XdmSequenceIterator iterator = spine.axisIterator(Axis.CHILD,
-					new QName(EpubXmlAccess.NAMESPACE_OPF, "itemref"));
+					new QName(XmlAccess.NAMESPACE_OPF, "itemref"));
 			while (iterator.hasNext()) {
 				String id = ((XdmNode)iterator.next()).getAttributeValue(
 						new QName("idref"));
 				XdmNode item = getItemFromManifest(id, manifest);
 				URI uri = makeOpfBasedUri(item.getAttributeValue(new QName(
 						"href")));
-				XdmNode document = epubXmlAccess.getDocument(uri);
+				XdmNode document = xmlAccess.getDocument(uri);
 				contentDocumentsMap.put(uri, document);
 			}
 			return contentDocumentsMap;
@@ -150,13 +150,13 @@ public class EpubAccess {
 		public Iterable<URI> getContentDocumentUris(XdmNode opfDocument)
 				throws EpubException {
 			XdmNode manifest = (XdmNode)opfDocument.axisIterator(Axis
-					.DESCENDANT, new QName(EpubXmlAccess.NAMESPACE_OPF,
+					.DESCENDANT, new QName(XmlAccess.NAMESPACE_OPF,
 							"manifest")).next();
 			XdmNode spine = (XdmNode)opfDocument.axisIterator(Axis.DESCENDANT,
-					new QName(EpubXmlAccess.NAMESPACE_OPF, "spine")).next();
+					new QName(XmlAccess.NAMESPACE_OPF, "spine")).next();
 			LinkedList<URI> uris = new LinkedList<URI>();
 			XdmSequenceIterator iterator = spine.axisIterator(Axis.CHILD,
-					new QName(EpubXmlAccess.NAMESPACE_OPF, "itemref"));
+					new QName(XmlAccess.NAMESPACE_OPF, "itemref"));
 			while (iterator.hasNext()) {
 				String id = ((XdmNode)iterator.next()).getAttributeValue(
 						new QName("idref"));
@@ -170,7 +170,7 @@ public class EpubAccess {
 		private XdmNode getItemFromManifest(String itemId, XdmNode manifest)
 				throws EpubException {
 			XdmSequenceIterator iterator = manifest.axisIterator(Axis.CHILD, 
-					new QName(EpubXmlAccess.NAMESPACE_OPF, "item"));
+					new QName(XmlAccess.NAMESPACE_OPF, "item"));
 			while (iterator.hasNext()) {
 				XdmNode node = (XdmNode)iterator.next();
 				if (node.getAttributeValue(new QName("id")).equals(itemId))
@@ -189,7 +189,7 @@ public class EpubAccess {
 				XdmNode opfDocument) {
 			HashMap<String,String> metadataMap = new HashMap<String,String>();
 			XdmNode metadata = (XdmNode)opfDocument.axisIterator(Axis
-					.DESCENDANT, new QName(EpubXmlAccess.NAMESPACE_OPF,
+					.DESCENDANT, new QName(XmlAccess.NAMESPACE_OPF,
 							"metadata")).next();
 			metadata.axisIterator(Axis.CHILD).forEachRemaining(
 					item -> {
@@ -197,7 +197,7 @@ public class EpubAccess {
 						XdmNode node = (XdmNode)item;
 						if (node.getNodeKind() != XdmNodeKind.ELEMENT) return;
 						if (node.getNodeName().getNamespaceURI().equals(
-								EpubXmlAccess.NAMESPACE_DC))
+								XmlAccess.NAMESPACE_DC))
 							metadataMap.put(node.getNodeName().getLocalName()
 									.toLowerCase(), node.getStringValue());
 					});
@@ -206,7 +206,7 @@ public class EpubAccess {
 		
 		public XdmNode getOpfDocument() throws EpubException {
 			try {
-				return epubXmlAccess.getDocument(opfUri);
+				return xmlAccess.getDocument(opfUri);
 			} catch (SaxonApiException e) {
 				throw new EpubException("Unable to get OPF document", e);
 			}
@@ -217,8 +217,7 @@ public class EpubAccess {
 				throws EpubException {
 			Xslt30Transformer opfUpdater;
 			try {
-				opfUpdater = EpubXmlAccessProvider.getEpubXmlAccess()
-						.getXsltTransformer(
+				opfUpdater = xmlAccess.getXsltTransformer(
 								"/dk/nota/xml/xslt/epub-opf-update.xsl");
 			} catch (SaxonApiException e) {
 				throw new EpubException("Unable to load OPF updater", e);
@@ -270,7 +269,7 @@ public class EpubAccess {
 		
 		public XdmNode getXhtmlNavDocument() throws EpubException {
 			try {
-				return epubXmlAccess.getDocument(navUri);
+				return xmlAccess.getDocument(navUri);
 			} catch (SaxonApiException e) {
 				throw new EpubException(
 						"Unable to get XHTML navigation document", e);
@@ -279,7 +278,7 @@ public class EpubAccess {
 		
 		public XdmNode getNcxNavDocument() throws EpubException {
 			try {
-				return epubXmlAccess.getDocument(ncxUri);
+				return xmlAccess.getDocument(ncxUri);
 			} catch (SaxonApiException e) {
 				throw new EpubException(
 						"Unable to get NCX navigation document", e);

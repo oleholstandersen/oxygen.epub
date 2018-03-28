@@ -19,8 +19,20 @@ import net.sf.saxon.s9api.XsltExecutable;
 
 public class XmlAccess {
 	
+	public static final String NAMESPACE_DC = "http://purl.org/dc/elements/1.1/";
+	public static final String PREFIX_DC = "dc";
+	public static final String NAMESPACE_EPUB = "http://www.idpf.org/2007/ops";
+	public static final String PREFIX_EPUB = "epub";
+	public static final String NAMESPACE_INFO = "urn:oasis:names:tc:opendocument:xmlns:container";
+	public static final String PREFIX_INFO = "info";
+	public static final String NAMESPACE_NCX = "http://www.daisy.org/z3986/2005/ncx/";
+	public static final String PREFIX_NCX = "ncx";
 	public static final String NAMESPACE_NOTA = "http://www.nota.dk/oxygen";
 	public static final String PREFIX_NOTA = "nota";
+	public static final String NAMESPACE_OPF = "http://www.idpf.org/2007/opf";
+	public static final String PREFIX_OPF = "opf";
+	public static final String NAMESPACE_HTML = "http://www.w3.org/1999/xhtml";
+	public static final String PREFIX_HTML = "html";
 	
 	private Processor processor;
 	private XPathCompiler xpathCompiler;
@@ -61,6 +73,31 @@ public class XmlAccess {
 		serializer.setOutputProperty(Serializer.Property.METHOD, "xml");
 		serializer.setOutputProperty(Serializer.Property.SAXON_INDENT_SPACES,
 				"4");
+		return serializer;
+	}
+	
+	public Serializer getOpfSerializer() {
+		Serializer serializer = getSerializer();
+		serializer.setOutputProperty(Serializer.Property
+				.SAXON_SUPPRESS_INDENTATION, "dd dt hd levelhd li p td th");
+		return serializer;
+	}
+	
+	public Serializer getXhtmlSerializer() {
+		Serializer serializer = getSerializer();
+		serializer.setOutputProperty(Serializer.Property.DOCTYPE_PUBLIC,
+				"html");
+		// By default we suppress indentation within elements which may contain
+		// text and other inline content
+		serializer.setOutputProperty(Serializer.Property
+				.SAXON_SUPPRESS_INDENTATION, String.format(
+						"{%1$s}caption "
+						+ "{%1$s}dd {%1$s}dt "
+						+ "{%1$s}figcaption "
+						+ "{%1$s}h1 {%1$s}h2 {%1$s}h3 {%1$s}h4 {%1$s}h5 {%1$s}h6 "
+						+ "{%1$s}li "
+						+ "{%1$s}p "
+						+ "{%1$s}td {%1$s}th", NAMESPACE_HTML));
 		return serializer;
 	}
 	
@@ -111,7 +148,13 @@ public class XmlAccess {
 	}
 	
 	private void setupXpathNamespaces() {
+		xpathCompiler.declareNamespace(PREFIX_DC, NAMESPACE_DC);
+		xpathCompiler.declareNamespace(PREFIX_EPUB, NAMESPACE_EPUB);
+		xpathCompiler.declareNamespace(PREFIX_INFO, NAMESPACE_INFO);
+		xpathCompiler.declareNamespace(PREFIX_NCX, NAMESPACE_NCX);
 		xpathCompiler.declareNamespace(PREFIX_NOTA, NAMESPACE_NOTA);
+		xpathCompiler.declareNamespace(PREFIX_OPF, NAMESPACE_OPF);
+		xpathCompiler.declareNamespace(PREFIX_HTML, NAMESPACE_HTML);
 	}
 	
 }

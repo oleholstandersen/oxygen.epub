@@ -6,7 +6,7 @@ import java.util.LinkedList;
 
 import javax.xml.transform.SourceLocator;
 
-import dk.nota.epub.xml.EpubXmlAccessProvider;
+import dk.nota.xml.XmlAccessProvider;
 import dk.nota.oxygen.xml.EpubXmlAccess;
 import dk.nota.xml.AbstractTransformationListener;
 import net.sf.saxon.s9api.Axis;
@@ -24,7 +24,7 @@ public class Concatter extends AbstractContentTransformation {
 	
 	public Concatter(XdmNode opfDocument, boolean updateOpf)
 			throws SaxonApiException {
-		super(EpubXmlAccessProvider.getEpubXmlAccess().getXsltTransformer(
+		super(XmlAccessProvider.getXmlAccess().getXsltTransformer(
 				"/dk/nota/xml/xslt/epub-concat.xsl"), opfDocument);
 		addListener(new ConcatListener());
 		addParameter("UPDATE_OPF", new XdmAtomicValue(updateOpf));

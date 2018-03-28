@@ -13,7 +13,7 @@ import java.util.LinkedHashMap;
 import java.util.Set;
 
 import dk.nota.archive.ArchiveAccess;
-import dk.nota.epub.xml.EpubXmlAccessProvider;
+import dk.nota.xml.XmlAccessProvider;
 import net.sf.saxon.s9api.Axis;
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.SaxonApiException;
@@ -65,9 +65,9 @@ public class DocumentResult {
 	
 	public void writeDocumentsToArchive(ArchiveAccess archiveAccess)
 			throws IOException, SaxonApiException {
-		Serializer genericSerializer = EpubXmlAccessProvider.getEpubXmlAccess()
+		Serializer genericSerializer = XmlAccessProvider.getXmlAccess()
 				.getSerializer();
-		Serializer xhtmlSerializer = EpubXmlAccessProvider.getEpubXmlAccess()
+		Serializer xhtmlSerializer = XmlAccessProvider.getXmlAccess()
 				.getXhtmlSerializer();
 		Serializer serializer;
 		try (FileSystem archiveFileSystem = archiveAccess

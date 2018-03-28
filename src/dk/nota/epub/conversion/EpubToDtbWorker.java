@@ -13,7 +13,7 @@ import java.util.LinkedList;
 import dk.nota.archive.ArchiveAccess;
 import dk.nota.epub.EpubAccess;
 import dk.nota.epub.content.Concatter;
-import dk.nota.epub.xml.EpubXmlAccessProvider;
+import dk.nota.xml.XmlAccessProvider;
 import dk.nota.oxygen.AbstractWorkerWithResults;
 import dk.nota.oxygen.EditorAccess;
 import dk.nota.oxygen.EditorAccessProvider;
@@ -66,7 +66,7 @@ public class EpubToDtbWorker
 				opfDocument, outputUri);
 		dtbConverter.addListener(getResultsListener());
 		documentResult = new DocumentResult(dtbConverter.call());
-		Serializer dtbSerializer = EpubXmlAccessProvider.getEpubXmlAccess()
+		Serializer dtbSerializer = XmlAccessProvider.getXmlAccess()
 				.getSerializer();
 		dtbSerializer.setOutputProperty(Serializer.Property
 				.SAXON_SUPPRESS_INDENTATION, "dd dt hd levelhd li p td th");

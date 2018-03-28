@@ -11,11 +11,11 @@ import java.util.LinkedList;
 
 import dk.nota.archive.ArchiveAccess;
 import dk.nota.epub.EpubAccess;
-import dk.nota.epub.xml.EpubXmlAccessProvider;
 import dk.nota.oxygen.AbstractWorkerWithResults;
 import dk.nota.oxygen.EditorAccessProvider;
 import dk.nota.oxygen.ResultsListener;
 import dk.nota.xml.DocumentResult;
+import dk.nota.xml.XmlAccessProvider;
 import net.sf.saxon.s9api.Serializer;
 import net.sf.saxon.s9api.XdmNode;
 
@@ -37,15 +37,15 @@ public class SplitWorker
 	@Override
 	protected DocumentResult doInBackground() throws Exception {
 		fireResultsUpdate("SPLIT STARTING");
-		XdmNode concatDocument = EpubXmlAccessProvider.getEpubXmlAccess()
+		XdmNode concatDocument = XmlAccessProvider.getXmlAccess()
 				.getDocument(epubAccess.makeOpfBasedUri("concat.xhtml"));
 		Splitter splitter = new Splitter(concatDocument, opfDocument);
 		splitter.addListener(getResultsListener());
 		DocumentResult documentResult = new DocumentResult(splitter.call());
 		ArchiveAccess archiveAccess = epubAccess.getArchiveAccess();
-		Serializer genericSerializer = EpubXmlAccessProvider.getEpubXmlAccess()
+		Serializer genericSerializer = XmlAccessProvider.getXmlAccess()
 				.getSerializer();
-		Serializer xhtmlSerializer = EpubXmlAccessProvider.getEpubXmlAccess()
+		Serializer xhtmlSerializer = XmlAccessProvider.getXmlAccess()
 				.getXhtmlSerializer();
 		Serializer serializer;
 		try (FileSystem epubFileSystem = archiveAccess
