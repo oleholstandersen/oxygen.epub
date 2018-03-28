@@ -2,6 +2,7 @@ package dk.nota.archive;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URI;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
@@ -9,8 +10,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardOpenOption;
 import java.util.LinkedList;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Random;
+
+import net.sf.saxon.s9api.SaxonApiException;
+import net.sf.saxon.s9api.Serializer;
+import net.sf.saxon.s9api.XdmNode;
 
 public class ArchiveAccess {
 	
@@ -85,6 +93,27 @@ public class ArchiveAccess {
 				String.format("The provided URI (%s) is not an archive URI",
 						uri));
 		return components[1];
+	}
+	
+	public void serializeNodeToArchive(XdmNode node, URI uri,
+			Serializer serializer, FileSystem archiveFileSystem)
+			throws IOException, SaxonApiException {
+		Path path = archiveFileSystem.getPath(relativizeUriToArchive(uri));
+		try (OutputStream outputStream = Files.newOutputStream(path,
+				StandardOpenOption.CREATE)) {
+			serializer.setOutputStream(outputStream);
+			serializer.serializeNode(node);
+		} finally {
+			serializer.close();
+		}
+	}
+	
+	public void serializeNodesToArchive(Map<URI,XdmNode> nodes,
+			Serializer serializer, FileSystem archiveFileSystem)
+			throws IOException, SaxonApiException {
+		for (Entry<URI,XdmNode> entry : nodes.entrySet())
+			serializeNodeToArchive(entry.getValue(), entry.getKey(),
+					serializer, archiveFileSystem);
 	}
 
 }
