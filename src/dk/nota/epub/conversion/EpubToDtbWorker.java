@@ -19,7 +19,6 @@ import dk.nota.oxygen.EditorAccess;
 import dk.nota.oxygen.EditorAccessProvider;
 import dk.nota.oxygen.ResultsListener;
 import dk.nota.xml.DocumentResult;
-import net.sf.saxon.s9api.Serializer;
 import net.sf.saxon.s9api.XdmNode;
 
 public class EpubToDtbWorker
@@ -66,12 +65,9 @@ public class EpubToDtbWorker
 				opfDocument, outputUri);
 		dtbConverter.addListener(getResultsListener());
 		documentResult = new DocumentResult(dtbConverter.call());
-		Serializer dtbSerializer = XmlAccessProvider.getXmlAccess()
-				.getSerializer();
-		dtbSerializer.setOutputProperty(Serializer.Property
-				.SAXON_SUPPRESS_INDENTATION, "dd dt hd levelhd li p td th");
 		copyImages(outputUri.resolve("./"), concatter.getImages());
-		documentResult.writeDocuments(dtbSerializer);
+		documentResult.writeDocuments(XmlAccessProvider.getXmlAccess()
+				.getDtbSerializer());
 		return documentResult;
 	}
 	

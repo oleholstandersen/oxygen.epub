@@ -76,7 +76,7 @@ public class XmlAccess {
 		return serializer;
 	}
 	
-	public Serializer getOpfSerializer() {
+	public Serializer getDtbSerializer() {
 		Serializer serializer = getSerializer();
 		serializer.setOutputProperty(Serializer.Property
 				.SAXON_SUPPRESS_INDENTATION, "dd dt hd levelhd li p td th");
