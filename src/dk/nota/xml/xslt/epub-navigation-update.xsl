@@ -42,24 +42,24 @@
             </document>
         </xsl:for-each> 
     </xsl:variable>
-    <xsl:variable name="NAVIGATION" as="element(nota:navigation)">
-        <nota:navigation>
+    <xsl:variable name="NAVIGATION" as="element(navigation)">
+        <navigation xmlns="">
             <xsl:for-each-group select="$CONTENT_DOCUMENTS_WITH_IDS"
                 group-adjacent="@placement">
-                <xsl:element name="{'nota:' || current-grouping-key()}">
-                    <xsl:variable name="documents" as="element(nota:document)*"
+                <xsl:element name="{current-grouping-key()}">
+                    <xsl:variable name="documents" as="element(document)*"
                         select="nota:group-notes(current-group())"/>
                     <xsl:for-each-group select="$documents"
-                        group-starting-with="nota:document[@type eq 'part']">
+                        group-starting-with="document[@type eq 'part']">
                         <xsl:choose>
                             <xsl:when test="current-group()[1]/@type eq 'part'">
-                                <nota:document>
+                                <document xmlns="">
                                     <xsl:copy-of
                                         select="current-group()[1]/(@position|
-                                                @type|nota:document)|
+                                                @type|document)|
                                                 current-group()[position() gt
                                                 1]"/>
-                                </nota:document>
+                                </document>
                             </xsl:when>
                             <xsl:otherwise>
                                 <xsl:copy-of select="current-group()"/>
@@ -68,7 +68,7 @@
                     </xsl:for-each-group>
                 </xsl:element>
             </xsl:for-each-group>
-        </nota:navigation>
+        </navigation>
     </xsl:variable>
     <!-- NCX navigation document: Based on XHTML ditto -->
     <xsl:variable name="NCX_NAVIGATION_DOCUMENT" as="element(ncx:ncx)">
@@ -146,7 +146,7 @@
                     <h1 lang="da" xml:lang="da">Indhold</h1>
                     <ol class="list-style-type-none">
                         <xsl:apply-templates mode="GENERATE_NAV_HEADINGS"
-                            select="$NAVIGATION/nota:*/nota:document"/>
+                            select="$NAVIGATION/*/document"/>
                     </ol>
                 </nav>
                 <xsl:if test="$PAGE_NUMBERS">
@@ -195,7 +195,7 @@
         </xsl:copy>
     </xsl:template>
     <!-- XHTML navigation -->
-    <xsl:template mode="GENERATE_NAV_HEADINGS" match="nota:document">
+    <xsl:template mode="GENERATE_NAV_HEADINGS" match="document">
         <xsl:variable name="position" as="xs:integer"
             select="xs:integer(@position)"/>
         <xsl:variable name="documentNav" as="element()+">
@@ -205,12 +205,12 @@
         </xsl:variable>
         <li>
             <xsl:copy-of select="$documentNav[self::html:a]"/>
-            <xsl:if test="$documentNav[self::html:ol]|nota:document">
+            <xsl:if test="$documentNav[self::html:ol]|document">
                 <ol class="list-style-type-none">
                     <xsl:copy-of
                         select="$documentNav[self::html:ol]/html:li"/>
                     <xsl:apply-templates mode="GENERATE_NAV_HEADINGS"
-                        select="nota:document"/>
+                        select="document"/>
                 </ol>
             </xsl:if>
         </li>
@@ -224,7 +224,7 @@
                     //text()[not(ancestor::html:a)], ''))
                     else nota:heading-from-type-or-class(@epub:type, @class)"/>
         <xsl:variable name="documentName" as="xs:string"
-            select="ancestor::nota:document[1]/@name"/>
+            select="ancestor::document[1]/@name"/>
         <xsl:variable name="id" as="xs:string"
             select="if ($heading) then $heading/@id else @id"/>
         <a href="{$documentName || '#' || $id}">
@@ -247,7 +247,7 @@
     <xsl:template mode="GENERATE_NAV_PAGES"
         match="html:*[@epub:type = 'pagebreak']">
         <li>
-            <a href="{ancestor::nota:document[1]/@name || '#' || @id}">
+            <a href="{ancestor::document[1]/@name || '#' || @id}">
                 <xsl:value-of select="@title"/>
             </a>
         </li>
@@ -279,7 +279,7 @@
                     else if (@class = 'page-special') then 'special'
                     else 'normal'"/>
         <xsl:variable name="documentName" as="xs:string"
-            select="ancestor::nota:document[1]/@name"/>
+            select="ancestor::document[1]/@name"/>
         <pageTarget xmlns="http://www.daisy.org/z3986/2005/ncx/"
             id="{'pageTarget-' || $count}"
             playOrder="{$TOC_ENTRY_COUNT + $count}" type="{$type}">
@@ -320,23 +320,23 @@
         <xsl:variable name="group" as="element()">
             <xsl:choose>
                 <xsl:when test="$notesBelongToCurrentDocument">
-                    <nota:document position="{$currentDocument/@position}"
+                    <document xmlns="" position="{$currentDocument/@position}"
                         type="{$currentDocument/@type}">
                         <xsl:for-each select="$notesDocuments">
                             <xsl:message select="@name"/>
-                            <nota:document position="{@position}"
-                                type="{@type}"/>
+                            <document xmlns="" position="{@position}"
+                            	type="{@type}"/>
                         </xsl:for-each>
-                    </nota:document>
+                    </document>
                 </xsl:when>
                 <xsl:otherwise>
-                    <nota:document position="{$currentDocument/@position}"
+                    <document xmlns="" position="{$currentDocument/@position}"
                         type="{$currentDocument/@type}"/>
                 </xsl:otherwise>
             </xsl:choose>
         </xsl:variable>
         <xsl:variable name="nextSequence" as="element()*"
-            select="$n[position() gt 1 + $group/count(nota:document)]"/>
+            select="$n[position() gt 1 + $group/count(document)]"/>
         <xsl:sequence
             select="if ($nextSequence)
                     then $group|nota:group-notes($nextSequence)
