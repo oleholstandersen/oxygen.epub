@@ -99,9 +99,9 @@
             select="if (ancestor::node() intersect $referencedSection) then ''
                     else nota:create-document-name($referencedSection)"/>
         <xsl:copy>
-            <xsl:attribute name="href"
-                select="concat($referencedFile, @href)"/>
-            <xsl:apply-templates select="@*[not(name() = 'href')]|node()"/>
+            <xsl:attribute name="href" select="$referencedFile || @href"/>
+            <xsl:apply-templates mode="SPLIT"
+            	select="@*[not(name() = 'href')]|node()"/>
         </xsl:copy>
     </xsl:template>
 </xsl:stylesheet>
