@@ -4,27 +4,22 @@ import java.net.URL;
 import java.util.LinkedList;
 
 import dk.nota.archive.ArchiveAccess;
+import dk.nota.epub.AbstractEpubWorkerWithResults;
 import dk.nota.epub.EpubAccess;
-import dk.nota.oxygen.AbstractWorkerWithResults;
 import dk.nota.oxygen.EditorAccessProvider;
 import dk.nota.oxygen.ResultsListener;
 import dk.nota.xml.DocumentResult;
 import net.sf.saxon.s9api.XdmNode;
 
-public class NavigationUpdateWorker
-		extends AbstractWorkerWithResults<DocumentResult,Object> {
+public class NavigationUpdateWorker extends AbstractEpubWorkerWithResults {
 	
 	private LinkedList<URL> affectedEditorUrls;
-	private EpubAccess epubAccess;
-	private XdmNode opfDocument;
 
 	public NavigationUpdateWorker(EpubAccess epubAccess, XdmNode opfDocument,
 			ResultsListener resultsListener,
 			LinkedList<URL> affectedEditorUrls) {
-		super("NAVIGATION UPDATE", resultsListener);
+		super("NAVIGATION UPDATE", resultsListener, epubAccess, opfDocument);
 		this.affectedEditorUrls = affectedEditorUrls;
-		this.epubAccess = epubAccess;
-		this.opfDocument = opfDocument;
 	}
 
 	@Override

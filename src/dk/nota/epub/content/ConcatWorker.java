@@ -8,26 +8,21 @@ import java.nio.file.Path;
 import java.util.LinkedList;
 
 import dk.nota.archive.ArchiveAccess;
+import dk.nota.epub.AbstractEpubWorkerWithResults;
 import dk.nota.epub.EpubAccess;
-import dk.nota.oxygen.AbstractWorkerWithResults;
 import dk.nota.oxygen.EditorAccessProvider;
 import dk.nota.oxygen.ResultsListener;
 import dk.nota.xml.DocumentResult;
 import net.sf.saxon.s9api.XdmNode;
 
-public class ConcatWorker
-		extends AbstractWorkerWithResults<DocumentResult,Object> {
+public class ConcatWorker extends AbstractEpubWorkerWithResults {
 	
 	private LinkedList<URL> affectedEditorUrls;
-	private EpubAccess epubAccess;
-	private XdmNode opfDocument;
 
 	public ConcatWorker(EpubAccess epubAccess, XdmNode opfDocument,
 			ResultsListener listener, LinkedList<URL> affectedEditorUrls) {
-		super("CONCAT", listener);
+		super("CONCAT", listener, epubAccess, opfDocument);
 		this.affectedEditorUrls = affectedEditorUrls;
-		this.epubAccess = epubAccess;
-		this.opfDocument = opfDocument;
 	}
 
 	@Override

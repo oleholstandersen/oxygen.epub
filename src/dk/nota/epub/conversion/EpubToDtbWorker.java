@@ -1,56 +1,26 @@
 package dk.nota.epub.conversion;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
-import java.nio.file.FileSystem;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.util.LinkedList;
 
-import dk.nota.archive.ArchiveAccess;
+import dk.nota.epub.AbstractEpubWorkerWithResults;
 import dk.nota.epub.EpubAccess;
 import dk.nota.epub.content.Concatter;
 import dk.nota.xml.XmlAccessProvider;
-import dk.nota.oxygen.AbstractWorkerWithResults;
 import dk.nota.oxygen.EditorAccess;
 import dk.nota.oxygen.EditorAccessProvider;
 import dk.nota.oxygen.ResultsListener;
 import dk.nota.xml.DocumentResult;
 import net.sf.saxon.s9api.XdmNode;
 
-public class EpubToDtbWorker
-		extends AbstractWorkerWithResults<DocumentResult,Object> {
+public class EpubToDtbWorker extends AbstractEpubWorkerWithResults {
 	
-	private EpubAccess epubAccess;
-	private XdmNode opfDocument;
 	private URI outputUri;
 	
 	public EpubToDtbWorker(EpubAccess epubAccess, XdmNode opfDocument,
 			ResultsListener listener, URI outputUri) {
-		super("EPUB-TO-DTBOOK CONVERSION", listener);
-		this.epubAccess = epubAccess;
-		this.opfDocument = opfDocument;
+		super("EPUB-TO-DTBOOK CONVERSION", listener, epubAccess, opfDocument);
 		this.outputUri = outputUri;
-	}
-	
-	protected void copyImages(URI outputFolderUri, LinkedList<URI> imageUris)
-			throws IOException {
-		Path outputFolderPath = Paths.get(outputFolderUri);
-		ArchiveAccess archiveAccess = epubAccess.getArchiveAccess();
-		try (FileSystem epubFileSystem = archiveAccess
-				.getArchiveAsFileSystem()) {
-			for (URI imageUri : imageUris) {
-				Path imagePath = epubFileSystem.getPath(archiveAccess
-						.relativizeUriToArchive(imageUri));
-				Path newImagePath = outputFolderPath.resolve(imagePath
-						.getFileName().toString());
-				Files.copy(imagePath, newImagePath, StandardCopyOption
-						.REPLACE_EXISTING);
-			}
-		}
 	}
 
 	@Override

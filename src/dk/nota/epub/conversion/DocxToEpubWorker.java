@@ -4,15 +4,14 @@ import java.io.File;
 import java.net.URL;
 import java.util.LinkedList;
 
+import dk.nota.epub.AbstractEpubWorkerWithResults;
 import dk.nota.epub.EpubAccess;
-import dk.nota.oxygen.AbstractWorkerWithResults;
 import dk.nota.oxygen.EditorAccessProvider;
 import dk.nota.oxygen.ResultsListener;
 import dk.nota.xml.DocumentResult;
 import net.sf.saxon.s9api.XdmNode;
 
-public class DocxToEpubWorker
-		extends AbstractWorkerWithResults<DocumentResult,Object> {
+public class DocxToEpubWorker extends AbstractEpubWorkerWithResults {
 	
 	private LinkedList<URL> affectedEditorUrls;
 	private EpubAccess epubAccess;
@@ -22,10 +21,8 @@ public class DocxToEpubWorker
 	public DocxToEpubWorker(EpubAccess epubAccess, XdmNode opfDocument,
 			ResultsListener listener, File[] sourceFiles,
 			LinkedList<URL> affectedEditorUrls) {
-		super("DOCX-TO-EPUB CONVERSION", listener);
+		super("DOCX-TO-EPUB CONVERSION", listener, epubAccess, opfDocument);
 		this.affectedEditorUrls = affectedEditorUrls;
-		this.epubAccess = epubAccess;
-		this.opfDocument = opfDocument;
 		this.sourceFiles = sourceFiles;
 	}
 
