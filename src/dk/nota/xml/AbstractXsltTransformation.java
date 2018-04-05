@@ -10,7 +10,7 @@ import net.sf.saxon.s9api.Xslt30Transformer;
 
 public abstract class AbstractXsltTransformation implements Callable<XdmValue> {
 	
-	private HashMap<QName,XdmValue> parameters =
+	protected HashMap<QName,XdmValue> parameters =
 			new HashMap<QName,XdmValue>();
 	protected RelayingTransformationListener relayingListener;
 	protected Xslt30Transformer transformer;
