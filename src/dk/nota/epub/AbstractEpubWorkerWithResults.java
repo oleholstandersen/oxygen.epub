@@ -32,6 +32,7 @@ public abstract class AbstractEpubWorkerWithResults
 	protected void copyImages(URI outputFolderUri, LinkedList<URI> imageUris)
 			throws IOException {
 		Path outputFolderPath = Paths.get(outputFolderUri);
+		Files.createDirectories(outputFolderPath);
 		ArchiveAccess archiveAccess = epubAccess.getArchiveAccess();
 		try (FileSystem epubFileSystem = archiveAccess
 				.getArchiveAsFileSystem()) {

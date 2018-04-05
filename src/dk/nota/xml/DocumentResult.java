@@ -55,6 +55,7 @@ public class DocumentResult {
 			SaxonApiException {
 		for (URI uri : getUris()) {
 			Path path = Paths.get(uri);
+			Files.createDirectories(path.resolve("../"));
 			try (OutputStream outputStream = Files.newOutputStream(path)) {
 				serializer.setOutputStream(outputStream);
 				serializer.serializeNode(getDocument(uri));
