@@ -3,17 +3,17 @@ package dk.nota.oxygen.epub.plugin;
 import javax.swing.JComponent;
 import javax.swing.JMenuBar;
 
+import dk.nota.dtb.conversion.InspirationOutput;
+import dk.nota.epub.actions.ConcatAction;
+import dk.nota.epub.actions.EpubToDocxAction;
+import dk.nota.epub.actions.EpubToDtbAction;
+import dk.nota.epub.actions.InspirationOutputAction;
+import dk.nota.epub.actions.NavigationUpdateAction;
+import dk.nota.epub.actions.SplitAction;
 import dk.nota.oxygen.common.EditorAccess;
 import dk.nota.oxygen.epub.common.ImportDocxAction;
-import dk.nota.oxygen.epub.nav.UpdateNavigationAction;
-import dk.nota.oxygen.epub.opf.ConcatAction;
 import dk.nota.oxygen.epub.opf.CreateDaisyComicAction;
-import dk.nota.oxygen.epub.opf.CreateDocxAction;
-import dk.nota.oxygen.epub.opf.CreateDtbAction;
-import dk.nota.oxygen.epub.opf.CreateInspirationOutputAction;
-import dk.nota.oxygen.epub.opf.InspOutputType;
 import dk.nota.oxygen.epub.opf.ReloadDocumentsAction;
-import dk.nota.oxygen.epub.opf.SplitAction;
 import dk.nota.oxygen.epub.xhtml.ImportCatListAction;
 import dk.nota.oxygen.quickbase.QuickbaseAccess;
 import dk.nota.oxygen.quickbase.QuickbaseMenu;
@@ -91,7 +91,7 @@ public class EpubPluginExtension implements WorkspaceAccessPluginExtension {
 		
 		private void setupNavToolbar(ToolbarInfo toolbar) {
 			JComponent[] navComponents = new JComponent[] {
-				new ToolbarButton(new UpdateNavigationAction(), true)
+				new ToolbarButton(new NavigationUpdateAction(), true)
 			};
 			toolbar.setTitle("EPUB Navigation");
 			toolbar.setComponents(navComponents);
@@ -104,20 +104,20 @@ public class EpubPluginExtension implements WorkspaceAccessPluginExtension {
 			contentMenu.addSeparator();
 			contentMenu.add(new ReloadDocumentsAction());
 			Menu exportMenu = new Menu("Export");
-			exportMenu.add(new CreateDtbAction());
+			exportMenu.add(new EpubToDtbAction());
 			exportMenu.addSeparator();
-			exportMenu.add(new CreateInspirationOutputAction(
-					"Inspiration: E-tekst", InspOutputType.INSP_ETEXT));
-			exportMenu.add(new CreateInspirationOutputAction(
-					"Inspiration: Korrektur", InspOutputType.INSP_PROOF));
-			exportMenu.add(new CreateInspirationOutputAction(
-					"Inspiration: Lyd", InspOutputType.INSP_AUDIO));
-			exportMenu.add(new CreateInspirationOutputAction(
-					"Inspiration: Punkt", InspOutputType.INSP_BRAILLE));
-			exportMenu.add(new CreateInspirationOutputAction(
-					"Inspiration: Tryk", InspOutputType.INSP_PRINT));
+			exportMenu.add(new InspirationOutputAction(InspirationOutput
+					.INSP_ETEXT));
+			exportMenu.add(new InspirationOutputAction(InspirationOutput
+					.INSP_PROOF));
+			exportMenu.add(new InspirationOutputAction(InspirationOutput
+					.INSP_AUDIO));
+			exportMenu.add(new InspirationOutputAction(InspirationOutput
+					.INSP_BRAILLE));
+			exportMenu.add(new InspirationOutputAction(InspirationOutput
+					.INSP_PRINT));
 			exportMenu.addSeparator();
-			exportMenu.add(new CreateDocxAction());
+			exportMenu.add(new EpubToDocxAction());
 			exportMenu.addSeparator();
 			exportMenu.add(new CreateDaisyComicAction());
 			Menu importMenu = new Menu("Import");
@@ -138,7 +138,7 @@ public class EpubPluginExtension implements WorkspaceAccessPluginExtension {
 			importMenu.add(new ImportDocxAction());
 			importMenu.add(new ImportCatListAction());
 			JComponent[] xhtmlComponents = new JComponent[] {
-				new ToolbarButton(new UpdateNavigationAction(), true),
+				new ToolbarButton(new NavigationUpdateAction(), true),
 				importMenu
 			};
 			toolbar.setTitle("EPUB XHTML");
