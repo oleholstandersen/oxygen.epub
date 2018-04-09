@@ -11,9 +11,9 @@ import dk.nota.oxygen.ResultsListener;
 import dk.nota.oxygen.ResultsView;
 import net.sf.saxon.s9api.XdmNode;
 
-public class TestEpubToDocxAction extends EpubAction {
+public class EpubToDocxAction extends EpubAction {
 
-	public TestEpubToDocxAction() {
+	public EpubToDocxAction() {
 		super("Docx", false);
 	}
 

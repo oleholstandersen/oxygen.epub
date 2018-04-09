@@ -10,9 +10,9 @@ import dk.nota.oxygen.ResultsListener;
 import dk.nota.oxygen.ResultsView;
 import net.sf.saxon.s9api.XdmNode;
 
-public class TestSplitAction extends EpubAction {
+public class SplitAction extends EpubAction {
 	
-	public TestSplitAction() {
+	public SplitAction() {
 		super("Split", true);
 	}
 

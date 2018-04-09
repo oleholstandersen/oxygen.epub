@@ -10,9 +10,9 @@ import dk.nota.oxygen.ResultsListener;
 import dk.nota.oxygen.ResultsView;
 import net.sf.saxon.s9api.XdmNode;
 
-public class TestImportDocxAction extends EpubAction {
+public class ImportDocxAction extends EpubAction {
 
-	public TestImportDocxAction() {
+	public ImportDocxAction() {
 		super("Docx", false);
 	}
 

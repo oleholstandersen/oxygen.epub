@@ -10,9 +10,9 @@ import dk.nota.oxygen.ResultsListener;
 import dk.nota.oxygen.ResultsView;
 import net.sf.saxon.s9api.XdmNode;
 
-public class TestNavigationUpdateAction extends EpubAction {
+public class NavigationUpdateAction extends EpubAction {
 	
-	public TestNavigationUpdateAction() {
+	public NavigationUpdateAction() {
 		super("Update navigation", true);
 	}
 

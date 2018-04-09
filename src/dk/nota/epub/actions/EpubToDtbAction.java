@@ -11,9 +11,9 @@ import dk.nota.oxygen.ResultsListener;
 import dk.nota.oxygen.ResultsView;
 import net.sf.saxon.s9api.XdmNode;
 
-public class TestEpubToDtbAction extends EpubAction {
+public class EpubToDtbAction extends EpubAction {
 
-	public TestEpubToDtbAction() {
+	public EpubToDtbAction() {
 		super("DTBook 1.1.0", false);
 	}
 

@@ -12,11 +12,11 @@ import dk.nota.oxygen.ResultsListener;
 import dk.nota.oxygen.ResultsView;
 import net.sf.saxon.s9api.XdmNode;
 
-public class TestInspirationOutputAction extends EpubAction {
+public class InspirationOutputAction extends EpubAction {
 	
 	private InspirationOutput inspirationOutput;
 	
-	public TestInspirationOutputAction(InspirationOutput inspirationOutput) {
+	public InspirationOutputAction(InspirationOutput inspirationOutput) {
 		super(inspirationOutput.getName(), false);
 		this.inspirationOutput = inspirationOutput;
 	}

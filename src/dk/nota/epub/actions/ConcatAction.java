@@ -10,9 +10,9 @@ import dk.nota.oxygen.ResultsListener;
 import dk.nota.oxygen.ResultsView;
 import net.sf.saxon.s9api.XdmNode;
 
-public class TestConcatAction extends EpubAction {
+public class ConcatAction extends EpubAction {
 	
-	public TestConcatAction() {
+	public ConcatAction() {
 		super("Concat", true);
 	}
 
