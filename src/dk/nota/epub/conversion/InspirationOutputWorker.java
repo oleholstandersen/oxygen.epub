@@ -45,6 +45,9 @@ public class InspirationOutputWorker extends AbstractEpubWorkerWithResults {
 				.getSerializer();
 		if (inspirationOutput == InspirationOutput.INSP_PRINT)
 			serializer.setOutputProperty(Serializer.Property.METHOD, "text");
+		else if (inspirationOutput == InspirationOutput.INSP_PROOF)
+			serializer.setOutputProperty(Serializer.Property.ENCODING,
+					"Windows-1252");
 		documentResult.writeDocuments(serializer);
 		return documentResult;
 	}
