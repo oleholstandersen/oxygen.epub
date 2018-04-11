@@ -83,6 +83,12 @@ public class XmlAccess {
 		return serializer;
 	}
 	
+	public Serializer getTextSerializer() {
+		Serializer serializer = getSerializer();
+		serializer.setOutputProperty(Serializer.Property.METHOD, "text");
+		return serializer;
+	}
+	
 	public Serializer getXhtmlSerializer() {
 		Serializer serializer = getSerializer();
 		serializer.setOutputProperty(Serializer.Property.DOCTYPE_PUBLIC,

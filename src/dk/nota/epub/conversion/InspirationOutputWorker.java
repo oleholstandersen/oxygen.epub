@@ -41,11 +41,11 @@ public class InspirationOutputWorker extends AbstractEpubWorkerWithResults {
 				inspirationOutput.getTransformer(), documentResult
 				.getDocuments().iterator().next(), outputUri);
 		documentResult = new DocumentResult(inspirationConverter.call());
-		Serializer serializer = XmlAccessProvider.getXmlAccess()
-				.getSerializer();
-		if (inspirationOutput == InspirationOutput.INSP_PRINT)
-			serializer.setOutputProperty(Serializer.Property.METHOD, "text");
-		else if (inspirationOutput == InspirationOutput.INSP_PROOF)
+		Serializer serializer =
+				inspirationOutput == InspirationOutput.INSP_PRINT ?
+				XmlAccessProvider.getXmlAccess().getTextSerializer() :
+				XmlAccessProvider.getXmlAccess().getSerializer();
+		if (inspirationOutput == InspirationOutput.INSP_PROOF)
 			serializer.setOutputProperty(Serializer.Property.ENCODING,
 					"Windows-1252");
 		documentResult.writeDocuments(serializer);
