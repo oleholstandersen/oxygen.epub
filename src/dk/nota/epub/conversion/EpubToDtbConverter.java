@@ -19,7 +19,7 @@ public class EpubToDtbConverter extends AbstractContentTransformation {
 	}
 	
 	public EpubToDtbConverter(XdmNode xhtmlDocument, XdmNode opfDocument,
-			XdmNode navDocument, URI outputUri) throws SaxonApiException {
+			URI outputUri, XdmNode navDocument) throws SaxonApiException {
 		this(xhtmlDocument, opfDocument, outputUri);
 		addParameter("NAV_DOCUMENT", navDocument);
 	}
