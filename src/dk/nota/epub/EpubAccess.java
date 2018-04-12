@@ -252,12 +252,9 @@ public class EpubAccess {
 			}
 			try {
 				documentResult.writeDocumentsToArchive(getArchiveAccess());
-			} catch (IOException e) {
+			} catch (IOException | SaxonApiException e) {
 				throw new EpubException(
 						"An error occurred while writing OPF document", e);
-			} catch (SaxonApiException e) {
-				throw new EpubException(
-						"An error occurred while serializing OPF document", e);
 			}
 		}
 		
