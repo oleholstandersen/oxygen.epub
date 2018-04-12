@@ -37,7 +37,7 @@ public class ArchiveAccess {
 	
 	public LinkedList<URI> copyFilesToArchiveFolder(String internalFolder,
 			boolean replace, File... files) throws IOException {
-		LinkedList<URI> copiedFileUris = new LinkedList<URI>();
+		LinkedList<URI> uris = new LinkedList<URI>();
 		try (FileSystem archiveFileSystem = getArchiveAsFileSystem()) {
 			Path basePath = archiveFileSystem.getPath(internalFolder);
 			Files.createDirectories(basePath);
@@ -56,13 +56,14 @@ public class ArchiveAccess {
 										"$1-" + suffix + "$2");
 						filePath = basePath.resolve(fileName);
 					}
-				copiedFileUris.add(Files.copy(files[i].toPath(), filePath,
-						StandardCopyOption.REPLACE_EXISTING).toUri());
+				uris.add(makeArchiveBasedUri(Files.copy(files[i].toPath(),
+						filePath, StandardCopyOption.REPLACE_EXISTING)
+						.toString()));
 			}
 		} catch (IOException e) {
 			throw e;
 		}
-		return copiedFileUris;
+		return uris;
 	}
 	
 	public FileSystem getArchiveAsFileSystem() throws IOException {

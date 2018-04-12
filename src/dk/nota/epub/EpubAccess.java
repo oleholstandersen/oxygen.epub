@@ -258,6 +258,11 @@ public class EpubAccess {
 			}
 		}
 		
+		public void updateOpfWithImages(Map<String,String> additions)
+				throws EpubException {
+			updateOpf(additions, new LinkedList<String>(), "image", false);
+		}
+		
 	}
 	
 	public class NavigationAccess {
