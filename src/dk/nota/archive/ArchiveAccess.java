@@ -81,6 +81,22 @@ public class ArchiveAccess {
 		return URI.create("zip:" + archivePath.toUri() + "!/");
 	}
 	
+	public LinkedList<Path> getDirectoryContents(String directoryPath)
+			throws IOException {
+		try (FileSystem archiveFileSystem = getArchiveAsFileSystem()) {
+			return getDirectoryContents(archiveFileSystem, directoryPath);
+		}
+	}
+	
+	public LinkedList<Path> getDirectoryContents(FileSystem archiveFileSystem,
+			String directoryPath) throws IOException {
+		LinkedList<Path> paths = new LinkedList<Path>();
+		Files.walk(archiveFileSystem.getPath(directoryPath), 1)
+			.sorted()
+			.forEach(path -> paths.add(path));
+		return paths;
+	}
+	
 	public URI makeArchiveBasedUri(String relativePath) {
 		return URI.create(getArchiveInternalUri() + relativePath);
 	}
