@@ -18,7 +18,6 @@ import dk.nota.epub.EpubException;
 import dk.nota.oxygen.EditorAccess;
 import dk.nota.oxygen.EditorAccessProvider;
 import dk.nota.oxygen.common.AbstractAuthorOperation;
-import dk.nota.oxygen.xml.EpubXmlAccess;
 import dk.nota.xml.XmlAccess;
 import dk.nota.xml.XmlAccessProvider;
 import net.sf.saxon.s9api.Axis;
@@ -77,7 +76,7 @@ public class ImportImageMapsOperation extends AbstractAuthorOperation {
 			public void message(XdmNode message, boolean terminate,
 					SourceLocator sourceLocator) {
 				message.axisIterator(Axis.DESCENDANT_OR_SELF, new QName(
-						EpubXmlAccess.NOTA_NAMESPACE, "image"))
+						XmlAccess.NAMESPACE_NOTA, "image"))
 						.forEachRemaining(
 								item -> imageFiles[count++] = new File(URI
 										.create(item.getStringValue())));

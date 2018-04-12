@@ -7,8 +7,8 @@ import javax.xml.transform.ErrorListener;
 import javax.xml.transform.SourceLocator;
 import javax.xml.transform.TransformerException;
 
-import dk.nota.oxygen.xml.EpubXmlAccess;
 import dk.nota.xml.TransformationListener;
+import dk.nota.xml.XmlAccess;
 import net.sf.saxon.s9api.Axis;
 import net.sf.saxon.s9api.MessageListener;
 import net.sf.saxon.s9api.QName;
@@ -60,12 +60,12 @@ public class ResultsListener implements ErrorListener, MessageListener,
 		// Messages meant for display are text-node children of <nota:out>
 		// elements within <xsl:message>
 		XdmSequenceIterator messageIterator = message.axisIterator(Axis
-				.DESCENDANT_OR_SELF, new QName(EpubXmlAccess.NOTA_NAMESPACE,
+				.DESCENDANT_OR_SELF, new QName(XmlAccess.NAMESPACE_NOTA,
 						"out"));
 		// Stylesheets may or may not include the system ID of input documents
 		// in a <nota:systemid> element
 		XdmSequenceIterator idIterator = message.axisIterator(Axis
-				.DESCENDANT_OR_SELF, new QName(EpubXmlAccess.NOTA_NAMESPACE,
+				.DESCENDANT_OR_SELF, new QName(XmlAccess.NAMESPACE_NOTA,
 						"systemid"));
 		String systemId = "";
 		if (idIterator.hasNext()) systemId = idIterator.next().getStringValue();

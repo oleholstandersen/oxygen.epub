@@ -7,8 +7,8 @@ import java.util.LinkedList;
 import javax.xml.transform.SourceLocator;
 
 import dk.nota.xml.XmlAccessProvider;
-import dk.nota.oxygen.xml.EpubXmlAccess;
 import dk.nota.xml.AbstractTransformationListener;
+import dk.nota.xml.XmlAccess;
 import net.sf.saxon.s9api.Axis;
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.SaxonApiException;
@@ -54,12 +54,12 @@ public class Concatter extends AbstractContentTransformation {
 				SourceLocator sourceLocator) {
 			// Get values of <nota:document> elements passed by xsl:message
 			XdmSequenceIterator messageIterator = message.axisIterator(Axis
-					.DESCENDANT_OR_SELF, new QName(EpubXmlAccess.NOTA_NAMESPACE,
+					.DESCENDANT_OR_SELF, new QName(XmlAccess.NAMESPACE_NOTA,
 							"document"));
 			messageIterator.forEachRemaining(
 					i -> originalDocuments.add(URI.create(i.getStringValue())));
 			messageIterator = message.axisIterator(Axis.DESCENDANT_OR_SELF,
-					new QName(EpubXmlAccess.NOTA_NAMESPACE, "image"));
+					new QName(XmlAccess.NAMESPACE_NOTA, "image"));
 			messageIterator.forEachRemaining(
 					i -> images.add(URI.create(i.getStringValue())));
 		}
