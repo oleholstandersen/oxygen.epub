@@ -1,4 +1,4 @@
-package dk.nota.epub.actions;
+package dk.nota.oxygen.epub.actions;
 
 import java.awt.event.ActionEvent;
 import java.io.IOException;

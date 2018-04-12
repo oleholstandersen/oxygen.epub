@@ -1,4 +1,4 @@
-package dk.nota.epub.actions;
+package dk.nota.oxygen.epub.actions;
 
 import java.io.File;
 import java.net.URL;
