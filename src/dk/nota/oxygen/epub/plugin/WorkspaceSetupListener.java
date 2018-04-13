@@ -1,14 +1,10 @@
 package dk.nota.oxygen.epub.plugin;
 
-import java.io.IOException;
-import java.net.URI;
 import java.net.URL;
-import java.util.HashMap;
 
 import dk.nota.epub.EpubAccessProvider;
 import dk.nota.epub.EpubException;
 import dk.nota.oxygen.EditorAccess;
-import net.sf.saxon.s9api.SaxonApiException;
 import ro.sync.exml.workspace.api.editor.WSEditor;
 import ro.sync.exml.workspace.api.listeners.WSEditorChangeListener;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;

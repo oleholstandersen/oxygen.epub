@@ -10,8 +10,6 @@ import dk.nota.epub.EpubAccessProvider;
 import dk.nota.epub.EpubException;
 import dk.nota.oxygen.EditorAccess;
 import dk.nota.oxygen.EditorAccessProvider;
-import dk.nota.oxygen.epub.plugin.EpubPluginExtension;
-import net.sf.saxon.s9api.SaxonApiException;
 import ro.sync.ecss.extensions.api.ArgumentDescriptor;
 import ro.sync.ecss.extensions.api.ArgumentsMap;
 import ro.sync.ecss.extensions.api.AuthorOperationException;
