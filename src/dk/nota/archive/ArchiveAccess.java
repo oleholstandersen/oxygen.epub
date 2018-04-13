@@ -61,7 +61,7 @@ public class ArchiveAccess {
 	public URI copyFileToArchiveFolder(String internalFolder, boolean replace,
 			File file) throws IOException {
 		try (FileSystem archiveFileSystem = getArchiveAsFileSystem()) {
-			return copyFileToArchiveFolder(getArchiveAsFileSystem(),
+			return copyFileToArchiveFolder(archiveFileSystem,
 					internalFolder, replace, file);
 		}
 	}
