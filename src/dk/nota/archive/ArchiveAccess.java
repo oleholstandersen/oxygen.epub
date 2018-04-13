@@ -35,33 +35,44 @@ public class ArchiveAccess {
 				StandardCopyOption.REPLACE_EXISTING).toFile();
 	}
 	
+	public URI copyFileToArchiveFolder(FileSystem archiveFileSystem,
+			String internalFolder, boolean replace, File file)
+			throws IOException {
+		Path basePath = archiveFileSystem.getPath(internalFolder);
+		Files.createDirectories(basePath);
+		String fileName = file.getName();
+		Path filePath = basePath.resolve(fileName);
+		if (!replace)
+			// If files should not be replaced, add a random suffix
+			// prior to creating the file
+			while (Files.exists(filePath)) {
+				// TODO: Find a prettier solution - just decide on a
+				// suffix format indicating a file copy and increment
+				// as needed
+				int suffix = new Random().nextInt(Integer.MAX_VALUE);
+				fileName = fileName.replaceFirst("^(.+)(\\..*?)$",
+								"$1-" + suffix + "$2");
+				filePath = basePath.resolve(fileName);
+			}
+		return makeArchiveBasedUri(Files.copy(file.toPath(), filePath,
+				StandardCopyOption.REPLACE_EXISTING).toString());
+	}
+	
+	public URI copyFileToArchiveFolder(String internalFolder, boolean replace,
+			File file) throws IOException {
+		try (FileSystem archiveFileSystem = getArchiveAsFileSystem()) {
+			return copyFileToArchiveFolder(getArchiveAsFileSystem(),
+					internalFolder, replace, file);
+		}
+	}
+	
 	public LinkedList<URI> copyFilesToArchiveFolder(String internalFolder,
 			boolean replace, File... files) throws IOException {
 		LinkedList<URI> uris = new LinkedList<URI>();
 		try (FileSystem archiveFileSystem = getArchiveAsFileSystem()) {
-			Path basePath = archiveFileSystem.getPath(internalFolder);
-			Files.createDirectories(basePath);
-			for (int i = 0; i < files.length; i++) {
-				String fileName = files[i].getName();
-				Path filePath = basePath.resolve(fileName);
-				if (!replace)
-					// If files should not be replaced, add a random suffix
-					// prior to creating the file
-					while (Files.exists(filePath)) {
-						// TODO: Find a prettier solution - just decide on a
-						// suffix format indicating a file copy and increment
-						// as needed
-						int suffix = new Random().nextInt(Integer.MAX_VALUE);
-						fileName = fileName.replaceFirst("^(.+)(\\..*?)$",
-										"$1-" + suffix + "$2");
-						filePath = basePath.resolve(fileName);
-					}
-				uris.add(makeArchiveBasedUri(Files.copy(files[i].toPath(),
-						filePath, StandardCopyOption.REPLACE_EXISTING)
-						.toString()));
-			}
-		} catch (IOException e) {
-			throw e;
+			for (File file : files)
+				uris.add(copyFileToArchiveFolder(archiveFileSystem,
+						internalFolder, replace, file));
 		}
 		return uris;
 	}
