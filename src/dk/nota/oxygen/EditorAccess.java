@@ -1,5 +1,6 @@
 package dk.nota.oxygen;
 
+import java.net.URI;
 import java.net.URL;
 import java.util.LinkedList;
 
@@ -35,11 +36,19 @@ public class EditorAccess {
 		return urls;
 	}
 	
+	public URI getArchiveUri() {
+		return URI.create(getArchiveUrlComponent());
+	}
+	
+	public static URI getArchiveUri(URL editorUrl) {
+		return URI.create(getArchiveUrlComponent(editorUrl));
+	}
+	
 	public String getArchiveUrlComponent() {
 		return getArchiveUrlComponent(getCurrentEditorUrl());
 	}
 	
-	public String getArchiveUrlComponent(URL editorUrl) {
+	public static String getArchiveUrlComponent(URL editorUrl) {
 		return editorUrl.toString().replaceFirst("^zip:", "").split("!/")[0];
 	}
 	
