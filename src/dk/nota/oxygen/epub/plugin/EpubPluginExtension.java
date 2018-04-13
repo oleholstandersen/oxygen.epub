@@ -4,17 +4,15 @@ import javax.swing.JComponent;
 import javax.swing.JMenuBar;
 
 import dk.nota.dtb.conversion.InspirationOutput;
-import dk.nota.oxygen.common.EditorAccess;
 import dk.nota.oxygen.epub.actions.ConcatAction;
 import dk.nota.oxygen.epub.actions.DaisyComicAction;
 import dk.nota.oxygen.epub.actions.EpubToDocxAction;
 import dk.nota.oxygen.epub.actions.EpubToDtbAction;
+import dk.nota.oxygen.epub.actions.ImportDocxAction;
 import dk.nota.oxygen.epub.actions.InspirationOutputAction;
 import dk.nota.oxygen.epub.actions.NavigationUpdateAction;
 import dk.nota.oxygen.epub.actions.ReloadDocumentsAction;
 import dk.nota.oxygen.epub.actions.SplitAction;
-import dk.nota.oxygen.epub.common.ImportDocxAction;
-import dk.nota.oxygen.epub.xhtml.ImportCatListAction;
 import dk.nota.oxygen.quickbase.QuickbaseAccess;
 import dk.nota.oxygen.quickbase.QuickbaseMenu;
 import ro.sync.exml.plugin.workspace.WorkspaceAccessPluginExtension;
@@ -58,10 +56,6 @@ public class EpubPluginExtension implements WorkspaceAccessPluginExtension {
 		return PluginWorkspaceProvider.getPluginWorkspace()
 				.getCurrentEditorAccess(StandalonePluginWorkspace
 						.MAIN_EDITING_AREA);
-	}
-	
-	public static EditorAccess getEditorAccess() {
-		return new EditorAccess(getCurrentEditor());
 	}
 	
 	public static QuickbaseAccess getQuickbaseAccess() {
@@ -136,7 +130,6 @@ public class EpubPluginExtension implements WorkspaceAccessPluginExtension {
 		private void setupXhtmlToolbar(ToolbarInfo toolbar) {
 			Menu importMenu = new Menu("Import");
 			importMenu.add(new ImportDocxAction());
-			importMenu.add(new ImportCatListAction());
 			JComponent[] xhtmlComponents = new JComponent[] {
 				new ToolbarButton(new NavigationUpdateAction(), true),
 				importMenu
