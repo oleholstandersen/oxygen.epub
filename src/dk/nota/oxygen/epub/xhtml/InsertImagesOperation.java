@@ -54,7 +54,7 @@ public class InsertImagesOperation extends XhtmlEpubAuthorOperation {
 				fileTypes.put("images/" + file.getName(), Files
 						.probeContentType(file.toPath()));
 				epubAccess.getArchiveAccess().copyFileToArchiveFolder(
-						"images/", true, file);
+						"EPUB/images", true, file);
 			}
 			epubAccess.getContentAccess().updateOpfWithImages(fileTypes);
 			String fragment = createFragment(imageFiles);
