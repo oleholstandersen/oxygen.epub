@@ -1,4 +1,4 @@
-package dk.nota.oxygen.epub.operations;
+package dk.nota.oxygen.epub.xhtml;
 
 import java.io.BufferedReader;
 import java.io.File;

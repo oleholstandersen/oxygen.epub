@@ -3566,12 +3566,12 @@ ancestor-or-self::node()[self::*:tbody | self::*:tfoot | self::*:thead | self::*
 														<serializableOrderedMap>
 															<entry>
 																<String>depth</String>
-																<String>${xpath_eval(count(ancestor-or-self::body|ancestor-or-self::section))}</String>
+																<String>${xpath_eval(count(ancestor::body|ancestor::section))}</String>
 															</entry>
 														</serializableOrderedMap>
 													</field>
 													<field name="operationID">
-														<String>dk.nota.oxygen.epub.operations.ImportImageMapsOperation</String>
+														<String>dk.nota.oxygen.epub.xhtml.ImportImageMapsOperation</String>
 													</field>
 												</actionMode>
 											</actionMode-array>
