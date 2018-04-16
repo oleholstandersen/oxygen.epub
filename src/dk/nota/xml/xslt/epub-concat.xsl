@@ -121,6 +121,33 @@
             <xsl:apply-templates mode="CONCAT_FIRST_PASS" select="@*|node()"/>
         </xsl:copy>
     </xsl:template>
+    <xsl:template mode="CONCAT_FIRST_PASS" match="html:img[@height|@width]">
+    	<xsl:next-match/>
+    	<xsl:message expand-text="yes">
+    		<nota:image>{
+    			'zip:' || resolve-uri(@src, $OPF_URI_NO_ZIP)
+    		}</nota:image>
+    	</xsl:message>
+    </xsl:template>
+    <xsl:template mode="CONCAT_FIRST_PASS"
+        match="html:img[not(@height|@width)]">
+        <xsl:variable name="uri" as="xs:anyURI"
+        	select="resolve-uri(@src, $OPF_URI_NO_ZIP)"/>
+        <xsl:message expand-text="yes">
+    		<nota:image>{'zip:' || $uri}</nota:image>
+    	</xsl:message>
+    	<xsl:variable name="dimensions" as="xs:integer+"
+    		select="nota:get-image-size('zip:' || $uri)"/>
+    	<xsl:variable name="height" as="xs:integer" select="$dimensions[2]"/>
+        <xsl:variable name="width" as="xs:integer" select="$dimensions[1]"/>
+    	<xsl:copy>
+    	    <xsl:copy-of select="@* except (@height|@width)"/>
+    	    <xsl:if test="$height ne -1 and $width ne -1">
+ 	        	<xsl:attribute name="height" select="$height"/>
+    	    	<xsl:attribute name="width" select="$width"/>
+    	    </xsl:if>
+    	</xsl:copy>
+	</xsl:template>
     <xsl:template mode="CONCAT_FIRST_PASS" match="html:img">
     	<xsl:next-match/>
     	<xsl:message expand-text="yes">

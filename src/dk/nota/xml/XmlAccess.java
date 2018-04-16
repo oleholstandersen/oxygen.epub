@@ -1,21 +1,37 @@
 package dk.nota.xml;
 
+import java.io.IOException;
 import java.net.URI;
+import java.nio.file.FileSystem;
+import java.nio.file.Files;
+
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
+import dk.nota.archive.ArchiveAccess;
+import dk.nota.epub.EpubAccess;
+import dk.nota.epub.EpubAccessProvider;
+import dk.nota.epub.EpubException;
 import net.sf.saxon.s9api.DocumentBuilder;
+import net.sf.saxon.s9api.ExtensionFunction;
+import net.sf.saxon.s9api.ItemType;
+import net.sf.saxon.s9api.OccurrenceIndicator;
 import net.sf.saxon.s9api.Processor;
+import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.SaxonApiException;
+import net.sf.saxon.s9api.SequenceType;
 import net.sf.saxon.s9api.Serializer;
 import net.sf.saxon.s9api.XPathCompiler;
 import net.sf.saxon.s9api.XPathExecutable;
 import net.sf.saxon.s9api.XPathSelector;
+import net.sf.saxon.s9api.XdmAtomicValue;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
+import net.sf.saxon.s9api.XdmValue;
 import net.sf.saxon.s9api.Xslt30Transformer;
 import net.sf.saxon.s9api.XsltCompiler;
 import net.sf.saxon.s9api.XsltExecutable;
+import uk.co.jaimon.test.SimpleImageInfo;
 
 public class XmlAccess {
 	
@@ -43,6 +59,7 @@ public class XmlAccess {
 		xpathCompiler = processor.newXPathCompiler();
 		xsltCompiler = processor.newXsltCompiler();
 		setupXpathNamespaces();
+		processor.registerExtensionFunction(new ImageSizeExtensionFunction());
 	}
 	
 	public XdmNode getDocument(URI documentUri) throws SaxonApiException {
@@ -161,6 +178,54 @@ public class XmlAccess {
 		xpathCompiler.declareNamespace(PREFIX_NOTA, NAMESPACE_NOTA);
 		xpathCompiler.declareNamespace(PREFIX_OPF, NAMESPACE_OPF);
 		xpathCompiler.declareNamespace(PREFIX_HTML, NAMESPACE_HTML);
+	}
+	
+	public class ImageSizeExtensionFunction implements ExtensionFunction {
+
+		@Override
+		public XdmValue call(XdmValue[] arguments) throws SaxonApiException {
+			String uri = arguments[0].toString().replaceFirst("^zip:", "");
+			EpubAccess epubAccess;
+			try {
+				epubAccess = EpubAccessProvider.getEpubAccess(URI.create(uri
+						.replaceFirst("!/.*$", "")));
+			} catch (EpubException e) {
+				return new XdmValue(new XdmAtomicValue(-1).append(
+						new XdmAtomicValue(-1)));
+			}
+			try (FileSystem epubFileSystem = epubAccess.getArchiveAccess()
+					.getArchiveAsFileSystem()) {
+				SimpleImageInfo imageInfo = new SimpleImageInfo(Files
+						.newInputStream(epubFileSystem.getPath(uri
+								.replaceFirst("^.*!/", ""))));
+				return new XdmValue(new XdmAtomicValue(imageInfo.getWidth()))
+						.append(new XdmAtomicValue(imageInfo.getHeight()));
+			} catch (IOException e) {
+				e.printStackTrace();
+				return new XdmValue(new XdmAtomicValue(-1).append(
+						new XdmAtomicValue(-1)));
+			}
+		}
+
+		@Override
+		public SequenceType[] getArgumentTypes() {
+			return new SequenceType[] {
+				SequenceType.makeSequenceType(ItemType.STRING,
+						OccurrenceIndicator.ONE)
+			};
+		}
+		
+		@Override
+		public QName getName() {
+			return new QName(PREFIX_NOTA, NAMESPACE_NOTA, "get-image-size");
+		}
+
+		@Override
+		public SequenceType getResultType() {
+			return SequenceType.makeSequenceType(ItemType.INTEGER,
+					OccurrenceIndicator.ONE_OR_MORE);
+		}
+		
 	}
 	
 }
