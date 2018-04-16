@@ -5,10 +5,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.HashMap;
 
-import dk.nota.oxygen.common.EditorAccess;
-import dk.nota.oxygen.epub.common.EpubAccess;
-import dk.nota.oxygen.epub.plugin.EpubPluginExtension;
-import net.sf.saxon.s9api.SaxonApiException;
+import dk.nota.epub.EpubAccess;
+import dk.nota.epub.EpubAccessProvider;
+import dk.nota.epub.EpubException;
+import dk.nota.oxygen.EditorAccess;
+import dk.nota.oxygen.EditorAccessProvider;
 import ro.sync.ecss.extensions.api.ArgumentDescriptor;
 import ro.sync.ecss.extensions.api.ArgumentsMap;
 import ro.sync.ecss.extensions.api.AuthorOperationException;
@@ -38,24 +39,26 @@ public class InsertImagesOperation extends XhtmlEpubAuthorOperation {
 
 	@Override
 	protected void doOperation() throws AuthorOperationException {
-		EditorAccess editorAccess = EpubPluginExtension.getEditorAccess();
-		EpubAccess epubAccess = editorAccess.getEpubAccess();
+		EditorAccess editorAccess = EditorAccessProvider.getEditorAccess();
 		File[] imageFiles = getWorkspace().chooseFiles(null,
 				"Insert", new String[] { "gif", "jpg", "jpeg", "png" },
 				"Image files");
 		if (imageFiles == null) return;
 		HashMap<String,String> fileTypes = new HashMap<String,String>();
 		try {
+			EpubAccess epubAccess = EpubAccessProvider.getEpubAccess(editorAccess
+					.getArchiveUri());
 			for (File file : imageFiles) {
 				fileTypes.put("images/" + file.getName(), Files
 						.probeContentType(file.toPath()));
-				epubAccess.copyFileToImageFolder(file);
+				epubAccess.getArchiveAccess().copyFileToArchiveFolder(
+						"EPUB/images", true, file);
 			}
-			epubAccess.addItemReferencesToOpf(fileTypes, "image", false);
+			epubAccess.getContentAccess().updateOpfWithImages(fileTypes);
 			String fragment = createFragment(imageFiles);
 			getDocumentController().insertXMLFragment(fragment,
 					getSelectionStart());
-		} catch (IOException | SaxonApiException e) {
+		} catch (IOException | EpubException e) {
 			throw new AuthorOperationException(e.toString());
 		}
 	}

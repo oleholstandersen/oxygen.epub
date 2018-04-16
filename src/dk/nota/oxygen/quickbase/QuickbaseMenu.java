@@ -8,7 +8,11 @@ import java.util.Map;
 import javax.swing.AbstractAction;
 import javax.swing.JMenuItem;
 
-import dk.nota.oxygen.epub.common.EpubAccess;
+import dk.nota.epub.EpubAccess;
+import dk.nota.epub.EpubAccessProvider;
+import dk.nota.epub.EpubException;
+import dk.nota.oxygen.EditorAccess;
+import dk.nota.oxygen.EditorAccessProvider;
 import dk.nota.oxygen.epub.plugin.EpubPluginExtension;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.Menu;
@@ -54,9 +58,14 @@ public class QuickbaseMenu extends Menu implements QuickbaseAccessListener {
 	public void connected(QuickbaseAccess quickbaseAccess) {
 		enableActions(true);
 		populateQueue(quickbaseAccess);
-		if (EpubPluginExtension.getEditorAccess().getCurrentEditorUrl() == null)
-			return;
-		updateForEpub(EpubPluginExtension.getEditorAccess().getEpubAccess());
+		EditorAccess editorAccess = EditorAccessProvider.getEditorAccess();
+		if (editorAccess.getCurrentEditorUrl() == null) return;
+		try {
+			updateForEpub(EpubAccessProvider.getEpubAccess(editorAccess
+					.getArchiveUri()));
+		} catch (EpubException e) {
+			editorAccess.showErrorMessage("Unable to get EPUB access", e);
+		}
 	}
 	
 	@Override

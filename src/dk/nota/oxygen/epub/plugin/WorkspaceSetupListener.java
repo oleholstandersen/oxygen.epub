@@ -1,19 +1,16 @@
 package dk.nota.oxygen.epub.plugin;
 
-import java.io.IOException;
 import java.net.URL;
-import java.util.HashMap;
 
-import dk.nota.oxygen.epub.common.EpubAccess;
-import net.sf.saxon.s9api.SaxonApiException;
+import dk.nota.epub.EpubAccessProvider;
+import dk.nota.epub.EpubException;
+import dk.nota.oxygen.EditorAccess;
 import ro.sync.exml.workspace.api.editor.WSEditor;
 import ro.sync.exml.workspace.api.listeners.WSEditorChangeListener;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
 public class WorkspaceSetupListener extends WSEditorChangeListener {
 	
-		private HashMap<String,EpubAccess> epubAccessMap =
-				new HashMap<String,EpubAccess>();
 		private StandalonePluginWorkspace pluginWorkspace;
 		
 		public WorkspaceSetupListener(StandalonePluginWorkspace pluginWorkspace) {
@@ -63,14 +60,13 @@ public class WorkspaceSetupListener extends WSEditorChangeListener {
 				if (!setupEpubAccess(editorUrl)) return;
 				pluginWorkspace.showToolbar(EpubPluginExtension.NAV_TOOLBAR);
 			}
-			EpubPluginExtension.getQuickbaseMenu().updateForEpub(getEpubAccess(
-					editorUrl.toString()));
-		}
-		
-		public EpubAccess getEpubAccess(String url) {
-			url = url.replaceFirst("^zip:", "").replaceFirst("\\.epub!/*.*?$",
-					".epub");
-			return epubAccessMap.get(url);
+			try {
+				EpubPluginExtension.getQuickbaseMenu().updateForEpub(
+						EpubAccessProvider.getEpubAccess(EditorAccess
+								.getArchiveUri(editorUrl)));
+			} catch (EpubException e) {
+				e.printStackTrace();
+			}
 		}
 		
 		private void hideAllEpubToolbars() {
@@ -80,17 +76,13 @@ public class WorkspaceSetupListener extends WSEditorChangeListener {
 		}
 		
 		private boolean setupEpubAccess(URL editorUrl) {
-			String epubUrl = editorUrl.toString().replaceFirst("^zip:",  "")
-					.replaceFirst("\\.epub!/*.*?$", ".epub");
-			if (epubAccessMap.containsKey(epubUrl)) return true;
 			try {
-				EpubAccess epubAccess = new EpubAccess(editorUrl);
-				epubAccessMap.put(epubUrl, epubAccess);
-				return true;
-			} catch (IOException | SaxonApiException e) {
-				e.printStackTrace();
+				EpubAccessProvider.getEpubAccess(EditorAccess.getArchiveUri(
+						editorUrl));
+			} catch (EpubException e) {
 				return false;
 			}
+			return true;
 		}
 		
 	}
