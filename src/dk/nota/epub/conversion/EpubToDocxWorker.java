@@ -18,6 +18,7 @@ import dk.nota.epub.content.Concatter;
 import dk.nota.oxygen.ResultsListener;
 import dk.nota.xml.DocumentResult;
 import dk.nota.xml.XmlAccessProvider;
+import net.sf.saxon.s9api.DocumentBuilder;
 import net.sf.saxon.s9api.XdmAtomicValue;
 import net.sf.saxon.s9api.XdmNode;
 import ro.sync.document.DocumentPositionedInfo;
@@ -47,8 +48,13 @@ public class EpubToDocxWorker extends AbstractEpubWorkerWithResults {
 		dtbConverter.addListener(getResultsListener());
 		documentResult = new DocumentResult(dtbConverter.call());
 		copyImages(tempOutputUri.resolve("word/media/"), concatter.getImages());
+		XdmNode dtbDocument = documentResult.getDocuments().iterator().next();
+		// The Docx-related stylesheets require the input to be a document, so
+		// we have to jump through some hoops here
+		DocumentBuilder documentBuilder = XmlAccessProvider.getXmlAccess()
+				.getDocumentBuilder();
 		DtbToDocxConverter docxConverter = new DtbToDocxConverter(
-				documentResult.getDocuments().iterator().next());
+				documentBuilder.build(dtbDocument.asSource()));
 		docxConverter.addListener(getResultsListener());
 		docxConverter.addParameter("OUTPUT_URI", new XdmAtomicValue(
 				tempOutputUri));
