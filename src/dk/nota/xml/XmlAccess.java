@@ -8,7 +8,6 @@ import java.nio.file.Files;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
-import dk.nota.archive.ArchiveAccess;
 import dk.nota.epub.EpubAccess;
 import dk.nota.epub.EpubAccessProvider;
 import dk.nota.epub.EpubException;
