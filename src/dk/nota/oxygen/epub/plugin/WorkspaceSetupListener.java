@@ -19,6 +19,7 @@ public class WorkspaceSetupListener extends WSEditorChangeListener {
 		
 		@Override
 		public void editorClosed(URL editorUrl) {
+			hideAllPluginToolbars();
 			EpubPluginExtension.getQuickbaseMenu().updateForEpub(null);
 		}
 		
@@ -40,10 +41,13 @@ public class WorkspaceSetupListener extends WSEditorChangeListener {
 		private void establishWorkspace(URL editorUrl) {
 			WSEditor editor = pluginWorkspace.getEditorAccess(editorUrl,
 					StandalonePluginWorkspace.MAIN_EDITING_AREA);
-			hideAllEpubToolbars();
+			hideAllPluginToolbars();
 			if (editor == null || editor.getDocumentTypeInformation() == null)
 				return;
 			switch (editor.getDocumentTypeInformation().getName()) {
+			case "dtbook110":
+				pluginWorkspace.showToolbar(EpubPluginExtension.DTBOOK_TOOLBAR);
+				return;
 			case "XHTML [EPUB 3]":
 				if (!setupEpubAccess(editorUrl)) return;
 				if (editorUrl.toString().endsWith("/nav\\.xhtml"))
@@ -69,7 +73,8 @@ public class WorkspaceSetupListener extends WSEditorChangeListener {
 			}
 		}
 		
-		private void hideAllEpubToolbars() {
+		private void hideAllPluginToolbars() {
+			pluginWorkspace.hideToolbar(EpubPluginExtension.DTBOOK_TOOLBAR);
 			pluginWorkspace.hideToolbar(EpubPluginExtension.NAV_TOOLBAR);
 			pluginWorkspace.hideToolbar(EpubPluginExtension.OPF_TOOLBAR);
 			pluginWorkspace.hideToolbar(EpubPluginExtension.XHTML_TOOLBAR);
