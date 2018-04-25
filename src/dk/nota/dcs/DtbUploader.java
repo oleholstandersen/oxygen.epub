@@ -33,10 +33,10 @@ public class DtbUploader {
 		uploadPath = documentPath.getParent();
 	}
 	
-	public void checkDirectory() throws IOException {
+	public void checkDirectory() throws DcsException, IOException {
 		// Check if directory is located on N
 		if (!uploadPath.getRoot().equals(Paths.get("N:/")))
-			throw new IOException(String.format("%s is not on N", uploadPath));
+			throw new DcsException(String.format("%s is not on N", uploadPath));
 		// TODO: Consider not using the forEach() consumer, as it makes a mess
 		// of exception handling
 		Files.walk(uploadPath, 1).forEach(
@@ -44,20 +44,20 @@ public class DtbUploader {
 					if (path == uploadPath) return;
 					try {
 						if (Files.isDirectory(path))
-							throw new IOException(String.format(
+							throw new DcsException(String.format(
 									"%s has a subdirectory (%s)",
 									uploadPath, uploadPath.relativize(path)));
 						String mimeType = Files.probeContentType(path);
 						if (mimeType.equals("text/xml")) {
 							if (!path.equals(documentPath))
-								throw new IOException(String.format(
+								throw new DcsException(String.format(
 										"Additional XML file encountered (%s)",
 										path.getFileName()));
 						} else if (!mimeType.startsWith("image/"))
-							throw new IOException(String.format(
+							throw new DcsException(String.format(
 									"%s has invalid MIME type (%s)",
 									path.getFileName(), mimeType));
-					} catch (IOException e) {
+					} catch (DcsException | IOException e) {
 						throw new RuntimeException(e);
 					}
 				});
