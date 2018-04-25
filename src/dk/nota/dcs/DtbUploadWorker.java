@@ -1,7 +1,6 @@
 package dk.nota.dcs;
 
 import java.net.URI;
-import java.util.concurrent.ExecutionException;
 
 import dk.nota.oxygen.AbstractWorkerWithResults;
 import dk.nota.oxygen.EditorAccessProvider;
