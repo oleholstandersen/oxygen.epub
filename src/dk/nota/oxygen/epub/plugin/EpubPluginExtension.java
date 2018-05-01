@@ -13,7 +13,7 @@ import dk.nota.oxygen.epub.actions.InspirationOutputAction;
 import dk.nota.oxygen.epub.actions.NavigationUpdateAction;
 import dk.nota.oxygen.epub.actions.ReloadDocumentsAction;
 import dk.nota.oxygen.epub.actions.SplitAction;
-import dk.nota.quickbase.QuickbaseAccess;
+import dk.nota.quickbase.QuickbaseAccessProvider;
 import dk.nota.quickbase.QuickbaseMenu;
 import ro.sync.exml.plugin.workspace.WorkspaceAccessPluginExtension;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
@@ -32,7 +32,6 @@ public class EpubPluginExtension implements WorkspaceAccessPluginExtension {
 	public static final String OPF_TOOLBAR = "dk.nota.oxygen.epub.toolbar.opf";
 	public static final String XHTML_TOOLBAR = "dk.nota.oxygen.epub.toolbar.xhtml";
 	
-	private static QuickbaseAccess quickbaseAccess;
 	private static QuickbaseMenu quickbaseMenu;
 	
 	@Override
@@ -42,9 +41,8 @@ public class EpubPluginExtension implements WorkspaceAccessPluginExtension {
 
 	@Override
 	public void applicationStarted(StandalonePluginWorkspace pluginWorkspace) {
-		quickbaseAccess = new QuickbaseAccess(pluginWorkspace);
 		quickbaseMenu = new QuickbaseMenu();
-		quickbaseAccess.addListener(quickbaseMenu);
+		QuickbaseAccessProvider.getQuickbaseAccess().addListener(quickbaseMenu);
 		pluginWorkspace.addEditorChangeListener(new WorkspaceSetupListener(
 				pluginWorkspace), StandalonePluginWorkspace.MAIN_EDITING_AREA);
 		pluginWorkspace.addToolbarComponentsCustomizer(
@@ -56,10 +54,6 @@ public class EpubPluginExtension implements WorkspaceAccessPluginExtension {
 		return PluginWorkspaceProvider.getPluginWorkspace()
 				.getCurrentEditorAccess(StandalonePluginWorkspace
 						.MAIN_EDITING_AREA);
-	}
-	
-	public static QuickbaseAccess getQuickbaseAccess() {
-		return quickbaseAccess;
 	}
 	
 	public static QuickbaseMenu getQuickbaseMenu() {

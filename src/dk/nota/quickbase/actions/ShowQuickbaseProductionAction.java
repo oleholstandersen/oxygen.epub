@@ -4,7 +4,7 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 
-import dk.nota.oxygen.epub.plugin.EpubPluginExtension;
+import dk.nota.quickbase.QuickbaseAccessProvider;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
 public class ShowQuickbaseProductionAction extends AbstractAction {
@@ -25,7 +25,8 @@ public class ShowQuickbaseProductionAction extends AbstractAction {
 
 	@Override
 	public void actionPerformed(ActionEvent event) {
-		String url = EpubPluginExtension.getQuickbaseAccess().getTableUrl();
+		String url = QuickbaseAccessProvider.getQuickbaseAccess()
+				.getTableUrl();
 		if (rid == 0) {
 			// Without the record ID we can't link directly to the record, so
 			// we show a report based on the production ID instead.

@@ -16,8 +16,6 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.util.EntityUtils;
 
-import dk.nota.oxygen.epub.plugin.EpubPluginExtension;
-
 public class DownloadFromQuickbaseWorker extends SwingWorker<Boolean,Double> {
 	
 	private Path outputPath;
@@ -30,7 +28,7 @@ public class DownloadFromQuickbaseWorker extends SwingWorker<Boolean,Double> {
 
 	@Override
 	protected Boolean doInBackground() throws Exception {
-		QuickbaseAccess quickbaseAccess = EpubPluginExtension
+		QuickbaseAccess quickbaseAccess = QuickbaseAccessProvider
 				.getQuickbaseAccess();
 		QuickbaseRecord record = quickbaseAccess.queryByPid(pid, 18);
 		if (record == null)
