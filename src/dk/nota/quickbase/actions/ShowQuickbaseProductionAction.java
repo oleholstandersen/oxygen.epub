@@ -1,4 +1,4 @@
-package dk.nota.oxygen.quickbase;
+package dk.nota.quickbase.actions;
 
 import java.awt.event.ActionEvent;
 

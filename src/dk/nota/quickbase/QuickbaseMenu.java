@@ -1,4 +1,4 @@
-package dk.nota.oxygen.quickbase;
+package dk.nota.quickbase;
 
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -14,6 +14,9 @@ import dk.nota.epub.EpubException;
 import dk.nota.oxygen.EditorAccess;
 import dk.nota.oxygen.EditorAccessProvider;
 import dk.nota.oxygen.epub.plugin.EpubPluginExtension;
+import dk.nota.quickbase.actions.ApproveQuickbaseProductionAction;
+import dk.nota.quickbase.actions.DownloadFromQuickbaseAction;
+import dk.nota.quickbase.actions.ShowQuickbaseProductionAction;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.Menu;
 

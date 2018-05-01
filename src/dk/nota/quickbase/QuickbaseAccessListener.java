@@ -1,4 +1,4 @@
-package dk.nota.oxygen.quickbase;
+package dk.nota.quickbase;
 
 public interface QuickbaseAccessListener {
 	
