@@ -17,12 +17,11 @@ import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 
 import dk.nota.oxygen.epub.plugin.EpubPluginExtension;
+import dk.nota.oxygen.options.OptionsProvider;
 import ro.sync.exml.plugin.option.OptionPagePluginExtension;
 import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
-import ro.sync.exml.workspace.api.options.WSOptionsStorage;
 import ro.sync.exml.workspace.api.standalone.ui.Button;
-import ro.sync.exml.workspace.api.util.UtilAccess;
 
 public class QuickbaseOptionPagePluginExtension
 		extends OptionPagePluginExtension implements QuickbaseAccessListener {
@@ -38,21 +37,19 @@ public class QuickbaseOptionPagePluginExtension
 
 	@Override
 	public void apply(PluginWorkspace pluginWorkspace) {
-		UtilAccess utilAccess = pluginWorkspace.getUtilAccess();
-		WSOptionsStorage optionsStorage = pluginWorkspace.getOptionsStorage();
-		optionsStorage.setOption(QuickbaseAccess.QB_EMAIL_OPTION, emailField
-				.getText());
-		optionsStorage.setOption(QuickbaseAccess.QB_PASSWORD_OPTION,
-				utilAccess.encrypt(String.valueOf(passwordField
-						.getPassword())));
-		optionsStorage.setOption(QuickbaseAccess.QB_AUTO_OPTION,
+		OptionsProvider.setOptionValue(OptionsProvider.QB_EMAIL_OPTION,
+				emailField.getText());
+		OptionsProvider.setEncryptedOptionValue(OptionsProvider
+				.QB_PASSWORD_OPTION, String.valueOf(passwordField
+						.getPassword()));
+		OptionsProvider.setOptionValue(OptionsProvider.QB_AUTO_OPTION,
 				enabledCheckbox.isSelected() ? "true" : "false");
-		optionsStorage.setOption(QuickbaseAccess.QB_URL_MAIN_OPTION,
+		OptionsProvider.setOptionValue(OptionsProvider.QB_URL_MAIN_OPTION,
 				mainUrlField.getText());
-		optionsStorage.setOption(QuickbaseAccess.QB_URL_TABLE_OPTION,
+		OptionsProvider.setOptionValue(OptionsProvider.QB_URL_TABLE_OPTION,
 				tableUrlField.getText());
-		optionsStorage.setOption(QuickbaseAccess.QB_TOKEN_OPTION, utilAccess
-				.encrypt(tokenField.getText()));
+		OptionsProvider.setEncryptedOptionValue(OptionsProvider
+				.QB_TOKEN_OPTION, tokenField.getText());
 	}
 	
 	private void addComponentToPanel(JComponent component, JPanel panel,
@@ -185,20 +182,18 @@ public class QuickbaseOptionPagePluginExtension
 		JPanel pagePanel = new JPanel(new BorderLayout());
 		pagePanel.add(optionPanel, BorderLayout.NORTH);
 		// Load options
-		UtilAccess utilAccess = pluginWorkspace.getUtilAccess();
-		WSOptionsStorage optionsStorage = pluginWorkspace.getOptionsStorage();
-		emailField.setText(optionsStorage.getOption(QuickbaseAccess
+		emailField.setText(OptionsProvider.getOptionValue(OptionsProvider
 				.QB_EMAIL_OPTION, ""));
-		passwordField.setText(utilAccess.decrypt(optionsStorage.getOption(
-				QuickbaseAccess.QB_PASSWORD_OPTION, "")));
-		enabledCheckbox.setSelected(optionsStorage.getOption(QuickbaseAccess
+		passwordField.setText(OptionsProvider.getDecryptedOptionValue(
+				OptionsProvider.QB_PASSWORD_OPTION, ""));
+		enabledCheckbox.setSelected(OptionsProvider.getOptionValue(OptionsProvider
 				.QB_AUTO_OPTION, "false").equals("true"));
-		mainUrlField.setText(optionsStorage.getOption(QuickbaseAccess
+		mainUrlField.setText(OptionsProvider.getOptionValue(OptionsProvider
 				.QB_URL_MAIN_OPTION, "https://cnpxml.quickbase.com/db/main"));
-		tableUrlField.setText(optionsStorage.getOption(QuickbaseAccess
+		tableUrlField.setText(OptionsProvider.getOptionValue(OptionsProvider
 				.QB_URL_TABLE_OPTION, "https://cnpxml.quickbase.com/db/bjcv74iq3"));
-		tokenField.setText(utilAccess.decrypt(optionsStorage.getOption(
-				QuickbaseAccess.QB_TOKEN_OPTION, "")));
+		tokenField.setText(OptionsProvider.getDecryptedOptionValue(OptionsProvider
+				.QB_TOKEN_OPTION, ""));
 		return pagePanel;
 	}
 

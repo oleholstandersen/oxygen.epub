@@ -19,18 +19,36 @@ public class OptionsProvider {
 	public static final String QB_URL_TABLE_OPTION =
 			"dk.nota.oxygen.quickbase.url.table";
 	
-	public static Object getOptionValue(String option) {
+	public static String getOptionValue(String option) {
+		return getOptionValue(option, null);
+	}
+	
+	public static String getOptionValue(String option, String defaultValue) {
 		return PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage()
 				.getOption(option, null);
 	}
 	
 	public static String getDecryptedOptionValue(String option) {
-		Object encryptedValue = getOptionValue(option);
-		if (!(encryptedValue instanceof String))
-			throw new IllegalArgumentException(String.format(
-					"The value of option %s is not a string", option));
+		return getOptionValue(option, null);
+	}
+	
+	public static String getDecryptedOptionValue(String option,
+			String defaultValue) {
+		String value = getOptionValue(option, defaultValue);
+		if (value == defaultValue) return value;
 		return PluginWorkspaceProvider.getPluginWorkspace().getUtilAccess()
-				.decrypt((String)encryptedValue);
+				.decrypt(value);
+	}
+	
+	public static void setEncryptedOptionValue(String option, String value) {
+		String encryptedValue = PluginWorkspaceProvider.getPluginWorkspace()
+				.getUtilAccess().encrypt(value);
+		setOptionValue(option, encryptedValue);
+	}
+	
+	public static void setOptionValue(String option, String value) {
+		PluginWorkspaceProvider.getPluginWorkspace().getOptionsStorage()
+			.setOption(option, value);
 	}
 
 }

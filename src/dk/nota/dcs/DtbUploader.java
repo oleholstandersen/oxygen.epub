@@ -12,6 +12,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.json.simple.JSONObject;
 
+import dk.nota.oxygen.options.OptionsProvider;
 import dk.nota.xml.XmlAccess;
 import dk.nota.xml.XmlAccessProvider;
 import net.sf.saxon.s9api.QName;
@@ -20,12 +21,14 @@ import net.sf.saxon.s9api.XdmNode;
 
 public class DtbUploader {
 	
+	public static final String DCS_SERVER_DEFAULT =
+			"http://http-dcsarchive.beta.dbb.dk";
+	
 	private long dcsId;
 	private Path documentPath;
 	private CloseableHttpClient httpClient = HttpClients.createDefault();
 	private String pid;
 	private Path uploadPath;
-	private final String server = "http://http-dcsarchive.beta.dbb.dk";
 	
 	public DtbUploader(URI documentUri) throws SaxonApiException {
 		documentPath = Paths.get(documentUri);
@@ -85,7 +88,9 @@ public class DtbUploader {
 	}
 	
 	private HttpPost getHttpPost(String endpoint) {
-		HttpPost post = new HttpPost(server + endpoint);
+		HttpPost post = new HttpPost(OptionsProvider.getOptionValue(
+				OptionsProvider.DCS_SERVER_OPTION, DCS_SERVER_DEFAULT)
+				+ endpoint);
 		post.addHeader("Content-Type", "application/json");
 		return post;
 	}

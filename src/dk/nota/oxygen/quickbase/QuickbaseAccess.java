@@ -11,6 +11,8 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+
+import dk.nota.oxygen.options.OptionsProvider;
 import net.sf.saxon.s9api.Axis;
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.XdmNode;
@@ -19,13 +21,6 @@ import ro.sync.exml.workspace.api.options.WSOptionsStorage;
 import ro.sync.exml.workspace.api.util.UtilAccess;
 
 public class QuickbaseAccess {
-	
-	public static final String QB_AUTO_OPTION = "dk.nota.oxygen.quickbase.auto";
-	public static final String QB_EMAIL_OPTION = "dk.nota.oxygen.quickbase.useremail";
-	public static final String QB_PASSWORD_OPTION = "dk.nota.oxygen.quickbase.password";
-	public static final String QB_TOKEN_OPTION = "dk.nota.oxygen.quickbase.token";
-	public static final String QB_URL_MAIN_OPTION = "dk.nota.oxygen.quickbase.url.main";
-	public static final String QB_URL_TABLE_OPTION = "dk.nota.oxygen.quickbase.url.table";
 	
 	private boolean connected = false;
 	private CloseableHttpClient httpClient = HttpClients.createDefault();
@@ -43,17 +38,21 @@ public class QuickbaseAccess {
 	public QuickbaseAccess(PluginWorkspace pluginWorkspace) {
 		WSOptionsStorage optionsStorage = pluginWorkspace.getOptionsStorage();
 		UtilAccess utilAccess = pluginWorkspace.getUtilAccess();
-		userEmail = optionsStorage.getOption(QB_EMAIL_OPTION, "");
-		mainUrl = optionsStorage.getOption(QB_URL_MAIN_OPTION, "");
-		tableUrl = optionsStorage.getOption(QB_URL_TABLE_OPTION, "");
-		token = utilAccess.decrypt(optionsStorage.getOption(QB_TOKEN_OPTION,
-				""));
+		userEmail = optionsStorage.getOption(OptionsProvider.QB_EMAIL_OPTION,
+				"");
+		mainUrl = optionsStorage.getOption(OptionsProvider.QB_URL_MAIN_OPTION,
+				"");
+		tableUrl = optionsStorage.getOption(OptionsProvider
+				.QB_URL_TABLE_OPTION, "");
+		token = utilAccess.decrypt(optionsStorage.getOption(OptionsProvider
+				.QB_TOKEN_OPTION, ""));
 		String password = utilAccess.decrypt(optionsStorage.getOption(
-				QB_PASSWORD_OPTION, ""));
+				OptionsProvider.QB_PASSWORD_OPTION, ""));
 		// This constructor is only called when the application starts, which
 		// means we check here whether the user has enabled auto connect
 		// (disabled by default)
-		if (optionsStorage.getOption(QB_AUTO_OPTION, "false").equals("false"))
+		if (optionsStorage.getOption(OptionsProvider.QB_AUTO_OPTION, "false")
+				.equals("false"))
 			return;
 		try {
 			connect(userEmail, password);

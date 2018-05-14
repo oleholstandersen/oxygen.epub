@@ -12,23 +12,19 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 
-import dk.nota.oxygen.quickbase.QuickbaseAccess;
+import dk.nota.oxygen.options.OptionsProvider;
 import ro.sync.exml.plugin.option.OptionPagePluginExtension;
 import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.options.WSOptionsStorage;
 
 public class DcsOptionPagePluginExtension extends OptionPagePluginExtension {
 	
-	public static final String DCS_SERVER_DEFAULT =
-			"http://http-dcsarchive.beta.dbb.dk";
-	public static final String DCS_SERVER_OPTION = "dk.nota.oxygen.dcs.server";
-	
 	private JTextField serverUrlField;
 
 	@Override
 	public void apply(PluginWorkspace pluginWorkspace) {
-		WSOptionsStorage optionsStorage = pluginWorkspace.getOptionsStorage();
-		optionsStorage.setOption(DCS_SERVER_OPTION,	serverUrlField.getText());
+		OptionsProvider.setOptionValue(OptionsProvider.DCS_SERVER_OPTION,
+				serverUrlField.getText());
 	}
 
 	@Override
@@ -66,15 +62,14 @@ public class DcsOptionPagePluginExtension extends OptionPagePluginExtension {
 		JPanel pagePanel = new JPanel(new BorderLayout());
 		pagePanel.add(optionPanel, BorderLayout.NORTH);
 		// Populate fields
-		WSOptionsStorage optionsStorage = pluginWorkspace.getOptionsStorage();
-		serverUrlField.setText(optionsStorage.getOption(DCS_SERVER_OPTION,
-				DCS_SERVER_DEFAULT));
+		serverUrlField.setText((String)OptionsProvider.getOptionValue(
+				OptionsProvider.DCS_SERVER_OPTION));
 		return pagePanel;
 	}
 
 	@Override
 	public void restoreDefaults() {
-		serverUrlField.setText(DCS_SERVER_DEFAULT);
+		serverUrlField.setText(DtbUploader.DCS_SERVER_DEFAULT);
 	}
 
 }
