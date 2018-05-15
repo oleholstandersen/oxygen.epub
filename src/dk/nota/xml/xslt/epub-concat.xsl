@@ -58,8 +58,8 @@
 	            </head>
 	            <body>
 	            	<xsl:variable name="firstPass"
-	            		as="element(nota:documents)">
-	            		<documents xmlns="http://www.nota.dk/oxygen">
+	            		as="element(documents)">
+	            		<documents xmlns="">
 		            		<xsl:apply-templates mode="CONCAT_FIRST_PASS"
 		            			select="$CONTENT_DOCUMENTS/html:html/
 		            			        html:body"/>
@@ -107,7 +107,7 @@
             <nota:out>{'Adding ' || $originalDocumentName}</nota:out>
             <nota:document>{$originalDocumentUri}</nota:document>
         </xsl:message>
-        <section nota:originalDocumentName="{$originalDocumentName}">
+        <section originalDocumentName="{$originalDocumentName}">
             <xsl:call-template name="ATTRIBUTE.ID"/>
             <xsl:call-template name="ATTRIBUTE.LANG"/>
             <xsl:apply-templates mode="CONCAT_FIRST_PASS"
@@ -163,7 +163,7 @@
                     if (matches(@href, '#.+$'))
                     then concat('#', substring-after(@href, '#'))
                     else concat('#', ancestor::documents/html:section[matches(
-                    @nota:originalDocumentName, current()/@href)]/@id))
+                    @originalDocumentName, current()/@href)]/@id))
                     else @href"/>
         <xsl:copy>
             <xsl:attribute name="href" select="$reference"/>
@@ -172,5 +172,5 @@
         </xsl:copy>
     </xsl:template>
     <xsl:template mode="CONCAT_SECOND_PASS"
-        match="html:section/@nota:originalDocumentName"/>
+        match="html:section/@originalDocumentName"/>
 </xsl:stylesheet>

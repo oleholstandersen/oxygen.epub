@@ -1,4 +1,4 @@
-package dk.nota.oxygen.quickbase;
+package dk.nota.quickbase;
 
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -13,7 +13,9 @@ import dk.nota.epub.EpubAccessProvider;
 import dk.nota.epub.EpubException;
 import dk.nota.oxygen.EditorAccess;
 import dk.nota.oxygen.EditorAccessProvider;
-import dk.nota.oxygen.epub.plugin.EpubPluginExtension;
+import dk.nota.quickbase.actions.ApproveQuickbaseProductionAction;
+import dk.nota.quickbase.actions.DownloadFromQuickbaseAction;
+import dk.nota.quickbase.actions.ShowQuickbaseProductionAction;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.Menu;
 
@@ -37,11 +39,12 @@ public class QuickbaseMenu extends Menu implements QuickbaseAccessListener {
 				new AbstractAction("Refresh queue") {
 					@Override
 					public void actionPerformed(ActionEvent event) {
-						populateQueue(EpubPluginExtension.getQuickbaseAccess());
+						populateQueue(QuickbaseAccessProvider
+								.getQuickbaseAccess());
 					}
 				}));
 		addEmptyQueueLabel();
-		if (!EpubPluginExtension.getQuickbaseAccess().isConnected())
+		if (!QuickbaseAccessProvider.getQuickbaseAccess().isConnected())
 			enableActions(false);
 	}
 	
@@ -121,7 +124,7 @@ public class QuickbaseMenu extends Menu implements QuickbaseAccessListener {
 		String pid = epubAccess == null ? "" : epubAccess.getPid();
 		approveProductionAction.update(pid);
 		approveProductionAction.setEnabled(epubAccess != null &&
-				EpubPluginExtension.getQuickbaseAccess().isConnected());
+				QuickbaseAccessProvider.getQuickbaseAccess().isConnected());
 		showProductionAction.update(pid);
 		showProductionAction.setEnabled(epubAccess != null);
 	}

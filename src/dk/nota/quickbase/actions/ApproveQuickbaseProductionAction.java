@@ -1,4 +1,4 @@
-package dk.nota.oxygen.quickbase;
+package dk.nota.quickbase.actions;
 
 import java.awt.event.ActionEvent;
 import java.time.LocalDateTime;
@@ -6,7 +6,9 @@ import java.util.HashMap;
 
 import javax.swing.AbstractAction;
 
-import dk.nota.oxygen.epub.plugin.EpubPluginExtension;
+import dk.nota.quickbase.QuickbaseAccess;
+import dk.nota.quickbase.QuickbaseAccessProvider;
+import dk.nota.quickbase.QuickbaseException;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
 public class ApproveQuickbaseProductionAction extends AbstractAction {
@@ -20,7 +22,7 @@ public class ApproveQuickbaseProductionAction extends AbstractAction {
 
 	@Override
 	public void actionPerformed(ActionEvent event) {
-		QuickbaseAccess quickbaseAccess = EpubPluginExtension
+		QuickbaseAccess quickbaseAccess = QuickbaseAccessProvider
 				.getQuickbaseAccess();
 		try {
 			String date = LocalDateTime.now().toLocalDate().toString();

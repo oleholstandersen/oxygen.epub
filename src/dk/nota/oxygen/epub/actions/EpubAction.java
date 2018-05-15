@@ -33,7 +33,7 @@ public abstract class EpubAction extends AbstractAction {
 		EditorAccess editorAccess = EditorAccessProvider.getEditorAccess();
 		URL editorUrl = editorAccess.getCurrentEditorUrl();
 		LinkedList<URL> affectedEditorUrls = new LinkedList<URL>();
-		for (URL url : editorAccess.getArchiveEditorUrls(editorAccess
+		for (URL url : editorAccess.getArchiveEditorUrls(EditorAccess
 				.getArchiveUrlComponent(editorUrl))) {
 			WSEditor editor = editorAccess.getEditor(url);
 			if (editor.isModified()) {
@@ -47,7 +47,7 @@ public abstract class EpubAction extends AbstractAction {
 			affectedEditorUrls.forEach(url -> editorAccess.close(url));
 		try {
 			epubAccess = EpubAccessProvider.getEpubAccess(URI.create(
-					editorAccess.getArchiveUrlComponent(editorUrl)));
+					EditorAccess.getArchiveUrlComponent(editorUrl)));
 			epubAccess.backupArchive();
 		} catch (EpubException e) {
 			editorAccess.showErrorMessage("Unable to get EPUB access", e);

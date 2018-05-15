@@ -1,10 +1,12 @@
-package dk.nota.oxygen.quickbase;
+package dk.nota.quickbase.actions;
 
 import java.awt.event.ActionEvent;
 import java.io.File;
 
 import javax.swing.AbstractAction;
 
+import dk.nota.quickbase.DownloadFromQuickbaseWorker;
+import dk.nota.quickbase.QuickbaseDownloadDialog;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
 public class DownloadFromQuickbaseAction extends AbstractAction {

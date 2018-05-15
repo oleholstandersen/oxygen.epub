@@ -1,4 +1,4 @@
-package dk.nota.oxygen.quickbase;
+package dk.nota.quickbase;
 
 import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
@@ -16,7 +16,6 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 
-import dk.nota.oxygen.epub.plugin.EpubPluginExtension;
 import dk.nota.oxygen.options.OptionsProvider;
 import ro.sync.exml.plugin.option.OptionPagePluginExtension;
 import ro.sync.exml.workspace.api.PluginWorkspace;
@@ -158,7 +157,8 @@ public class QuickbaseOptionPagePluginExtension
 
 	@Override
 	public JComponent init(PluginWorkspace pluginWorkspace) {
-		QuickbaseAccess quickbaseAccess = EpubPluginExtension.getQuickbaseAccess();
+		QuickbaseAccess quickbaseAccess = QuickbaseAccessProvider
+				.getQuickbaseAccess();
 		// Attach as listener to QuickbaseAccess
 		quickbaseAccess.addListener(this);
 		connectButton = new Button();
@@ -213,7 +213,7 @@ public class QuickbaseOptionPagePluginExtension
 					new AbstractAction("Disconnect") {
 						@Override
 						public void actionPerformed(ActionEvent event) {
-							EpubPluginExtension.getQuickbaseAccess()
+							QuickbaseAccessProvider.getQuickbaseAccess()
 								.disconnect();
 						}
 					});
@@ -223,7 +223,7 @@ public class QuickbaseOptionPagePluginExtension
 						@Override
 						public void actionPerformed(ActionEvent event) {
 							try {
-								EpubPluginExtension.getQuickbaseAccess()
+								QuickbaseAccessProvider.getQuickbaseAccess()
 									.connect(emailField.getText(),
 											passwordField.getPassword());
 							} catch (QuickbaseException e) {
