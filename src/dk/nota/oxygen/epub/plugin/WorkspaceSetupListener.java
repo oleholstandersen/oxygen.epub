@@ -45,9 +45,6 @@ public class WorkspaceSetupListener extends WSEditorChangeListener {
 			if (editor == null || editor.getDocumentTypeInformation() == null)
 				return;
 			switch (editor.getDocumentTypeInformation().getName()) {
-			case "dtbook110":
-				pluginWorkspace.showToolbar(EpubPluginExtension.DTBOOK_TOOLBAR);
-				return;
 			case "XHTML [EPUB 3]":
 				if (!setupEpubAccess(editorUrl)) return;
 				if (editorUrl.toString().endsWith("/nav\\.xhtml"))
@@ -74,7 +71,6 @@ public class WorkspaceSetupListener extends WSEditorChangeListener {
 		}
 		
 		private void hideAllPluginToolbars() {
-			pluginWorkspace.hideToolbar(EpubPluginExtension.DTBOOK_TOOLBAR);
 			pluginWorkspace.hideToolbar(EpubPluginExtension.NAV_TOOLBAR);
 			pluginWorkspace.hideToolbar(EpubPluginExtension.OPF_TOOLBAR);
 			pluginWorkspace.hideToolbar(EpubPluginExtension.XHTML_TOOLBAR);

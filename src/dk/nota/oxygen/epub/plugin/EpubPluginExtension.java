@@ -3,7 +3,6 @@ package dk.nota.oxygen.epub.plugin;
 import javax.swing.JComponent;
 import javax.swing.JMenuBar;
 
-import dk.nota.dtb.actions.UploadToDcsAction;
 import dk.nota.dtb.conversion.InspirationOutput;
 import dk.nota.oxygen.epub.actions.ConcatAction;
 import dk.nota.oxygen.epub.actions.DaisyComicAction;
@@ -29,7 +28,6 @@ import ro.sync.exml.workspace.api.standalone.ui.ToolbarButton;
 public class EpubPluginExtension implements WorkspaceAccessPluginExtension {
 	
 	public static final String TOOLBAR_PREFIX = "dk.nota.oxygen.epub";
-	public static final String DTBOOK_TOOLBAR = "dk.nota.oxygen.epub.toolbar.dtbook";
 	public static final String NAV_TOOLBAR = "dk.nota.oxygen.epub.toolbar.nav";
 	public static final String OPF_TOOLBAR = "dk.nota.oxygen.epub.toolbar.opf";
 	public static final String XHTML_TOOLBAR = "dk.nota.oxygen.epub.toolbar.xhtml";
@@ -74,9 +72,6 @@ public class EpubPluginExtension implements WorkspaceAccessPluginExtension {
 		public void customizeToolbar(ToolbarInfo toolbar) {
 			if (!toolbar.getToolbarID().startsWith(TOOLBAR_PREFIX)) return;
 			switch (toolbar.getToolbarID()) {
-			case DTBOOK_TOOLBAR:
-				setupDtbookToolbar(toolbar);
-				return;
 			case NAV_TOOLBAR:
 				setupNavToolbar(toolbar);
 				return;
@@ -86,14 +81,6 @@ public class EpubPluginExtension implements WorkspaceAccessPluginExtension {
 			case XHTML_TOOLBAR:
 				setupXhtmlToolbar(toolbar);
 			}
-		}
-		
-		private void setupDtbookToolbar(ToolbarInfo toolbar) {
-			JComponent[] dtbookComponents = new JComponent[] {
-				new ToolbarButton(new UploadToDcsAction(), true)
-			};
-			toolbar.setTitle("DTBook");
-			toolbar.setComponents(dtbookComponents);
 		}
 		
 		private void setupNavToolbar(ToolbarInfo toolbar) {
