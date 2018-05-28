@@ -17,7 +17,7 @@ public class InspirationOutputAction extends EpubAction {
 	private InspirationOutput inspirationOutput;
 	
 	public InspirationOutputAction(InspirationOutput inspirationOutput) {
-		super(inspirationOutput.getName(), false);
+		super(inspirationOutput.getName(), false, false);
 		this.inspirationOutput = inspirationOutput;
 	}
 
@@ -34,15 +34,16 @@ public class InspirationOutputAction extends EpubAction {
 		URI outputUri;
 		switch (inspirationOutput) {
 		case INSP_PRINT:
-			outputUri = epubAccess.getArchiveUri().resolve("print/");
+			outputUri = epubAccess.getArchiveUri().resolve("tryk/");
 			break;
 		case INSP_PROOF:
-			outputUri = epubAccess.getArchiveUri().resolve("korrektur.html");
+			outputUri = epubAccess.getArchiveUri().resolve(
+					"korrektur/korrektur.html");
 			break;
 		default:
 			outputUri = epubAccess.getArchiveUri().resolve(inspirationOutput
-				.getPrefix() + epubAccess.getPid().replaceFirst(
-				"^(dk-nota-)*.{4}", "") + ".xml");
+				.getPrefix() + "/" + inspirationOutput.getPrefix() + epubAccess
+				.getPid().replaceFirst("^(dk-nota-)*.{4}", "") + ".xml");
 		}
 		InspirationOutputWorker inspirationOutputWorker =
 				new InspirationOutputWorker(epubAccess, opfDocument,

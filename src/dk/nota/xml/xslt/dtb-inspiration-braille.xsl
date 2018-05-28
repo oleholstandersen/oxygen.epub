@@ -8,10 +8,10 @@
     <xsl:variable name="EDITION" as="xs:string">
         <xsl:variable name="year" as="xs:string?"
             select="substring(head/meta[@name eq 'dc:identifier']/
-                    @content, 5, 4)"/>
+                    replace(@content, 'dk-nota-', ''), 5, 4)"/>
         <xsl:variable name="issue" as="xs:string?"
             select="substring(head/meta[@name eq 'dc:identifier']/
-                    @content, 12, 1)"/>
+                    replace(@content, 'dk-nota-', ''), 12, 1)"/>
         <xsl:value-of select="concat('nr. ', $issue, ', ', $year)"/>
     </xsl:variable>
     <xsl:template name="OUTPUT" as="element(document)">
@@ -69,6 +69,10 @@
         </xsl:variable>
         <xsl:apply-templates mode="STRIP_LEADING_WHITESPACE"
             select="$firstPass"/>
+    </xsl:template>
+    <xsl:template match="meta[@name eq 'dc:identifier']/@content">
+    	<xsl:attribute name="content"
+    		select="replace(., '^(dk-nota-)*INSM', '$1INSP')"/>
     </xsl:template>
     <xsl:template
         match="span[nota:has-classes(., ('OEE', 'OEL', 'OEP', 'typedescription'))]//a">

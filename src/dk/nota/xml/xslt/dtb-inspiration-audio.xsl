@@ -37,6 +37,10 @@
         	</level>
     	</frontmatter>
     </xsl:template>
+    <xsl:template match="meta[@name eq 'dc:identifier']/@content">
+    	<xsl:attribute name="content"
+    		select="replace(., '^(dk-nota-)*INSM', '$1INSL')"/>
+    </xsl:template>
     <xsl:template match="span">
         <xsl:apply-templates/>
     </xsl:template>
