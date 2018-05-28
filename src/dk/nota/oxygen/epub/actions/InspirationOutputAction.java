@@ -1,7 +1,10 @@
 package dk.nota.oxygen.epub.actions;
 
+import java.io.File;
 import java.net.URI;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.LinkedList;
 
 import dk.nota.dtb.conversion.InspirationOutput;
@@ -44,6 +47,14 @@ public class InspirationOutputAction extends EpubAction {
 			outputUri = epubAccess.getArchiveUri().resolve(inspirationOutput
 				.getPrefix() + "/" + inspirationOutput.getPrefix() + epubAccess
 				.getPid().replaceFirst("^(dk-nota-)*.{4}", "") + ".xml");
+		}
+		if (Files.exists(Paths.get(outputUri)) &&
+				inspirationOutput != InspirationOutput.INSP_PRINT) {
+			File outputFile = editorAccess.getPluginWorkspace().chooseFile(
+					new File(outputUri), "Export [" + inspirationOutput
+					.getName() + "]", null, "All files", true);
+			if (outputFile == null) return;
+			outputUri = outputFile.toURI();
 		}
 		InspirationOutputWorker inspirationOutputWorker =
 				new InspirationOutputWorker(epubAccess, opfDocument,
