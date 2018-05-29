@@ -101,6 +101,10 @@ public class EpubAccess {
 		return pid;
 	}
 	
+	public void setPid(String pid) {
+		this.pid = pid;
+	}
+	
 	public URI makeOpfBasedUri(String path) {
 		// Because URI.resolve() fails for URIs with the zip: protocol, we need
 		// a convenience method for generating an absolute URI based on a

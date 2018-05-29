@@ -4,6 +4,7 @@ import java.net.URL;
 
 import dk.nota.epub.EpubAccessProvider;
 import dk.nota.epub.EpubException;
+import dk.nota.epub.PidUpdateListener;
 import dk.nota.oxygen.EditorAccess;
 import ro.sync.exml.workspace.api.editor.WSEditor;
 import ro.sync.exml.workspace.api.listeners.WSEditorChangeListener;
@@ -55,6 +56,7 @@ public class WorkspaceSetupListener extends WSEditorChangeListener {
 				break;
 			case "OPF":
 				if (!setupEpubAccess(editorUrl)) return;
+				editor.addEditorListener(new PidUpdateListener());
 				pluginWorkspace.showToolbar(EpubPluginExtension.OPF_TOOLBAR);
 				break;
 			case "NCX":
