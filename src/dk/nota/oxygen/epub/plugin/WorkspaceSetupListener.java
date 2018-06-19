@@ -26,20 +26,20 @@ public class WorkspaceSetupListener extends WSEditorChangeListener {
 		
 		@Override
 		public void editorOpened(URL editorUrl) {
-			establishWorkspace(editorUrl);
+			establishWorkspace(editorUrl, true);
 		}
 		
 		@Override
 		public void editorRelocated(URL previousEditorUrl, URL newEditorUrl) {
-			establishWorkspace(newEditorUrl);
+			establishWorkspace(newEditorUrl, false);
 		}
 		
 		@Override
 		public void editorSelected(URL editorUrl) {
-			establishWorkspace(editorUrl);
+			establishWorkspace(editorUrl, false);
 		}
 		
-		private void establishWorkspace(URL editorUrl) {
+		private void establishWorkspace(URL editorUrl, boolean newEditor) {
 			WSEditor editor = pluginWorkspace.getEditorAccess(editorUrl,
 					StandalonePluginWorkspace.MAIN_EDITING_AREA);
 			hideAllPluginToolbars();
@@ -56,7 +56,8 @@ public class WorkspaceSetupListener extends WSEditorChangeListener {
 				break;
 			case "OPF":
 				if (!setupEpubAccess(editorUrl)) return;
-				editor.addEditorListener(new PidUpdateListener());
+				if (newEditor) editor.addEditorListener(
+						new PidUpdateListener());
 				pluginWorkspace.showToolbar(EpubPluginExtension.OPF_TOOLBAR);
 				break;
 			case "NCX":
