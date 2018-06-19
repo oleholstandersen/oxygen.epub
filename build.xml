@@ -48,7 +48,7 @@
 			basedir="./frameworks/plugin" includes="**"/>
 		<zip destfile="./deploy/${version-number}/xhtml5epub-${version-number}.zip"
 			basedir="./frameworks" includes="xhtml5epub/**"/>
-		<echo file="./deploy/dk.nota.oxygen.beta.xml"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+		<echo file="./deploy/dk.nota.oxygen.xml"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <xt:extensions xmlns:xt="http://www.oxygenxml.com/ns/extension"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.oxygenxml.com/ns/extension http://www.oxygenxml.com/ns/extension/extensions.xsd">
