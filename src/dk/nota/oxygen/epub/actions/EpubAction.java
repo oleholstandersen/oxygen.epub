@@ -17,11 +17,19 @@ import ro.sync.exml.workspace.api.editor.WSEditor;
 
 public abstract class EpubAction extends AbstractAction {
 	
+	private boolean backupArchive = false;
 	private boolean closeEditors;
 	protected EpubAccess epubAccess;
 	
 	public EpubAction(String name, boolean closeEditors) {
 		super(name);
+		this.closeEditors = closeEditors;
+	}
+	
+	public EpubAction(String name, boolean closeEditors,
+			boolean backupArchive) {
+		super(name);
+		this.backupArchive = backupArchive;
 		this.closeEditors = closeEditors;
 	}
 	
@@ -48,7 +56,7 @@ public abstract class EpubAction extends AbstractAction {
 		try {
 			epubAccess = EpubAccessProvider.getEpubAccess(URI.create(
 					EditorAccess.getArchiveUrlComponent(editorUrl)));
-			epubAccess.backupArchive();
+			if (backupArchive) epubAccess.backupArchive();
 		} catch (EpubException e) {
 			editorAccess.showErrorMessage("Unable to get EPUB access", e);
 			return;

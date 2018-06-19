@@ -1,7 +1,10 @@
 package dk.nota.oxygen.epub.actions;
 
+import java.io.File;
 import java.net.URI;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.LinkedList;
 
 import dk.nota.dtb.conversion.InspirationOutput;
@@ -17,7 +20,7 @@ public class InspirationOutputAction extends EpubAction {
 	private InspirationOutput inspirationOutput;
 	
 	public InspirationOutputAction(InspirationOutput inspirationOutput) {
-		super(inspirationOutput.getName(), false);
+		super(inspirationOutput.getName(), false, false);
 		this.inspirationOutput = inspirationOutput;
 	}
 
@@ -34,15 +37,24 @@ public class InspirationOutputAction extends EpubAction {
 		URI outputUri;
 		switch (inspirationOutput) {
 		case INSP_PRINT:
-			outputUri = epubAccess.getArchiveUri().resolve("print/");
+			outputUri = epubAccess.getArchiveUri().resolve("tryk/");
 			break;
 		case INSP_PROOF:
-			outputUri = epubAccess.getArchiveUri().resolve("korrektur.html");
+			outputUri = epubAccess.getArchiveUri().resolve(
+					"korrektur/korrektur.html");
 			break;
 		default:
 			outputUri = epubAccess.getArchiveUri().resolve(inspirationOutput
-				.getPrefix() + epubAccess.getPid().replaceFirst(
-				"^(dk-nota-)*.{4}", "") + ".xml");
+				.getPrefix() + "/" + inspirationOutput.getPrefix() + epubAccess
+				.getPid().replaceFirst("^(dk-nota-)*.{4}", "") + ".xml");
+		}
+		if (Files.exists(Paths.get(outputUri)) &&
+				inspirationOutput != InspirationOutput.INSP_PRINT) {
+			File outputFile = editorAccess.getPluginWorkspace().chooseFile(
+					new File(outputUri), "Export [" + inspirationOutput
+					.getName() + "]", null, "All files", true);
+			if (outputFile == null) return;
+			outputUri = outputFile.toURI();
 		}
 		InspirationOutputWorker inspirationOutputWorker =
 				new InspirationOutputWorker(epubAccess, opfDocument,

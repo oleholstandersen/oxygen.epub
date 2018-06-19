@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <project name="oxygen.epub" default="compile">
-	<property name="version-number" value="2.2.1" />
+	<property name="version-number" value="2.2.2" />
 	<target name="compile">
 		<echo file="./deploy/plugin.xml"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plugin SYSTEM "../plugin.dtd">
@@ -16,7 +16,7 @@
     <extension type="WorkspaceAccess" 
         class="dk.nota.oxygen.epub.plugin.EpubPluginExtension"/>
 	<extension type="OptionPage"
-		class="dk.nota.dcs.DcsOptionPagePluginExtension"/>
+			class="dk.nota.dcs.DcsOptionPagePluginExtension"/>
 	<extension type="OptionPage"
 		class="dk.nota.quickbase.QuickbaseOptionPagePluginExtension"/>
 	<toolbar id="dk.nota.oxygen.epub.toolbar.dtb" initialSide="NORTH" initialRow="2"/>
@@ -50,7 +50,7 @@
 			basedir="./frameworks/plugin" includes="**"/>
 		<zip destfile="./deploy/${version-number}/xhtml5epub-${version-number}.zip"
 			basedir="./frameworks" includes="xhtml5epub/**"/>
-		<echo file="./deploy/dk.nota.oxygen.beta.xml"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+		<echo file="./deploy/dk.nota.oxygen.xml"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <xt:extensions xmlns:xt="http://www.oxygenxml.com/ns/extension"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.oxygenxml.com/ns/extension http://www.oxygenxml.com/ns/extension/extensions.xsd">
