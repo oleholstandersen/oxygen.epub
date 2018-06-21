@@ -10,7 +10,8 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.json.simple.JSONObject;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import dk.nota.oxygen.options.OptionsProvider;
 import dk.nota.xml.XmlAccess;
@@ -68,7 +69,7 @@ public class DtbUploader {
 				});
 	}
 	
-	public boolean createTitle() throws IOException {
+	public boolean createTitle() throws IOException, JSONException {
 		HttpPost post = getHttpPost("/titles/createtitle");
 		JSONObject json = new JSONObject();
 		json.put("TitleNo",  pid);
@@ -78,10 +79,10 @@ public class DtbUploader {
 		json.put("OriginCode", "DDS");
 		json.put("SourcePath", "\\\\dbb.dk\\networkdrive" + uploadPath
 				.toString().substring(2));
-		post.setEntity(new StringEntity(json.toJSONString(),
+		post.setEntity(new StringEntity(json.toString(),
 				StandardCharsets.UTF_8));
 		json = httpClient.execute(post, new JsonHttpResponseHandler());
-		System.out.println(json.toJSONString());
+		System.out.println(json.toString());
 		return (long)json.get("Status") == 0;
 	}
 	
@@ -107,30 +108,30 @@ public class DtbUploader {
 		return pid;
 	}
 	
-	public void setDcsId() throws IOException {
+	public void setDcsId() throws IOException, JSONException {
 		HttpPost post = getHttpPost("/titles/gettitle");
 		JSONObject json = new JSONObject();
 		json.put("TitleNo", pid);
-		post.setEntity(new StringEntity(json.toJSONString(),
+		post.setEntity(new StringEntity(json.toString(),
 				StandardCharsets.UTF_8));
 		json = httpClient.execute(post, new JsonHttpResponseHandler());
-		System.out.println(json.toJSONString());
+		System.out.println(json.toString());
 		if (json.get("Value") == null) dcsId = 0;
-		else dcsId = (long)((JSONObject)json.get("Value")).get("ID");
+		else dcsId = json.getJSONObject("Value").getLong("ID");
 	}
 	
-	public boolean updateTitle() throws IOException {
+	public boolean updateTitle() throws IOException, JSONException {
 		HttpPost post = getHttpPost("/titles/updatetitleformat");
 		JSONObject json = new JSONObject();
 		json.put("TitleId", dcsId);
 		json.put("MaterialFormatCode", "DTB");
 		json.put("SourcePath", "\\\\dbb.dk\\networkdrive" + uploadPath
 				.toString().substring(2));
-		post.setEntity(new StringEntity(json.toJSONString(),
+		post.setEntity(new StringEntity(json.toString(),
 				StandardCharsets.UTF_8));
 		json = httpClient.execute(post, new JsonHttpResponseHandler());
-		System.out.println(json.toJSONString());
-		return (long)json.get("Status") == 0;
+		System.out.println(json.toString());
+		return json.getInt("Status") == 0;
 	}
 
 }
