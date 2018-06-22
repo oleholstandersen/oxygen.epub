@@ -82,8 +82,7 @@ public class DtbUploader {
 		post.setEntity(new StringEntity(json.toString(),
 				StandardCharsets.UTF_8));
 		json = httpClient.execute(post, new JsonHttpResponseHandler());
-		System.out.println(json.toString());
-		return (long)json.get("Status") == 0;
+		return json.getInt("Status") == 0;
 	}
 	
 	public long getDcsId() {
@@ -115,8 +114,7 @@ public class DtbUploader {
 		post.setEntity(new StringEntity(json.toString(),
 				StandardCharsets.UTF_8));
 		json = httpClient.execute(post, new JsonHttpResponseHandler());
-		System.out.println(json.toString());
-		if (json.get("Value") == null) dcsId = 0;
+		if (json.get("Value") == JSONObject.NULL) dcsId = 0;
 		else dcsId = json.getJSONObject("Value").getLong("ID");
 	}
 	
@@ -130,7 +128,6 @@ public class DtbUploader {
 		post.setEntity(new StringEntity(json.toString(),
 				StandardCharsets.UTF_8));
 		json = httpClient.execute(post, new JsonHttpResponseHandler());
-		System.out.println(json.toString());
 		return json.getInt("Status") == 0;
 	}
 

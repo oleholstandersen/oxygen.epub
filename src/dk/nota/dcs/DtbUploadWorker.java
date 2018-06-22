@@ -31,11 +31,11 @@ public class DtbUploadWorker extends AbstractWorkerWithResults<Object,Object>{
 							new String[] { "Overwrite", "Cancel" },
 							new int[] { 1, 0 }, 1);
 			if (overwrite == 1) {
-				fireResultsUpdate("UPDATING TITLE");
+				fireResultsUpdate("UPDATING TITLE...");
 				dtbUploader.updateTitle();
 			} else fireResultsUpdate("UPLOAD CANCELLED");
 		} else {
-			fireResultsUpdate("CREATING TITLE");
+			fireResultsUpdate("CREATING TITLE...");
 			dtbUploader.createTitle();
 		}
 		return null;
