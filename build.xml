@@ -94,7 +94,7 @@
     </xt:extension>
 	<!-- LEGACY SUPPORT -->
 	<xt:extension id="dk.nota.oxygen.epub.plugin">
-        <xt:location href="1.2.2/plugin-1.2.2.zip"/>
+    <xt:location href="1.2.2/plugin-1.2.2.zip"/>
         <xt:version>1.2.2</xt:version>
         <xt:oxy_version>19.0+</xt:oxy_version>
         <xt:type>plugin</xt:type>
@@ -104,7 +104,7 @@
         <xt:license>Copyrighted by Nota and distributed under GNU LGPL Version 3</xt:license>
     </xt:extension>
     <xt:extension id="dk.nota.oxygen.epub.ncx">
-        <xt:location href="1.2.2/ncx-1.2.2.zip"/>
+    <xt:location href="1.2.2/ncx-1.2.2.zip"/>
         <xt:version>1.2.2</xt:version>
         <xt:oxy_version>19.0+</xt:oxy_version>
         <xt:type>framework</xt:type>
@@ -113,7 +113,7 @@
         <xt:description xmlns="http://www.w3.org/1999/xhtml">Framework for NCX</xt:description>
         <xt:license>Copyrighted by Nota and distributed under GNU LGPL Version 3</xt:license>
     </xt:extension>
-        <xt:extension id="dk.nota.oxygen.epub.opf3">
+    <xt:extension id="dk.nota.oxygen.epub.opf3">
         <xt:location href="1.2.2/opf-1.2.2.zip"/>
         <xt:version>1.2.2</xt:version>
         <xt:oxy_version>19.0+</xt:oxy_version>
