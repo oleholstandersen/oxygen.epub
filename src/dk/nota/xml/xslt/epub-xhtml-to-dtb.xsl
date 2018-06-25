@@ -24,21 +24,7 @@
             <xsl:variable name="coverSection" as="element(html:section)?"
                 select="$CONCAT_DOCUMENT/html:body/html:section
                         [nota:has-epub-types(., 'cover')]"/>
-            <xsl:choose>
-            	<!--  If there is no cover, do nothing  -->
-            	<xsl:when test="not($coverSection)"/>
-            	<!--  If the cover contains subsections, make them level 1 -->
-                <xsl:when test="$coverSection/html:section">
-                    <xsl:apply-templates
-                        select="$coverSection/html:section"/>
-                </xsl:when>
-                <!-- Otherwise, create single cover level -->
-                <xsl:otherwise>
-                    <level depth="1" class="cover">
-                        <xsl:apply-templates select="$coverSection"/>
-                    </level>
-                </xsl:otherwise>
-            </xsl:choose>    
+            <xsl:apply-templates select="$coverSection"/>    
             <xsl:call-template name="LEVELS.GROUP">
                 <xsl:with-param name="sections" as="element(html:section)*"
                     select="$CONCAT_DOCUMENT/html:body/html:section
