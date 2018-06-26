@@ -95,7 +95,8 @@ public class ResultsListener implements ErrorListener, MessageListener,
 	
 	public void writeException(Throwable throwable, int severity) {
 		resultsView.writeResult(new DocumentPositionedInfo(severity,
-				throwable.toString()));
+				"Error: " + throwable.getClass().getName() + ": " + throwable
+				.getMessage()));
 	}
 	
 	public void writeException(TransformerException exception,

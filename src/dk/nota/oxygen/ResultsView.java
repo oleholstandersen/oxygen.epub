@@ -20,7 +20,7 @@ public class ResultsView {
 	
 	public void writeResult(DocumentPositionedInfo documentInfo) {
 		resultsManager.addResult(title, documentInfo, ResultsManager.ResultType
-				.GENERIC, true, true);
+				.PROBLEM, true, true);
 	}
 	
 	public void writeResult(String string) {
