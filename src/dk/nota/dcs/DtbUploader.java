@@ -25,6 +25,7 @@ public class DtbUploader {
 	public static final String DCS_SERVER_DEFAULT =
 			"http://http-dcsarchive.beta.dbb.dk";
 	
+	private String basePath = "\\\\dbb.dk\\networkdrive";
 	private long dcsId;
 	private Path documentPath;
 	private CloseableHttpClient httpClient = HttpClients.createDefault();
@@ -63,7 +64,7 @@ public class DtbUploader {
 							throw new DcsException(String.format(
 									"%s has invalid MIME type (%s)",
 									path.getFileName(), mimeType));
-					} catch (DcsException | IOException e) {
+					} catch (IOException e) {
 						throw new RuntimeException(e);
 					}
 				});
@@ -123,8 +124,7 @@ public class DtbUploader {
 		JSONObject json = new JSONObject();
 		json.put("TitleId", dcsId);
 		json.put("MaterialFormatCode", "DTB");
-		json.put("SourcePath", "\\\\dbb.dk\\networkdrive" + uploadPath
-				.toString().substring(2));
+		json.put("SourcePath", basePath + uploadPath.toString().substring(2));
 		post.setEntity(new StringEntity(json.toString(),
 				StandardCharsets.UTF_8));
 		json = httpClient.execute(post, new JsonHttpResponseHandler());

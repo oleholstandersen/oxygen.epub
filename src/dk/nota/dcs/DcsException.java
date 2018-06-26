@@ -1,6 +1,8 @@
 package dk.nota.dcs;
 
-public class DcsException extends Exception {
+import java.io.IOException;
+
+public class DcsException extends IOException {
 	
 	public DcsException(String string) {
 		super(string);

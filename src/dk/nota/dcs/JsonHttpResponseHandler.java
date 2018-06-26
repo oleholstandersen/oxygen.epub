@@ -18,6 +18,11 @@ public class JsonHttpResponseHandler extends AbstractResponseHandler<JSONObject>
 		String jsonString = IOUtils.toString(entity.getContent());
 		try {
 			JSONObject json = new JSONObject(jsonString);
+			int status = json.getInt("Status");
+			if (status != 0) {
+				String message = json.getString("Message");
+				throw new DcsException("Error from server: " + message);
+			}
 			return json;
 		} catch (JSONException e) {
 			throw new IOException(e);
