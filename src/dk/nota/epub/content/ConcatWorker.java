@@ -1,5 +1,6 @@
 package dk.nota.epub.content;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
 import java.nio.file.FileSystem;
@@ -34,6 +35,9 @@ public class ConcatWorker extends AbstractEpubWorkerWithResults {
 		ArchiveAccess archiveAccess = epubAccess.getArchiveAccess();
 		try (FileSystem epubFileSystem = archiveAccess
 				.getArchiveAsFileSystem()) {
+			if (Files.exists(epubFileSystem.getPath("EPUB/concat.xhtml"))) {
+				throw new IOException("File concat.xhtml already exists");
+			}
 			documentResult.writeDocumentsToArchive(archiveAccess, epubFileSystem);
 			for (URI uri : concatter.getOriginalDocuments()) {
 				Path path = epubFileSystem.getPath(archiveAccess
