@@ -1,4 +1,4 @@
-package dk.nota.oxygen.epub.xhtml;
+package dk.nota.oxygen.epub.html;
 
 import java.util.LinkedList;
 import javax.swing.text.BadLocationException;

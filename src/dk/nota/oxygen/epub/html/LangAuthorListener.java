@@ -1,4 +1,4 @@
-package dk.nota.oxygen.epub.xhtml;
+package dk.nota.oxygen.epub.html;
 
 import ro.sync.ecss.extensions.api.AttributeChangedEvent;
 import ro.sync.ecss.extensions.api.AuthorAccess;
