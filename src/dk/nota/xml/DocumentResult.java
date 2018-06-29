@@ -18,6 +18,8 @@ import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.Serializer;
 import net.sf.saxon.s9api.XdmNode;
+import net.sf.saxon.s9api.XdmNodeKind;
+import net.sf.saxon.s9api.XdmSequenceIterator;
 import net.sf.saxon.s9api.XdmValue;
 
 public class DocumentResult {
@@ -29,11 +31,21 @@ public class DocumentResult {
 		transformationResult.iterator().forEachRemaining(
 				item -> {
 					if (item instanceof XdmNode) {
-						XdmNode documentNode = (XdmNode)item;
-						URI uri = URI.create(documentNode.getAttributeValue(
+						XdmNode node = (XdmNode)item;
+						URI uri = URI.create(node.getAttributeValue(
 								new QName("uri")));
-						XdmNode content = (XdmNode)documentNode.axisIterator(
-								Axis.CHILD).next();
+						// Avoid adding a "document" consisting of just a
+						// processing instruction
+						// TODO: More elegant solution
+						XdmNode content = null;
+						XdmSequenceIterator iterator = node.axisIterator(
+								Axis.CHILD);
+						while (iterator.hasNext()) {
+							content = (XdmNode)iterator.next();
+							if (content.getNodeKind() !=
+									XdmNodeKind.PROCESSING_INSTRUCTION)
+								break;
+						}
 						resultMap.put(uri, content);
 					}
 				});
