@@ -16,7 +16,7 @@
     <extension type="WorkspaceAccess" 
         class="dk.nota.oxygen.epub.plugin.EpubPluginExtension"/>
 	<extension type="OptionPage"
-		class="dk.nota.quickbase.QuickbaseOptionPagePluginExtension"/>
+		class="dk.nota.oxygen.options.QuickbaseOptionPagePluginExtension"/>
 	<toolbar id="dk.nota.oxygen.epub.toolbar.dtb" initialSide="NORTH" initialRow="2"/>
     <toolbar id="dk.nota.oxygen.epub.toolbar.nav" initialSide="NORTH" initialRow="2"/>
     <toolbar id="dk.nota.oxygen.epub.toolbar.opf" initialSide="NORTH" initialRow="2"/>
