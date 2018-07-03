@@ -27,6 +27,17 @@ import net.sf.saxon.s9api.XdmSequenceIterator;
 import net.sf.saxon.s9api.XdmValue;
 import net.sf.saxon.s9api.Xslt30Transformer;
 
+/**
+ * 
+ * <p>EpubAccess is the main entry point for EPUB-related functionality. It is
+ * instantiated by passing an EPUB file as a {@link java.net.URI}. EpubAccess
+ * objects are more or less just collections of URIs referring to the various
+ * components. The inner classes {@link dk.nota.epub.EpubAccess.ContentAccess}
+ * and {@link dk.nota.epub.EpubAccess.NavigationAccess} allow access to OPF and
+ * navigation documents, respectively.</p>
+ * 
+ */
+
 public class EpubAccess {
 	
 	private ArchiveAccess epubArchiveAccess;
@@ -37,6 +48,14 @@ public class EpubAccess {
 	private URI ncxUri;
 	private URI opfUri;
 	private String pid;
+	
+	/**
+	 * Constructor. Based on the provided URI, associated URIs will be obtained
+	 * from the relevant files.
+	 * @param epubArchiveUri The archive location.
+	 * @throws EpubException If for some reason we fail to erect the
+	 * scaffolding around the main URI because of an IO or XML exception.
+	 */
 	
 	public EpubAccess(URI epubArchiveUri) throws EpubException {
 		this.epubArchiveUri = epubArchiveUri;
@@ -50,6 +69,12 @@ public class EpubAccess {
 		}
 		epubContentAccess = new ContentAccess();
 	}
+	
+	/**
+	 * Create a copy of the file with the suffix .bak in the same directory.
+	 * @return The backup File.
+	 * @throws IOException If an error occurs during copying.
+	 */
 	
 	public File backupArchive() throws IOException {
 		Path archivePath = epubArchiveAccess.getArchivePath();
@@ -85,25 +110,63 @@ public class EpubAccess {
 				.getStringValue();
 	}
 	
+	/**
+	 * Get the EPUB archive as an ArchiveAccess instance. This can then be used
+	 * to manipulate the actual file.
+	 * @return An ArchiveAccess instance of the archive.
+	 */
+	
 	public ArchiveAccess getArchiveAccess() {
 		return epubArchiveAccess;
 	}
+	
+	/**
+	 * Get the location of the archive used to construct this instance.
+	 * @return The archive location.
+	 */
 	
 	public URI getArchiveUri() {
 		return epubArchiveUri;
 	}
 	
+	/**
+	 * Get a ContentAcess instance, allowing access to OPF content such as
+	 * metadata and content references.
+	 * @return A ContentAccess instance of the OPF.
+	 */
+	
 	public ContentAccess getContentAccess() {
 		return epubContentAccess;
 	}
+	
+	/**
+	 * Get the PID optained from the dc:identifier element in the OPF.
+	 * @return The PID.
+	 */
 	
 	public String getPid() {
 		return pid;
 	}
 	
+	/**
+	 * <p>Set the PID of this instance.</p>
+	 * <p><em>Note</em>: The PID in this regard is just the value of a field
+	 * in this EpubAccess object. It is not written to any actual
+	 * files(s) in the physical archive.</p>
+	 */
+	
 	public void setPid(String pid) {
 		this.pid = pid;
 	}
+	
+	/**
+	 * A convenience method for generating an absolute URI based on a
+	 * relative path within the archive. This method is useful because the
+	 * generic methods provided by the {@link java.net.URI} class are unable
+	 * to handle zip-based URIs (zip:file://.../file.epub!/path/to/file).
+	 * @param path An internal archive path with no leading slash.
+	 * @return An absolute URI with an archive component.
+	 */
 	
 	public URI makeOpfBasedUri(String path) {
 		// Because URI.resolve() fails for URIs with the zip: protocol, we need
@@ -115,17 +178,42 @@ public class EpubAccess {
 		return URI.create(path).normalize();
 	}
 	
+	/**
+	 * A convenience method for relativizing an absolute URI again the archive
+	 * URI, resulting in a simple {@class java.lang.String} representation of
+	 * just the internal path.
+	 * @param uri Some absolute URI with an archive component corresponding to
+	 * the archive URI.
+	 * @return The internal archive path with no leading slash.
+	 */
+	
 	public String relativizeUriToOpf(URI uri) {
 		return uri.toString().substring(opfUri.toString().lastIndexOf('/') + 1);
 	}
+	
+	/**
+	 * 
+	 * This class allows access to the contents of the OPF document.
+	 *
+	 */
 	
 	public class ContentAccess {
 		
 		private ContentAccess() {
 		}
 		
+		/**
+		 * 
+		 * @param opfDocument
+		 * @return A {@link java.util.LinkedHashMap} containing the document
+		 * URIs as keys and their contents, in the form of
+		 * {@link net.sf.saxon.s9api.XdmNode} instances, as values. The map
+		 * is linked in order to preserve spine order.
+		 * @throws EpubException 
+		 */
+		
 		public LinkedHashMap<URI,XdmNode> getContentDocuments(
-				XdmNode opfDocument) throws EpubException, SaxonApiException {
+				XdmNode opfDocument) throws EpubException {
 			// TODO: Refactor, create indepent methods for manifest and spine
 			LinkedHashMap<URI,XdmNode> contentDocumentsMap =
 					new LinkedHashMap<URI,XdmNode>();
@@ -140,10 +228,14 @@ public class EpubAccess {
 				String id = ((XdmNode)iterator.next()).getAttributeValue(
 						new QName("idref"));
 				XdmNode item = getItemFromManifest(id, manifest);
-				URI uri = makeOpfBasedUri(item.getAttributeValue(new QName(
-						"href")));
-				XdmNode document = xmlAccess.getDocument(uri);
-				contentDocumentsMap.put(uri, document);
+				String ref = item.getAttributeValue(new QName("href"));
+				URI uri = makeOpfBasedUri(ref);
+				try {
+					XdmNode document = xmlAccess.getDocument(uri);
+					contentDocumentsMap.put(uri, document);
+				} catch (SaxonApiException e) {
+					throw new EpubException("Unable to get document " + ref, e);
+				}
 			}
 			return contentDocumentsMap;
 		}
@@ -181,8 +273,7 @@ public class EpubAccess {
 				if (node.getAttributeValue(new QName("id")).equals(itemId))
 					return node;
 			}
-			throw new EpubException(String.format(
-					"Unable to get item %s from OPF manifest", itemId));
+			return null;
 		}
 		
 		public HashMap<String,String> getDublinCoreMetadata()
