@@ -4,17 +4,17 @@
 	<target name="compile">
 		<echo file="./deploy/plugin.xml"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plugin SYSTEM "../plugin.dtd">
-<plugin id="dk.nota.oxygen.epub.plugin"
+<plugin id="dk.nota.oxygen.plugin"
     name="EPUB Plugin"
 	description="Various extensions to aid in the editing and creation of EPUB books"
     version="${version-number}"
     vendor="Nota"
-    class="dk.nota.oxygen.epub.plugin.EpubPlugin">
+    class="dk.nota.oxygen.plugin.NotaPlugin">
     <runtime>
         <library name="epub.jar"/>
     </runtime>
     <extension type="WorkspaceAccess" 
-        class="dk.nota.oxygen.epub.plugin.EpubPluginExtension"/>
+        class="dk.nota.oxygen.plugin.NotaPluginExtension"/>
 	<extension type="OptionPage"
 		class="dk.nota.oxygen.options.QuickbaseOptionPagePluginExtension"/>
 	<toolbar id="dk.nota.oxygen.epub.toolbar.dtb" initialSide="NORTH" initialRow="2"/>
