@@ -15,6 +15,10 @@ public final class ProcessorProvider {
 		processor.setConfigurationProperty(FeatureKeys.LINE_NUMBERING, true);
 	}
 	
+	private ProcessorProvider() {
+		
+	}
+	
 	public static final Processor getProcessor() {
 		return processor;
 	}
