@@ -18,7 +18,7 @@
 						<String-array/>
 					</field>
 					<field name="parentClassLoaderID">
-						<String>dk.nota.oxygen.epub.plugin</String>
+						<String>dk.nota.oxygen.plugin</String>
 					</field>
 					<field name="authorExtensionDescriptor">
 						<authorExtension>

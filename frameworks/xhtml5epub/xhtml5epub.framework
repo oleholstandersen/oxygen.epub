@@ -17,7 +17,7 @@
 								<Integer>4</Integer>
 							</field>
 							<field name="uri">
-								<String>${framework}/schema/nordic-html5.rng</String>
+								<String>${framework}/schema/nordic-xhtml5.rng</String>
 							</field>
 						</docTypeSchema>
 					</field>
@@ -29,7 +29,7 @@
 						</String-array>
 					</field>
 					<field name="parentClassLoaderID">
-						<String>dk.nota.oxygen.epub.plugin</String>
+						<String>dk.nota.oxygen.plugin</String>
 					</field>
 					<field name="authorExtensionDescriptor">
 						<authorExtension>
