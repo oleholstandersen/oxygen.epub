@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <project name="oxygen.epub" default="compile">
-	<property name="version-number" value="2.2.4" />
+	<property name="version-number" value="2.2.5" />
 	<target name="compile">
 		<echo file="./deploy/plugin.xml"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plugin SYSTEM "../plugin.dtd">
