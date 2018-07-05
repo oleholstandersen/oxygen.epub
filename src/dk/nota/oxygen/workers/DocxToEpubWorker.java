@@ -9,13 +9,12 @@ import dk.nota.epub.conversion.DocxToEpubConverter;
 import dk.nota.oxygen.EditorAccessProvider;
 import dk.nota.oxygen.ResultsListener;
 import dk.nota.xml.DocumentResult;
+import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmNode;
 
 public class DocxToEpubWorker extends AbstractEpubWorkerWithResults {
 	
 	private LinkedList<URL> affectedEditorUrls;
-	private EpubAccess epubAccess;
-	private XdmNode opfDocument;
 	private File[] sourceFiles;
 
 	public DocxToEpubWorker(EpubAccess epubAccess, XdmNode opfDocument,
