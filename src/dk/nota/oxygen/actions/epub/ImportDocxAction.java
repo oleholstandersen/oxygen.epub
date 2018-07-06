@@ -13,7 +13,7 @@ import net.sf.saxon.s9api.XdmNode;
 public class ImportDocxAction extends EpubAction {
 
 	public ImportDocxAction() {
-		super("Docx", false);
+		super("Docx", true);
 	}
 
 	@Override
