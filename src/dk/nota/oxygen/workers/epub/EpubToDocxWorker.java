@@ -1,4 +1,4 @@
-package dk.nota.oxygen.workers;
+package dk.nota.oxygen.workers.epub;
 
 import java.io.File;
 import java.io.IOException;

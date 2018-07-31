@@ -7,7 +7,7 @@ import dk.nota.epub.EpubException;
 import dk.nota.oxygen.EditorAccess;
 import dk.nota.oxygen.ResultsListener;
 import dk.nota.oxygen.ResultsView;
-import dk.nota.oxygen.workers.SplitWorker;
+import dk.nota.oxygen.workers.epub.SplitWorker;
 import net.sf.saxon.s9api.XdmNode;
 
 public class SplitAction extends EpubAction {
@@ -27,8 +27,8 @@ public class SplitAction extends EpubAction {
 			return;
 		}
 		SplitWorker splitWorker = new SplitWorker(epubAccess,
-				opfDocument, new ResultsListener(new ResultsView(
-				epubAccess.getPid() + " - Split")), affectedEditorUrls);
+				opfDocument, new ResultsListener(epubAccess.getPid()
+						+ " - Split"), affectedEditorUrls);
 		splitWorker.execute();
 	}
 

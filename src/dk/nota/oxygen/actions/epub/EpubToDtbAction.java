@@ -8,7 +8,7 @@ import dk.nota.epub.EpubException;
 import dk.nota.oxygen.EditorAccess;
 import dk.nota.oxygen.ResultsListener;
 import dk.nota.oxygen.ResultsView;
-import dk.nota.oxygen.workers.EpubToDtbWorker;
+import dk.nota.oxygen.workers.epub.EpubToDtbWorker;
 import net.sf.saxon.s9api.XdmNode;
 
 public class EpubToDtbAction extends EpubAction {
@@ -35,8 +35,8 @@ public class EpubToDtbAction extends EpubAction {
 				"Export [DTBook]", new String[] {"xml"}, "DTBook files", true);
 		if (dtbFile == null) return;
 		EpubToDtbWorker epubToDtbWorker = new EpubToDtbWorker(epubAccess,
-				opfDocument, new ResultsListener(new ResultsView(epubAccess
-						.getPid() + " - Convert to DTBook")), dtbFile.toURI());
+				opfDocument, new ResultsListener(epubAccess.getPid()
+						+ " - Convert to DTBook"), dtbFile.toURI());
 		epubToDtbWorker.execute();
 	}
 

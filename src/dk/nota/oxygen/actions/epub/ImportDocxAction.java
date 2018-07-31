@@ -7,13 +7,13 @@ import dk.nota.epub.EpubException;
 import dk.nota.oxygen.EditorAccess;
 import dk.nota.oxygen.ResultsListener;
 import dk.nota.oxygen.ResultsView;
-import dk.nota.oxygen.workers.DocxToEpubWorker;
+import dk.nota.oxygen.workers.epub.DocxToEpubWorker;
 import net.sf.saxon.s9api.XdmNode;
 
 public class ImportDocxAction extends EpubAction {
 
 	public ImportDocxAction() {
-		super("Docx", false);
+		super("Docx", true);
 	}
 
 	@Override
@@ -31,8 +31,8 @@ public class ImportDocxAction extends EpubAction {
 			return;
 		}
 		DocxToEpubWorker docxToEpubWorker = new DocxToEpubWorker(
-				epubAccess, opfDocument, new ResultsListener(new ResultsView(
-				epubAccess.getPid() + " - Import Docx")), sourceFiles,
+				epubAccess, opfDocument, new ResultsListener(epubAccess.getPid()
+						+ " - Import Docx"), sourceFiles,
 				affectedEditorUrls);
 		docxToEpubWorker.execute();
 	}
