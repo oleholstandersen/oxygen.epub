@@ -28,14 +28,12 @@ import net.sf.saxon.s9api.XdmValue;
 import net.sf.saxon.s9api.Xslt30Transformer;
 
 /**
- * 
- * <p>EpubAccess is the main entry point for EPUB-related functionality. It is
+ * EpubAccess is the main entry point for EPUB-related functionality. It is
  * instantiated by passing an EPUB file as a {@link java.net.URI}. EpubAccess
  * objects are more or less just collections of URIs referring to the various
  * components. The inner classes {@link dk.nota.epub.EpubAccess.ContentAccess}
  * and {@link dk.nota.epub.EpubAccess.NavigationAccess} allow access to OPF and
- * navigation documents, respectively.</p>
- * 
+ * navigation documents, respectively.
  */
 
 public class EpubAccess {
@@ -203,12 +201,12 @@ public class EpubAccess {
 		}
 		
 		/**
-		 * 
-		 * @param opfDocument
+		 * Get the content documents of the EPUB archive. Content documents are
+		 * obtained from the spine element of the OPF document.
+		 * @param opfDocument The OPF document.
 		 * @return A {@link java.util.LinkedHashMap} containing the document
-		 * URIs as keys and their contents, in the form of
-		 * {@link net.sf.saxon.s9api.XdmNode} instances, as values. The map
-		 * is linked in order to preserve spine order.
+		 * URIs as keys and their contents as values. The map is linked in order
+		 * to preserve spine order.
 		 * @throws EpubException 
 		 */
 		
@@ -243,6 +241,15 @@ public class EpubAccess {
 		public Iterable<URI> getContentDocumentUris() throws EpubException {
 			return getContentDocumentUris(getOpfDocument());
 		}
+		
+		/**
+		 * Get the URIs of all content documents as they appear in the spine
+		 * element of the OPF.
+		 * @param opfDocument The OPF document.
+		 * @return A {@link java.util.Iterable} containing the document
+		 * URIs. The URIs are returned in spine order.
+		 * @throws EpubException 
+		 */
 		
 		public Iterable<URI> getContentDocumentUris(XdmNode opfDocument)
 				throws EpubException {
@@ -281,6 +288,18 @@ public class EpubAccess {
 			return getDublinCoreMetadata(getOpfDocument());
 		}
 		
+		/**
+		 * <p>Get the Dublin Core metadata as they appear in the OPF.</p>
+		 * <p><em>Note</em>: Does not handle duplicate property names, e.g.
+		 * multiple instances of dc:creator elements. Should probably not be
+		 * used.</p> 
+		 * @param opfDocument The OPF document.
+		 * @return A {@link java.util.HashMap} of property-value pairs. The
+		 * name of a property is its local name, meaning the element name
+		 * without the dc: prefix.
+		 * @throws EpubException 
+		 */
+		
 		public HashMap<String,String> getDublinCoreMetadata(
 				XdmNode opfDocument) {
 			HashMap<String,String> metadataMap = new HashMap<String,String>();
@@ -300,6 +319,12 @@ public class EpubAccess {
 			return metadataMap;
 		}
 		
+		/**
+		 * Get the OPF document.
+		 * @return The OPF document.
+		 * @throws EpubException 
+		 */
+		
 		public XdmNode getOpfDocument() throws EpubException {
 			try {
 				return xmlAccess.getDocument(opfUri);
@@ -307,6 +332,21 @@ public class EpubAccess {
 				throw new EpubException("Unable to get OPF document", e);
 			}
 		}
+		
+		/**
+		 * Update the manifest of the OPF document with additions and removals.
+		 * @param additions A {@link java.util.Map} of file additions. The keys
+		 * are supposed to be file references (paths relative to the OPF
+		 * document); values should be MIME types.
+		 * @param removals Files to remove. Manifest entries are removed
+		 * <em>by path</em>, not <em>by id</em>.
+		 * @param idBase The base of IDs generated for added files. The base
+		 * string is suffixed with an underscore and a number, e.g. "image_34".
+		 * @param addToSpine Determines whether <em>all</em> the added
+		 * files should also be referenced from the spine. Should probably be
+		 * used for content documents only.
+		 * @throws EpubException 
+		 */
 		
 		public void updateOpf(Map<String,String> additions,
 				Collection<String> removals, String idBase, boolean addToSpine)
