@@ -31,8 +31,8 @@ public class ImportDocxAction extends EpubAction {
 			return;
 		}
 		DocxToEpubWorker docxToEpubWorker = new DocxToEpubWorker(
-				epubAccess, opfDocument, new ResultsListener(new ResultsView(
-				epubAccess.getPid() + " - Import Docx")), sourceFiles,
+				epubAccess, opfDocument, new ResultsListener(epubAccess.getPid()
+						+ " - Import Docx"), sourceFiles,
 				affectedEditorUrls);
 		docxToEpubWorker.execute();
 	}

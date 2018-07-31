@@ -35,8 +35,8 @@ public class EpubToDtbAction extends EpubAction {
 				"Export [DTBook]", new String[] {"xml"}, "DTBook files", true);
 		if (dtbFile == null) return;
 		EpubToDtbWorker epubToDtbWorker = new EpubToDtbWorker(epubAccess,
-				opfDocument, new ResultsListener(new ResultsView(epubAccess
-						.getPid() + " - Convert to DTBook")), dtbFile.toURI());
+				opfDocument, new ResultsListener(epubAccess.getPid()
+						+ " - Convert to DTBook"), dtbFile.toURI());
 		epubToDtbWorker.execute();
 	}
 

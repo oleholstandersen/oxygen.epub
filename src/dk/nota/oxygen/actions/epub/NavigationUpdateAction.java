@@ -28,8 +28,8 @@ public class NavigationUpdateAction extends EpubAction {
 		}
 		NavigationUpdateWorker navigationUpdateWorker =
 				new NavigationUpdateWorker(epubAccess, opfDocument,
-				new ResultsListener(new ResultsView(epubAccess.getPid() +
-				" - Update navigation")), affectedEditorUrls);
+				new ResultsListener(epubAccess.getPid()
+						+ " - Update navigation"), affectedEditorUrls);
 		navigationUpdateWorker.execute();
 	}
 

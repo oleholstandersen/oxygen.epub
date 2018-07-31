@@ -36,8 +36,8 @@ public class EpubToDocxAction extends EpubAction {
 				true);
 		if (docxFile == null) return;
 		EpubToDocxWorker epubToDocxWorker = new EpubToDocxWorker(epubAccess,
-				opfDocument, new ResultsListener(new ResultsView(epubAccess
-						.getPid() + " - Convert to Docx")), docxFile);
+				opfDocument, new ResultsListener(epubAccess.getPid()
+						+ " - Convert to Docx"), docxFile);
 		epubToDocxWorker.execute();
 	}
 

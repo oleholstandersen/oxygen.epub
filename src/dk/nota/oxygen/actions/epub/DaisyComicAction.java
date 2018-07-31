@@ -31,8 +31,8 @@ public class DaisyComicAction extends EpubAction {
 			return;
 		}
 		DaisyComicWorker daisyComicWorker = new DaisyComicWorker(epubAccess,
-				opfDocument, new ResultsListener(new ResultsView(epubAccess
-				.getPid() + " - Create DAISY comic")), outputDirectory.toURI());
+				opfDocument, new ResultsListener(epubAccess.getPid()
+						+ " - Create DAISY comic"), outputDirectory.toURI());
 		daisyComicWorker.execute();
 	}
 

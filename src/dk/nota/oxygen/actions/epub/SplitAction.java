@@ -27,8 +27,8 @@ public class SplitAction extends EpubAction {
 			return;
 		}
 		SplitWorker splitWorker = new SplitWorker(epubAccess,
-				opfDocument, new ResultsListener(new ResultsView(
-				epubAccess.getPid() + " - Split")), affectedEditorUrls);
+				opfDocument, new ResultsListener(epubAccess.getPid()
+						+ " - Split"), affectedEditorUrls);
 		splitWorker.execute();
 	}
 

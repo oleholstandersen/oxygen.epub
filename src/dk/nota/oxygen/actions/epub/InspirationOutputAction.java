@@ -58,8 +58,8 @@ public class InspirationOutputAction extends EpubAction {
 		}
 		InspirationOutputWorker inspirationOutputWorker =
 				new InspirationOutputWorker(epubAccess, opfDocument,
-						new ResultsListener(new ResultsView(epubAccess.getPid()
-						+ " - Create " + inspirationOutput.getName())),
+						new ResultsListener(epubAccess.getPid() + " - Create "
+								+ inspirationOutput.getName()),
 						inspirationOutput, outputUri);
 		inspirationOutputWorker.execute();
 	}

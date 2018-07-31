@@ -27,8 +27,8 @@ public class ConcatAction extends EpubAction {
 			return;
 		}
 		ConcatWorker concatWorker = new ConcatWorker(epubAccess,
-				opfDocument, new ResultsListener(new ResultsView(epubAccess
-				.getPid() + " - Concat")), affectedEditorUrls);
+				opfDocument, new ResultsListener(epubAccess.getPid()
+						+ " - Concat"), affectedEditorUrls);
 		concatWorker.execute();
 	}
 
