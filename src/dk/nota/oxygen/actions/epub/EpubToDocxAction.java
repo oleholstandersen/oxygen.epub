@@ -8,7 +8,7 @@ import dk.nota.epub.EpubException;
 import dk.nota.oxygen.EditorAccess;
 import dk.nota.oxygen.ResultsListener;
 import dk.nota.oxygen.ResultsView;
-import dk.nota.oxygen.workers.EpubToDocxWorker;
+import dk.nota.oxygen.workers.epub.EpubToDocxWorker;
 import net.sf.saxon.s9api.XdmNode;
 
 public class EpubToDocxAction extends EpubAction {

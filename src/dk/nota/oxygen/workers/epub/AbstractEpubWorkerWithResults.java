@@ -1,4 +1,4 @@
-package dk.nota.oxygen.workers;
+package dk.nota.oxygen.workers.epub;
 
 import java.io.IOException;
 import java.net.URI;
@@ -12,6 +12,7 @@ import java.util.LinkedList;
 import dk.nota.archive.ArchiveAccess;
 import dk.nota.epub.EpubAccess;
 import dk.nota.oxygen.ResultsListener;
+import dk.nota.oxygen.workers.AbstractWorkerWithResults;
 import dk.nota.xml.DocumentResult;
 import net.sf.saxon.s9api.XdmNode;
 

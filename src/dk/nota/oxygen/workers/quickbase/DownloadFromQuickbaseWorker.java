@@ -1,4 +1,4 @@
-package dk.nota.oxygen.workers;
+package dk.nota.oxygen.workers.quickbase;
 
 import java.io.File;
 import java.io.IOException;

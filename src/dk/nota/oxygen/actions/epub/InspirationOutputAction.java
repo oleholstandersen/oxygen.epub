@@ -12,7 +12,7 @@ import dk.nota.epub.EpubException;
 import dk.nota.oxygen.EditorAccess;
 import dk.nota.oxygen.ResultsListener;
 import dk.nota.oxygen.ResultsView;
-import dk.nota.oxygen.workers.InspirationOutputWorker;
+import dk.nota.oxygen.workers.epub.InspirationOutputWorker;
 import net.sf.saxon.s9api.XdmNode;
 
 public class InspirationOutputAction extends EpubAction {

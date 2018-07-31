@@ -5,7 +5,7 @@ import java.io.File;
 
 import javax.swing.AbstractAction;
 
-import dk.nota.oxygen.workers.DownloadFromQuickbaseWorker;
+import dk.nota.oxygen.workers.quickbase.DownloadFromQuickbaseWorker;
 import dk.nota.quickbase.QuickbaseDownloadDialog;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 
