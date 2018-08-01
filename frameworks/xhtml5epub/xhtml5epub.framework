@@ -3673,6 +3673,114 @@ ancestor-or-self::node()[self::*:tbody | self::*:tfoot | self::*:thead | self::*
 											<Boolean>false</Boolean>
 										</field>
 									</action>
+									<action>
+										<field name="id">
+											<String>figure.description.next</String>
+										</field>
+										<field name="name">
+											<String>Go to next undescribed image</String>
+										</field>
+										<field name="description">
+											<String>Moves the caret to the next figure element that does not contain a description</String>
+										</field>
+										<field name="largeIconPath">
+											<String></String>
+										</field>
+										<field name="smallIconPath">
+											<String></String>
+										</field>
+										<field name="accessKey">
+											<String></String>
+										</field>
+										<field name="accelerator">
+											<String>ctrl shift N</String>
+										</field>
+										<field name="actionModes">
+											<actionMode-array>
+												<actionMode>
+													<field name="xpathCondition">
+														<String></String>
+													</field>
+													<field name="argValues">
+														<serializableOrderedMap>
+															<entry>
+																<String>position</String>
+																<String>Inside, at the end</String>
+															</entry>
+															<entry>
+																<String>selection</String>
+																<String>None</String>
+															</entry>
+															<entry>
+																<String>xpathLocation</String>
+																<String>following::figure[not(figure)][not(aside)]</String>
+															</entry>
+														</serializableOrderedMap>
+													</field>
+													<field name="operationID">
+														<String>ro.sync.ecss.extensions.commons.operations.MoveCaretOperation</String>
+													</field>
+												</actionMode>
+											</actionMode-array>
+										</field>
+										<field name="enabledInReadOnlyContext">
+											<Boolean>false</Boolean>
+										</field>
+									</action>
+									<action>
+										<field name="id">
+											<String>figure.description.previous</String>
+										</field>
+										<field name="name">
+											<String>Go to previous undescribed image</String>
+										</field>
+										<field name="description">
+											<String>Moves the caret to the previous figure element that does not contain a description</String>
+										</field>
+										<field name="largeIconPath">
+											<String></String>
+										</field>
+										<field name="smallIconPath">
+											<String></String>
+										</field>
+										<field name="accessKey">
+											<String></String>
+										</field>
+										<field name="accelerator">
+											<String>ctrl shift P</String>
+										</field>
+										<field name="actionModes">
+											<actionMode-array>
+												<actionMode>
+													<field name="xpathCondition">
+														<String></String>
+													</field>
+													<field name="argValues">
+														<serializableOrderedMap>
+															<entry>
+																<String>position</String>
+																<String>Inside, at the beginning</String>
+															</entry>
+															<entry>
+																<String>selection</String>
+																<String>None</String>
+															</entry>
+															<entry>
+																<String>xpathLocation</String>
+																<String>preceding::figure[not(figure)][not(aside)]</String>
+															</entry>
+														</serializableOrderedMap>
+													</field>
+													<field name="operationID">
+														<String>ro.sync.ecss.extensions.commons.operations.MoveCaretOperation</String>
+													</field>
+												</actionMode>
+											</actionMode-array>
+										</field>
+										<field name="enabledInReadOnlyContext">
+											<Boolean>false</Boolean>
+										</field>
+									</action>
 								</action-array>
 							</field>
 							<field name="menubarDescriptor">
@@ -3908,6 +4016,23 @@ ancestor-or-self::node()[self::*:tbody | self::*:tfoot | self::*:thead | self::*
 														<menuItem>
 															<field name="actionID">
 																<String>figure.description.insert</String>
+															</field>
+														</menuItem>
+														<menuSeparator/>
+														<menuItem>
+															<field name="actionID">
+																<String>figure.description.next</String>
+															</field>
+														</menuItem>
+														<menuItem>
+															<field name="actionID">
+																<String>figure.description.previous</String>
+															</field>
+														</menuItem>
+														<menuSeparator/>
+														<menuItem>
+															<field name="actionID">
+																<String>imagemaps.import</String>
 															</field>
 														</menuItem>
 													</menuEntry-array>
@@ -4274,6 +4399,23 @@ ancestor-or-self::node()[self::*:tbody | self::*:tfoot | self::*:thead | self::*
 																<String>figure.description.insert</String>
 															</field>
 														</menuItem>
+														<menuSeparator/>
+														<menuItem>
+															<field name="actionID">
+																<String>figure.description.next</String>
+															</field>
+														</menuItem>
+														<menuItem>
+															<field name="actionID">
+																<String>figure.description.previous</String>
+															</field>
+														</menuItem>
+														<menuSeparator/>
+														<menuItem>
+															<field name="actionID">
+																<String>imagemaps.import</String>
+															</field>
+														</menuItem>
 													</menuEntry-array>
 												</field>
 												<field name="context">
@@ -4635,6 +4777,17 @@ ancestor-or-self::node()[self::*:tbody | self::*:tfoot | self::*:thead | self::*
 														<toolbarItem>
 															<field name="actionID">
 																<String>figure.description.insert</String>
+															</field>
+														</toolbarItem>
+														<toolbarSeparator/>
+														<toolbarItem>
+															<field name="actionID">
+																<String>figure.description.next</String>
+															</field>
+														</toolbarItem>
+														<toolbarItem>
+															<field name="actionID">
+																<String>figure.description.previous</String>
 															</field>
 														</toolbarItem>
 														<toolbarSeparator/>
