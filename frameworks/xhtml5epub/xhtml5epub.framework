@@ -2878,7 +2878,7 @@ ancestor-or-self::node()[self::*:tbody | self::*:tfoot | self::*:thead | self::*
 											<String></String>
 										</field>
 										<field name="accelerator">
-											<null/>
+											<String>ctrl shift I</String>
 										</field>
 										<field name="actionModes">
 											<actionMode-array>
