@@ -14,6 +14,15 @@ import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmSequenceIterator;
 import ro.sync.document.DocumentPositionedInfo;
 
+/**
+ * A listener that owns a ResultsView and prints messages to it. It implements
+ * {dk.nota.xml.TransformationListener}, allowing it to receive messages and
+ * exceptions from XSLT transformations, and
+ * {@link java.beans.PropertyChangeListener}, allowing it to receive events
+ * from SwingWorkers. Property changes are printed to the view if their names
+ * match "dk.nota.oxygen.results.update".
+ */
+
 public class ResultsListener implements PropertyChangeListener,
 		TransformationListener {
 	
@@ -45,6 +54,18 @@ public class ResultsListener implements PropertyChangeListener,
 	public ResultsView getResultsView() {
 		return resultsView;
 	}
+	
+	/**
+	 * Receive messages sent by xsl:message. The text to be printed must be
+	 * wrapped in a nota:out element. If a system ID is to be associated with
+	 * the result, it can be included in the message in a nota:systemid
+	 * element.
+	 * @param message The message as a document node.
+	 * @param terminate Whether or not the message terminated the
+	 * transformation.
+	 * @param sourceLocator An object describing the location of the message
+	 * within the XSLT source from which it is called. 
+	 */
 
 	@Override
 	public final void message(XdmNode message, boolean terminate,
