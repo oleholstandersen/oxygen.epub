@@ -51,6 +51,7 @@ public class WorkspaceSetupListener extends WSEditorChangeListener {
 		hideAllPluginToolbars();
 		if (editor == null || editor.getDocumentTypeInformation() == null)
 			return;
+		boolean epubEnabled = false;
 		switch (editor.getDocumentTypeInformation().getName()) {
 		case "XHTML [EPUB 3]":
 			if (!setupEpubAccess(editorUrl)) return;
@@ -59,17 +60,21 @@ public class WorkspaceSetupListener extends WSEditorChangeListener {
 						.NAV_TOOLBAR);
 			else pluginWorkspace.showToolbar(NotaPluginExtension
 					.XHTML_TOOLBAR);
+			epubEnabled = true;
 			break;
 		case "OPF":
 			if (!setupEpubAccess(editorUrl)) return;
 			if (newEditor) editor.addEditorListener(
 					new PidUpdateListener());
 			pluginWorkspace.showToolbar(NotaPluginExtension.OPF_TOOLBAR);
+			epubEnabled = true;
 			break;
 		case "NCX":
 			if (!setupEpubAccess(editorUrl)) return;
 			pluginWorkspace.showToolbar(NotaPluginExtension.NAV_TOOLBAR);
+			epubEnabled = true;
 		}
+		if (!epubEnabled) return;
 		try {
 			NotaPluginExtension.getQuickbaseMenu().updateForEpub(
 					EpubAccessProvider.getEpubAccess(EditorAccess
