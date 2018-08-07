@@ -9,6 +9,11 @@ import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.editor.WSEditor;
 import ro.sync.exml.workspace.api.standalone.StandalonePluginWorkspace;
 
+/**
+ * A class that wraps various editor-related functions, mainly from the  
+ * {@link ro.sync.exml.workspace.api.PluginWorkspace} class.
+ */
+
 public class EditorAccess {
 	
 	private PluginWorkspace pluginWorkspace = PluginWorkspaceProvider

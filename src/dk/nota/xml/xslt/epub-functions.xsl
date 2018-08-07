@@ -59,6 +59,6 @@
         expand-text="yes">
         <xsl:param name="typeString" as="xs:string"/>{
         (tokenize($typeString, '\s+')[. = ('cover', 'frontmatter',
-        'bodymatter', 'backmatter')], '')[1]
+        'bodymatter', 'backmatter')][1], 'unknown')[1]
     }</xsl:function>
 </xsl:stylesheet>

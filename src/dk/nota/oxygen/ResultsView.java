@@ -5,6 +5,16 @@ import ro.sync.exml.workspace.api.PluginWorkspace;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.results.ResultsManager;
 
+/**
+ * <p>A view showing <em>results</em> (of transformations, searches, validation
+ * and similar) in a tabular format. Results may or may not include additional
+ * information regarding document position, allowing the user to go directly
+ * to a document position.</p>
+ * <p>Each instance of this class is a distinct results panel identified by its
+ * title. The actual administration of the views is handled by
+ * {@link ro.sync.exml.workspace.api.results.ResultsManager}.</p>
+ */
+
 public class ResultsView {
 	
 	private ResultsManager resultsManager;
@@ -20,7 +30,7 @@ public class ResultsView {
 	
 	public void writeResult(DocumentPositionedInfo documentInfo) {
 		resultsManager.addResult(title, documentInfo, ResultsManager.ResultType
-				.GENERIC, true, true);
+				.PROBLEM, true, true);
 	}
 	
 	public void writeResult(String string) {

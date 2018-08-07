@@ -17,7 +17,7 @@
 								<Integer>4</Integer>
 							</field>
 							<field name="uri">
-								<String>${framework}/schema/nordic-html5.rng</String>
+								<String>${framework}/schema/nordic-xhtml5.rng</String>
 							</field>
 						</docTypeSchema>
 					</field>
@@ -26,10 +26,11 @@
 							<String>${framework}/resources/</String>
 							<String>${framework}/i18n/</String>
 							<String>${framework}/xhtml.jar</String>
+							<String>${framework}/epub.jar</String>
 						</String-array>
 					</field>
 					<field name="parentClassLoaderID">
-						<String>dk.nota.oxygen.epub.plugin</String>
+						<String>dk.nota.oxygen.plugin</String>
 					</field>
 					<field name="authorExtensionDescriptor">
 						<authorExtension>
@@ -1379,7 +1380,7 @@ ancestor-or-self::*:tbody) [namespace-uri()='http://www.w3.org/1999/xhtml']</Str
 														</serializableOrderedMap>
 													</field>
 													<field name="operationID">
-														<String>dk.nota.oxygen.epub.xhtml.HeadingOperation</String>
+														<String>dk.nota.oxygen.operations.html.HeadingOperation</String>
 													</field>
 												</actionMode>
 											</actionMode-array>
@@ -1425,7 +1426,7 @@ ancestor-or-self::*:tbody) [namespace-uri()='http://www.w3.org/1999/xhtml']</Str
 														</serializableOrderedMap>
 													</field>
 													<field name="operationID">
-														<String>dk.nota.oxygen.epub.xhtml.HeadingOperation</String>
+														<String>dk.nota.oxygen.operations.html.HeadingOperation</String>
 													</field>
 												</actionMode>
 											</actionMode-array>
@@ -1471,7 +1472,7 @@ ancestor-or-self::*:tbody) [namespace-uri()='http://www.w3.org/1999/xhtml']</Str
 														</serializableOrderedMap>
 													</field>
 													<field name="operationID">
-														<String>dk.nota.oxygen.epub.xhtml.HeadingOperation</String>
+														<String>dk.nota.oxygen.operations.html.HeadingOperation</String>
 													</field>
 												</actionMode>
 											</actionMode-array>
@@ -1517,7 +1518,7 @@ ancestor-or-self::*:tbody) [namespace-uri()='http://www.w3.org/1999/xhtml']</Str
 														</serializableOrderedMap>
 													</field>
 													<field name="operationID">
-														<String>dk.nota.oxygen.epub.xhtml.HeadingOperation</String>
+														<String>dk.nota.oxygen.operations.html.HeadingOperation</String>
 													</field>
 												</actionMode>
 											</actionMode-array>
@@ -1563,7 +1564,7 @@ ancestor-or-self::*:tbody) [namespace-uri()='http://www.w3.org/1999/xhtml']</Str
 														</serializableOrderedMap>
 													</field>
 													<field name="operationID">
-														<String>dk.nota.oxygen.epub.xhtml.HeadingOperation</String>
+														<String>dk.nota.oxygen.operations.html.HeadingOperation</String>
 													</field>
 												</actionMode>
 											</actionMode-array>
@@ -1609,7 +1610,7 @@ ancestor-or-self::*:tbody) [namespace-uri()='http://www.w3.org/1999/xhtml']</Str
 														</serializableOrderedMap>
 													</field>
 													<field name="operationID">
-														<String>dk.nota.oxygen.epub.xhtml.HeadingOperation</String>
+														<String>dk.nota.oxygen.operations.html.HeadingOperation</String>
 													</field>
 												</actionMode>
 											</actionMode-array>
@@ -2343,7 +2344,7 @@ ancestor-or-self::node()[self::*:tbody | self::*:tfoot | self::*:thead | self::*
 														</serializableOrderedMap>
 													</field>
 													<field name="operationID">
-														<String>dk.nota.oxygen.epub.xhtml.ListOperation</String>
+														<String>dk.nota.oxygen.operations.html.ListOperation</String>
 													</field>
 												</actionMode>
 											</actionMode-array>
@@ -2393,7 +2394,7 @@ ancestor-or-self::node()[self::*:tbody | self::*:tfoot | self::*:thead | self::*
 														</serializableOrderedMap>
 													</field>
 													<field name="operationID">
-														<String>dk.nota.oxygen.epub.xhtml.ListOperation</String>
+														<String>dk.nota.oxygen.operations.html.ListOperation</String>
 													</field>
 												</actionMode>
 											</actionMode-array>
@@ -2443,7 +2444,7 @@ ancestor-or-self::node()[self::*:tbody | self::*:tfoot | self::*:thead | self::*
 														</serializableOrderedMap>
 													</field>
 													<field name="operationID">
-														<String>dk.nota.oxygen.epub.xhtml.ListOperation</String>
+														<String>dk.nota.oxygen.operations.html.ListOperation</String>
 													</field>
 												</actionMode>
 											</actionMode-array>
@@ -2493,7 +2494,7 @@ ancestor-or-self::node()[self::*:tbody | self::*:tfoot | self::*:thead | self::*
 														</serializableOrderedMap>
 													</field>
 													<field name="operationID">
-														<String>dk.nota.oxygen.epub.xhtml.TableOperation</String>
+														<String>dk.nota.oxygen.operations.html.TableOperation</String>
 													</field>
 												</actionMode>
 												<actionMode>
@@ -2509,7 +2510,7 @@ ancestor-or-self::node()[self::*:tbody | self::*:tfoot | self::*:thead | self::*
 														</serializableOrderedMap>
 													</field>
 													<field name="operationID">
-														<String>dk.nota.oxygen.epub.xhtml.TableOperation</String>
+														<String>dk.nota.oxygen.operations.html.TableOperation</String>
 													</field>
 												</actionMode>
 											</actionMode-array>
@@ -2555,7 +2556,7 @@ ancestor-or-self::node()[self::*:tbody | self::*:tfoot | self::*:thead | self::*
 														</serializableOrderedMap>
 													</field>
 													<field name="operationID">
-														<String>dk.nota.oxygen.epub.xhtml.HeadingOperation</String>
+														<String>dk.nota.oxygen.operations.html.HeadingOperation</String>
 													</field>
 												</actionMode>
 											</actionMode-array>
@@ -2596,7 +2597,7 @@ ancestor-or-self::node()[self::*:tbody | self::*:tfoot | self::*:thead | self::*
 														<serializableOrderedMap/>
 													</field>
 													<field name="operationID">
-														<String>dk.nota.oxygen.epub.xhtml.HierarchyOperation</String>
+														<String>dk.nota.oxygen.operations.html.HierarchyOperation</String>
 													</field>
 												</actionMode>
 											</actionMode-array>
@@ -2877,7 +2878,7 @@ ancestor-or-self::node()[self::*:tbody | self::*:tfoot | self::*:thead | self::*
 											<String></String>
 										</field>
 										<field name="accelerator">
-											<null/>
+											<String>ctrl shift I</String>
 										</field>
 										<field name="actionModes">
 											<actionMode-array>
@@ -2947,7 +2948,7 @@ ancestor-or-self::node()[self::*:tbody | self::*:tfoot | self::*:thead | self::*
 														<serializableOrderedMap/>
 													</field>
 													<field name="operationID">
-														<String>dk.nota.oxygen.epub.xhtml.InsertImagesOperation</String>
+														<String>dk.nota.oxygen.operations.html.InsertImagesOperation</String>
 													</field>
 												</actionMode>
 											</actionMode-array>
@@ -2988,7 +2989,7 @@ ancestor-or-self::node()[self::*:tbody | self::*:tfoot | self::*:thead | self::*
 														<serializableOrderedMap/>
 													</field>
 													<field name="operationID">
-														<String>dk.nota.oxygen.epub.xhtml.BridgeheadOperation</String>
+														<String>dk.nota.oxygen.operations.html.BridgeheadOperation</String>
 													</field>
 												</actionMode>
 											</actionMode-array>
@@ -3084,7 +3085,7 @@ ancestor-or-self::node()[self::*:tbody | self::*:tfoot | self::*:thead | self::*
 														</serializableOrderedMap>
 													</field>
 													<field name="operationID">
-														<String>dk.nota.oxygen.epub.xhtml.ListOperation</String>
+														<String>dk.nota.oxygen.operations.html.ListOperation</String>
 													</field>
 												</actionMode>
 											</actionMode-array>
@@ -3134,7 +3135,7 @@ ancestor-or-self::node()[self::*:tbody | self::*:tfoot | self::*:thead | self::*
 														</serializableOrderedMap>
 													</field>
 													<field name="operationID">
-														<String>dk.nota.oxygen.epub.xhtml.ListOperation</String>
+														<String>dk.nota.oxygen.operations.html.ListOperation</String>
 													</field>
 												</actionMode>
 											</actionMode-array>
@@ -3175,7 +3176,7 @@ ancestor-or-self::node()[self::*:tbody | self::*:tfoot | self::*:thead | self::*
 														<serializableOrderedMap/>
 													</field>
 													<field name="operationID">
-														<String>dk.nota.oxygen.epub.xhtml.AnchorOperation</String>
+														<String>dk.nota.oxygen.operations.html.AnchorOperation</String>
 													</field>
 												</actionMode>
 											</actionMode-array>
@@ -3225,7 +3226,7 @@ ancestor-or-self::node()[self::*:tbody | self::*:tfoot | self::*:thead | self::*
 														</serializableOrderedMap>
 													</field>
 													<field name="operationID">
-														<String>dk.nota.oxygen.epub.xhtml.HeadingOperation</String>
+														<String>dk.nota.oxygen.operations.html.HeadingOperation</String>
 													</field>
 												</actionMode>
 											</actionMode-array>
@@ -3275,7 +3276,7 @@ ancestor-or-self::node()[self::*:tbody | self::*:tfoot | self::*:thead | self::*
 														</serializableOrderedMap>
 													</field>
 													<field name="operationID">
-														<String>dk.nota.oxygen.epub.xhtml.HeadingOperation</String>
+														<String>dk.nota.oxygen.operations.html.HeadingOperation</String>
 													</field>
 												</actionMode>
 											</actionMode-array>
@@ -3325,7 +3326,7 @@ ancestor-or-self::node()[self::*:tbody | self::*:tfoot | self::*:thead | self::*
 														</serializableOrderedMap>
 													</field>
 													<field name="operationID">
-														<String>dk.nota.oxygen.epub.xhtml.HeadingOperation</String>
+														<String>dk.nota.oxygen.operations.html.HeadingOperation</String>
 													</field>
 												</actionMode>
 											</actionMode-array>
@@ -3375,7 +3376,7 @@ ancestor-or-self::node()[self::*:tbody | self::*:tfoot | self::*:thead | self::*
 														</serializableOrderedMap>
 													</field>
 													<field name="operationID">
-														<String>dk.nota.oxygen.epub.xhtml.HeadingOperation</String>
+														<String>dk.nota.oxygen.operations.html.HeadingOperation</String>
 													</field>
 												</actionMode>
 											</actionMode-array>
@@ -3425,7 +3426,7 @@ ancestor-or-self::node()[self::*:tbody | self::*:tfoot | self::*:thead | self::*
 														</serializableOrderedMap>
 													</field>
 													<field name="operationID">
-														<String>dk.nota.oxygen.epub.xhtml.HeadingOperation</String>
+														<String>dk.nota.oxygen.operations.html.HeadingOperation</String>
 													</field>
 												</actionMode>
 											</actionMode-array>
@@ -3475,7 +3476,7 @@ ancestor-or-self::node()[self::*:tbody | self::*:tfoot | self::*:thead | self::*
 														</serializableOrderedMap>
 													</field>
 													<field name="operationID">
-														<String>dk.nota.oxygen.epub.xhtml.HeadingOperation</String>
+														<String>dk.nota.oxygen.operations.html.HeadingOperation</String>
 													</field>
 												</actionMode>
 											</actionMode-array>
@@ -3525,7 +3526,7 @@ ancestor-or-self::node()[self::*:tbody | self::*:tfoot | self::*:thead | self::*
 														</serializableOrderedMap>
 													</field>
 													<field name="operationID">
-														<String>dk.nota.oxygen.epub.xhtml.HeadingOperation</String>
+														<String>dk.nota.oxygen.operations.html.HeadingOperation</String>
 													</field>
 												</actionMode>
 											</actionMode-array>
@@ -3571,7 +3572,7 @@ ancestor-or-self::node()[self::*:tbody | self::*:tfoot | self::*:thead | self::*
 														</serializableOrderedMap>
 													</field>
 													<field name="operationID">
-														<String>dk.nota.oxygen.epub.xhtml.ImportImageMapsOperation</String>
+														<String>dk.nota.oxygen.operations.html.ImportImageMapsOperation</String>
 													</field>
 												</actionMode>
 											</actionMode-array>
@@ -3617,7 +3618,7 @@ ancestor-or-self::node()[self::*:tbody | self::*:tfoot | self::*:thead | self::*
 														</serializableOrderedMap>
 													</field>
 													<field name="operationID">
-														<String>dk.nota.oxygen.epub.xhtml.ConvertTableCellsOperation</String>
+														<String>dk.nota.oxygen.operations.html.ConvertTableCellsOperation</String>
 													</field>
 												</actionMode>
 											</actionMode-array>
@@ -3663,7 +3664,115 @@ ancestor-or-self::node()[self::*:tbody | self::*:tfoot | self::*:thead | self::*
 														</serializableOrderedMap>
 													</field>
 													<field name="operationID">
-														<String>dk.nota.oxygen.epub.xhtml.ConvertTableCellsOperation</String>
+														<String>dk.nota.oxygen.operations.html.ConvertTableCellsOperation</String>
+													</field>
+												</actionMode>
+											</actionMode-array>
+										</field>
+										<field name="enabledInReadOnlyContext">
+											<Boolean>false</Boolean>
+										</field>
+									</action>
+									<action>
+										<field name="id">
+											<String>figure.description.next</String>
+										</field>
+										<field name="name">
+											<String>Go to next undescribed image</String>
+										</field>
+										<field name="description">
+											<String>Moves the caret to the next figure element that does not contain a description</String>
+										</field>
+										<field name="largeIconPath">
+											<String></String>
+										</field>
+										<field name="smallIconPath">
+											<String></String>
+										</field>
+										<field name="accessKey">
+											<String></String>
+										</field>
+										<field name="accelerator">
+											<String>ctrl shift N</String>
+										</field>
+										<field name="actionModes">
+											<actionMode-array>
+												<actionMode>
+													<field name="xpathCondition">
+														<String></String>
+													</field>
+													<field name="argValues">
+														<serializableOrderedMap>
+															<entry>
+																<String>position</String>
+																<String>Inside, at the end</String>
+															</entry>
+															<entry>
+																<String>selection</String>
+																<String>None</String>
+															</entry>
+															<entry>
+																<String>xpathLocation</String>
+																<String>following::figure[not(figure)][not(aside)]</String>
+															</entry>
+														</serializableOrderedMap>
+													</field>
+													<field name="operationID">
+														<String>ro.sync.ecss.extensions.commons.operations.MoveCaretOperation</String>
+													</field>
+												</actionMode>
+											</actionMode-array>
+										</field>
+										<field name="enabledInReadOnlyContext">
+											<Boolean>false</Boolean>
+										</field>
+									</action>
+									<action>
+										<field name="id">
+											<String>figure.description.previous</String>
+										</field>
+										<field name="name">
+											<String>Go to previous undescribed image</String>
+										</field>
+										<field name="description">
+											<String>Moves the caret to the previous figure element that does not contain a description</String>
+										</field>
+										<field name="largeIconPath">
+											<String></String>
+										</field>
+										<field name="smallIconPath">
+											<String></String>
+										</field>
+										<field name="accessKey">
+											<String></String>
+										</field>
+										<field name="accelerator">
+											<String>ctrl shift P</String>
+										</field>
+										<field name="actionModes">
+											<actionMode-array>
+												<actionMode>
+													<field name="xpathCondition">
+														<String></String>
+													</field>
+													<field name="argValues">
+														<serializableOrderedMap>
+															<entry>
+																<String>position</String>
+																<String>Inside, at the beginning</String>
+															</entry>
+															<entry>
+																<String>selection</String>
+																<String>None</String>
+															</entry>
+															<entry>
+																<String>xpathLocation</String>
+																<String>preceding::figure[not(figure)][not(aside)]</String>
+															</entry>
+														</serializableOrderedMap>
+													</field>
+													<field name="operationID">
+														<String>ro.sync.ecss.extensions.commons.operations.MoveCaretOperation</String>
 													</field>
 												</actionMode>
 											</actionMode-array>
@@ -3907,6 +4016,23 @@ ancestor-or-self::node()[self::*:tbody | self::*:tfoot | self::*:thead | self::*
 														<menuItem>
 															<field name="actionID">
 																<String>figure.description.insert</String>
+															</field>
+														</menuItem>
+														<menuSeparator/>
+														<menuItem>
+															<field name="actionID">
+																<String>figure.description.next</String>
+															</field>
+														</menuItem>
+														<menuItem>
+															<field name="actionID">
+																<String>figure.description.previous</String>
+															</field>
+														</menuItem>
+														<menuSeparator/>
+														<menuItem>
+															<field name="actionID">
+																<String>imagemaps.import</String>
 															</field>
 														</menuItem>
 													</menuEntry-array>
@@ -4271,6 +4397,23 @@ ancestor-or-self::node()[self::*:tbody | self::*:tfoot | self::*:thead | self::*
 														<menuItem>
 															<field name="actionID">
 																<String>figure.description.insert</String>
+															</field>
+														</menuItem>
+														<menuSeparator/>
+														<menuItem>
+															<field name="actionID">
+																<String>figure.description.next</String>
+															</field>
+														</menuItem>
+														<menuItem>
+															<field name="actionID">
+																<String>figure.description.previous</String>
+															</field>
+														</menuItem>
+														<menuSeparator/>
+														<menuItem>
+															<field name="actionID">
+																<String>imagemaps.import</String>
 															</field>
 														</menuItem>
 													</menuEntry-array>
@@ -4639,6 +4782,17 @@ ancestor-or-self::node()[self::*:tbody | self::*:tfoot | self::*:thead | self::*
 														<toolbarSeparator/>
 														<toolbarItem>
 															<field name="actionID">
+																<String>figure.description.next</String>
+															</field>
+														</toolbarItem>
+														<toolbarItem>
+															<field name="actionID">
+																<String>figure.description.previous</String>
+															</field>
+														</toolbarItem>
+														<toolbarSeparator/>
+														<toolbarItem>
+															<field name="actionID">
 																<String>imagemaps.import</String>
 															</field>
 														</toolbarItem>
@@ -4816,7 +4970,7 @@ ancestor-or-self::node()[self::*:tbody | self::*:tfoot | self::*:thead | self::*
 								<null/>
 							</field>
 							<field name="authorExtensionStateListener">
-								<String>dk.nota.oxygen.epub.xhtml.XhtmlExtensionStateListener</String>
+								<String>dk.nota.oxygen.listeners.html.XhtmlExtensionStateListener</String>
 							</field>
 							<field name="attributesRecognizer">
 								<null/>
@@ -4851,7 +5005,7 @@ ancestor-or-self::node()[self::*:tbody | self::*:tfoot | self::*:thead | self::*
 						<documentTypeRule-array>
 							<documentTypeRule>
 								<field name="namespace">
-									<String>*</String>
+									<String>http://www.w3.org/1999/xhtml</String>
 								</field>
 								<field name="rootElem">
 									<String>html</String>
@@ -4863,33 +5017,7 @@ ancestor-or-self::node()[self::*:tbody | self::*:tfoot | self::*:thead | self::*
 									<String>*</String>
 								</field>
 								<field name="javaRuleClass">
-									<null/>
-								</field>
-								<field name="attributeLocalName">
-									<String>*</String>
-								</field>
-								<field name="attributeNamespace">
-									<String>*</String>
-								</field>
-								<field name="attributeValue">
-									<String>*</String>
-								</field>
-							</documentTypeRule>
-							<documentTypeRule>
-								<field name="namespace">
-									<String>http://www.w3.org/1999/xhtml</String>
-								</field>
-								<field name="rootElem">
-									<String>*</String>
-								</field>
-								<field name="fileName">
-									<String>*</String>
-								</field>
-								<field name="publicID">
-									<String>*</String>
-								</field>
-								<field name="javaRuleClass">
-									<String></String>
+									<String>dk.nota.oxygen.frameworks.ArchiveDocumentTypeMatcher</String>
 								</field>
 								<field name="attributeLocalName">
 									<String>*</String>

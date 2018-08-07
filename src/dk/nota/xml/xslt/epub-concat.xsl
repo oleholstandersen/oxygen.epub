@@ -23,8 +23,8 @@
     <xsl:param name="ADDITION_TYPES" as="xs:string*"
         select="'application/xhtml+xml'"/>
     <xsl:param name="CONTENT_DOCUMENTS" as="document-node(element(html:html))*"
-        select="$OPF_DOCUMENT/opf:package/opf:manifest/opf:item[@id =
-                $OPF_DOCUMENT/opf:package/opf:spine/opf:itemref/@idref]/
+        select="for $id in $OPF_DOCUMENT/opf:package/opf:spine/opf:itemref/@idref
+                return $OPF_DOCUMENT/opf:package/opf:manifest/opf:item[@id eq $id]/
                 doc('zip:' || resolve-uri(@href, $OPF_URI_NO_ZIP))"/>
     <xsl:param name="ID_BASE" as="xs:string" select="'concat'"/>
     <xsl:param name="REMOVAL_REFS" as="xs:string*">

@@ -15,6 +15,7 @@ import javax.swing.JFrame;
 import javax.swing.JProgressBar;
 import javax.swing.SwingWorker;
 
+import dk.nota.oxygen.workers.quickbase.DownloadFromQuickbaseWorker;
 import ro.sync.exml.workspace.api.PluginWorkspaceProvider;
 import ro.sync.exml.workspace.api.standalone.ui.Button;
 

@@ -11,6 +11,10 @@ public class QuickbaseAccessProvider {
 				.getPluginWorkspace());
 	}
 	
+	private QuickbaseAccessProvider() {
+		
+	}
+	
 	public static QuickbaseAccess getQuickbaseAccess() {
 		return quickbaseAccess;
 	}
