@@ -53,6 +53,9 @@ public class WorkspaceSetupListener extends WSEditorChangeListener {
 			return;
 		boolean epubEnabled = false;
 		switch (editor.getDocumentTypeInformation().getName()) {
+		case "dtbook110":
+			pluginWorkspace.showToolbar(NotaPluginExtension.DTB_TOOLBAR);
+			return;
 		case "XHTML [EPUB 3]":
 			if (!setupEpubAccess(editorUrl)) return;
 			if (editorUrl.toString().endsWith("/nav\\.xhtml"))
