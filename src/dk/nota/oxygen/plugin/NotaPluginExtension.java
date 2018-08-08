@@ -3,8 +3,8 @@ package dk.nota.oxygen.plugin;
 import javax.swing.JComponent;
 import javax.swing.JMenuBar;
 
-import dk.nota.dtb.actions.UploadToDcsAction;
 import dk.nota.dtb.conversion.InspirationOutput;
+import dk.nota.oxygen.actions.dtb.UploadToDcsAction;
 import dk.nota.oxygen.actions.epub.ConcatAction;
 import dk.nota.oxygen.actions.epub.DaisyComicAction;
 import dk.nota.oxygen.actions.epub.EpubToDocxAction;

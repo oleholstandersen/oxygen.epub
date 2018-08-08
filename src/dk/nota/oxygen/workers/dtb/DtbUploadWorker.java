@@ -1,7 +1,8 @@
-package dk.nota.dcs;
+package dk.nota.oxygen.workers.dtb;
 
 import java.net.URI;
 import dk.nota.oxygen.workers.AbstractWorkerWithResults;
+import dk.nota.dcs.DtbUploader;
 import dk.nota.oxygen.EditorAccessProvider;
 import dk.nota.oxygen.ResultsListener;
 

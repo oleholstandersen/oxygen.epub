@@ -1,4 +1,4 @@
-package dk.nota.dcs;
+package dk.nota.oxygen.options;
 
 import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
@@ -12,7 +12,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 
-import dk.nota.oxygen.options.OptionsProvider;
+import dk.nota.dcs.DtbUploader;
 import ro.sync.exml.plugin.option.OptionPagePluginExtension;
 import ro.sync.exml.workspace.api.PluginWorkspace;
 

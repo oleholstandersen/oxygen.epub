@@ -1,14 +1,14 @@
-package dk.nota.dtb.actions;
+package dk.nota.oxygen.actions.dtb;
 
 import java.awt.event.ActionEvent;
 import java.net.URI;
 
 import javax.swing.AbstractAction;
 
-import dk.nota.dcs.DtbUploadWorker;
 import dk.nota.oxygen.EditorAccessProvider;
 import dk.nota.oxygen.ResultsListener;
 import dk.nota.oxygen.ResultsView;
+import dk.nota.oxygen.workers.dtb.DtbUploadWorker;
 
 public class UploadToDcsAction extends AbstractAction {
 	

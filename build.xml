@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <project name="oxygen.epub" default="compile">
-	<property name="version-number" value="2.2.6" />
+	<property name="version-number" value="2.6" />
 	<target name="compile">
 		<echo file="./deploy/plugin.xml"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plugin SYSTEM "../plugin.dtd">
@@ -16,7 +16,7 @@
     <extension type="WorkspaceAccess" 
         class="dk.nota.oxygen.plugin.NotaPluginExtension"/>
 	<extension type="OptionPage"
-		class="dk.nota.dcs.DcsOptionPagePluginExtension"/>
+		class="dk.nota.oxygen.options.DcsOptionPagePluginExtension"/>
 	<extension type="OptionPage"
 		class="dk.nota.oxygen.options.QuickbaseOptionPagePluginExtension"/>
 	<toolbar id="dk.nota.oxygen.epub.toolbar.dtb" initialSide="NORTH" initialRow="2"/>
