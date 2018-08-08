@@ -73,7 +73,7 @@ public class DtbUploader {
 		json.put("TitleNo",  pid);
 		json.put("MaterialFormatCode", "DTB");
 		json.put("MaterialTypeCode", "ETXT");
-		json.put("MetadataFromDBBDokSys", false);
+		json.put("MetadataFromDBBDokSys", true);
 		json.put("OriginCode", "DDS");
 		json.put("SourcePath", "\\\\dbb.dk\\networkdrive" + uploadPath
 				.toString().substring(2));
