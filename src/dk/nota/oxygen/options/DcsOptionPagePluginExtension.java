@@ -62,13 +62,13 @@ public class DcsOptionPagePluginExtension extends OptionPagePluginExtension {
 		pagePanel.add(optionPanel, BorderLayout.NORTH);
 		// Populate fields
 		serverUrlField.setText(OptionsProvider.getOptionValue(OptionsProvider
-				.DCS_SERVER_OPTION, DtbUploader.DCS_SERVER_DEFAULT));
+				.DCS_SERVER_OPTION, ""));
 		return pagePanel;
 	}
 
 	@Override
 	public void restoreDefaults() {
-		serverUrlField.setText(DtbUploader.DCS_SERVER_DEFAULT);
+		serverUrlField.setText("");
 	}
 
 }

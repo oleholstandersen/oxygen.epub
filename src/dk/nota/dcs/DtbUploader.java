@@ -22,9 +22,6 @@ import net.sf.saxon.s9api.XdmNode;
 
 public class DtbUploader {
 	
-	public static final String DCS_SERVER_DEFAULT =
-			"http://http-dcsarchive.beta.dbb.dk";
-	
 	private String basePath = "\\\\dbb.dk\\networkdrive";
 	private long dcsId;
 	private Path documentPath;
