@@ -31,9 +31,9 @@ public class DtbUploader {
 	private String server = OptionsProvider.getOptionValue(OptionsProvider
 			.DCS_SERVER_OPTION);
 	
-	public DtbUploader(URI documentUri) throws SaxonApiException {
+	public DtbUploader(URI documentUri, String pid) {
 		documentPath = Paths.get(documentUri);
-		pid = getPidFromDocument(documentUri);
+		this.pid = pid.replaceFirst("^(dk-nota-|DK-NOTA-)", "");
 		uploadPath = documentPath.getParent();
 	}
 	
@@ -91,18 +91,6 @@ public class DtbUploader {
 		HttpPost post = new HttpPost(server + endpoint);
 		post.addHeader("Content-Type", "application/json");
 		return post;
-	}
-	
-	private String getPidFromDocument(URI documentUri)
-			throws SaxonApiException {
-		String pid;
-		XmlAccess xmlAccess = XmlAccessProvider.getXmlAccess();
-		XdmNode document = xmlAccess.getDocument(documentUri);
-		pid = xmlAccess.getFirstNodeByXpath(
-				"//meta[@name = ('dc:identifier','dc:Identifier')]", document)
-				.getAttributeValue(new QName("content"))
-				.replaceFirst("^(dk-nota-|DK-NOTA-)", "");
-		return pid;
 	}
 	
 	public void setDcsId() throws IOException, JSONException {

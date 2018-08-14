@@ -33,6 +33,7 @@ public abstract class AbstractWorkerWithResults<T,E> extends SwingWorker<T,E> {
 					e instanceof ExecutionException ? e.getCause() : e,
 					DocumentPositionedInfo.SEVERITY_FATAL);
 			e.printStackTrace();
+			return;
 		}
 	}
 	

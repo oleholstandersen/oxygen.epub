@@ -9,16 +9,19 @@ import dk.nota.oxygen.ResultsListener;
 public class DtbUploadWorker extends AbstractWorkerWithResults<Object,Object>{
 	
 	private URI documentUri;
+	private String pid;
 
-	public DtbUploadWorker(ResultsListener resultsListener, URI documentUri) {
+	public DtbUploadWorker(ResultsListener resultsListener, URI documentUri,
+			String pid) {
 		super("DTBOOK UPLOAD", resultsListener);
 		this.documentUri = documentUri;
+		this.pid = pid;
 	}
 
 	@Override
 	protected Object doInBackground() throws Exception {
 		fireResultsUpdate("DTBOOK UPLOAD STARTING");
-		DtbUploader dtbUploader = new DtbUploader(documentUri);
+		DtbUploader dtbUploader = new DtbUploader(documentUri, pid);
 		fireResultsUpdate("CHECKING DIRECTORY...");
 		dtbUploader.checkDirectory();
 		dtbUploader.setDcsId();
@@ -26,7 +29,8 @@ public class DtbUploadWorker extends AbstractWorkerWithResults<Object,Object>{
 		if (dtbUploader.getDcsId() != 0) {
 			overwrite = EditorAccessProvider.getEditorAccess()
 					.getPluginWorkspace().showConfirmDialog("DTBook upload", 
-							"This title already exists in the archive: "
+							pid.replaceFirst("^(dk-nota-|DK-NOTA-)", "")
+							+ " already exists in the archive: "
 							+ "do you wish to overwrite the existing file(s)?",
 							new String[] { "Overwrite", "Cancel" },
 							new int[] { 1, 0 }, 1);
