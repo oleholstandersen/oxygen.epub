@@ -86,6 +86,7 @@ public class WorkspaceSetupListener extends WSEditorChangeListener {
 	}
 	
 	private void hideAllPluginToolbars() {
+		pluginWorkspace.hideToolbar(NotaPluginExtension.DTB_TOOLBAR);
 		pluginWorkspace.hideToolbar(NotaPluginExtension.NAV_TOOLBAR);
 		pluginWorkspace.hideToolbar(NotaPluginExtension.OPF_TOOLBAR);
 		pluginWorkspace.hideToolbar(NotaPluginExtension.XHTML_TOOLBAR);
