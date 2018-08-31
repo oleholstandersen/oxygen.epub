@@ -349,7 +349,10 @@
     <!-- ASIDE -->
     <xsl:template match="html:aside">
         <sidebar>
-            <xsl:call-template name="ATTRIBUTES.GENERIC.WITH_CLASS"/>
+            <xsl:call-template name="ATTRIBUTES.GENERIC.WITH_CLASS">
+                <xsl:with-param name="classesToDiscard" as="xs:string"
+                    select="'sidebar'"/>
+            </xsl:call-template>
             <xsl:apply-templates mode="GROUP_INLINE_CONTENT"/>
         </sidebar>
     </xsl:template>
