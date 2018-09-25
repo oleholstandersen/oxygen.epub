@@ -3713,7 +3713,7 @@ ancestor-or-self::node()[self::*:tbody | self::*:tfoot | self::*:thead | self::*
 															</entry>
 															<entry>
 																<String>xpathLocation</String>
-																<String>following::figure[not(figure)][not(aside)]</String>
+																<String>following::figure[not(figure)][not(aside)][1]</String>
 															</entry>
 														</serializableOrderedMap>
 													</field>
@@ -3767,7 +3767,7 @@ ancestor-or-self::node()[self::*:tbody | self::*:tfoot | self::*:thead | self::*
 															</entry>
 															<entry>
 																<String>xpathLocation</String>
-																<String>preceding::figure[not(figure)][not(aside)]</String>
+																<String>preceding::figure[not(figure)][not(aside)][1]</String>
 															</entry>
 														</serializableOrderedMap>
 													</field>
