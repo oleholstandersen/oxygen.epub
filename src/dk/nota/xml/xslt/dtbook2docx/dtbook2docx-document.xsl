@@ -890,6 +890,16 @@
             </xsl:with-param>
         </xsl:call-template>
     </xsl:template>
+    <!-- SPAN.underlined -->
+    <xsl:template mode="INLINE" match="span[nota:has-class(., 'underlined')]">
+        <xsl:param name="runProperties" as="node()*" tunnel="yes"/>
+        <xsl:apply-templates mode="INLINE">
+            <xsl:with-param name="runProperties" tunnel="yes">
+                <xsl:copy-of select="$runProperties"/>
+                <w:u w:val="single"/>
+            </xsl:with-param>
+        </xsl:apply-templates>
+    </xsl:template>
     <!-- STRONG -->
     <xsl:template mode="INLINE" match="strong">
         <xsl:param name="runProperties" as="node()*" tunnel="yes"/>
