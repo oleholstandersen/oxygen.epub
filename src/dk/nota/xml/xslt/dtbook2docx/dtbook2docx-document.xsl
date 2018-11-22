@@ -399,6 +399,16 @@
             </xsl:call-template>
         </xsl:if>
     </xsl:template>
+    <!-- LINE -->
+    <xsl:template mode="DOCUMENT" match="line">
+        <xsl:param name="paragraphStyle" as="xs:string*" tunnel="yes"/>
+        <xsl:param name="properties" as="node()*" tunnel="yes"/>
+        <xsl:call-template name="PARAGRAPH">
+            <xsl:with-param name="content" select="node()"/>
+            <xsl:with-param name="paragraphStyle" select="$paragraphStyle"/>
+            <xsl:with-param name="properties" select="$properties"/>
+        </xsl:call-template>
+    </xsl:template>
     <!-- NOTE: Only table notes are preserved in main document -->
     <!-- TODO: Linking -->
     <xsl:template mode="DOCUMENT" match="note[nota:is-table-note(.)]">
