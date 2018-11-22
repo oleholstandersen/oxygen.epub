@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <project name="oxygen.epub" default="compile">
-	<property name="version-number" value="2.3.1" />
+	<property name="version-number" value="2.4.0" />
 	<target name="compile">
 		<echo file="./deploy/plugin.xml"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plugin SYSTEM "../plugin.dtd">
@@ -31,9 +31,9 @@
 					value="${version-number}"/>
 			</manifest>
 		</jar>
-		<copy todir="C:/Program Files/Oxygen XML Editor 19/plugins/epub"
+		<copy todir="C:/Program Files/Oxygen XML Editor 20/plugins/epub"
 			file="./deploy/epub.jar"/>
-		<copy todir="C:/Program Files/Oxygen XML Editor 19/plugins/epub"
+		<copy todir="C:/Program Files/Oxygen XML Editor 20/plugins/epub"
 			file="./deploy/plugin.xml"/>
 	</target>
 	<target name="dist" depends="compile">
@@ -57,7 +57,7 @@
     <xt:extension id="dk.nota.oxygen.epub.plugin">
         <xt:location href="${version-number}/plugin-${version-number}.zip"/>
         <xt:version>${version-number}</xt:version>
-        <xt:oxy_version>19.0+</xt:oxy_version>
+        <xt:oxy_version>20.0+</xt:oxy_version>
         <xt:type>plugin</xt:type>
         <xt:author>Nota</xt:author>
         <xt:name>EPUB Plugin</xt:name>
@@ -67,7 +67,7 @@
     <xt:extension id="dk.nota.oxygen.epub.ncx">
         <xt:location href="${version-number}/ncx-${version-number}.zip"/>
         <xt:version>${version-number}</xt:version>
-        <xt:oxy_version>19.0+</xt:oxy_version>
+        <xt:oxy_version>20.0+</xt:oxy_version>
         <xt:type>framework</xt:type>
         <xt:author>Nota</xt:author>
         <xt:name>NCX framework</xt:name>
@@ -77,7 +77,7 @@
         <xt:extension id="dk.nota.oxygen.epub.opf3">
         <xt:location href="${version-number}/opf-${version-number}.zip"/>
         <xt:version>${version-number}</xt:version>
-        <xt:oxy_version>19.0+</xt:oxy_version>
+        <xt:oxy_version>20.0+</xt:oxy_version>
         <xt:type>framework</xt:type>
         <xt:author>Nota</xt:author>
         <xt:name>OPF framework</xt:name>
@@ -87,7 +87,7 @@
     <xt:extension id="dk.nota.oxygen.epub.xhtml5epub">
         <xt:location href="${version-number}/xhtml5epub-${version-number}.zip"/>
         <xt:version>${version-number}</xt:version>
-        <xt:oxy_version>19.0+</xt:oxy_version>
+        <xt:oxy_version>20.0+</xt:oxy_version>
         <xt:type>framework</xt:type>
         <xt:author>Nota</xt:author>
         <xt:name>XHTML 5 [EPUB 3] framework</xt:name>
@@ -96,7 +96,47 @@
     </xt:extension>
 	<!-- LEGACY SUPPORT -->
 	<xt:extension id="dk.nota.oxygen.epub.plugin">
-    <xt:location href="1.2.2/plugin-1.2.2.zip"/>
+        <xt:location href="2.3.0/plugin-2.3.0.zip"/>
+        <xt:version>2.3.0</xt:version>
+        <xt:oxy_version>19.0+</xt:oxy_version>
+        <xt:type>plugin</xt:type>
+        <xt:author>Nota</xt:author>
+        <xt:name>EPUB Plugin</xt:name>
+        <xt:description xmlns="http://www.w3.org/1999/xhtml">A workspace plugin adding EPUB-relationed functionality in Text and Author mode</xt:description>
+        <xt:license>Copyrighted by Nota and distributed under GNU LGPL Version 3</xt:license>
+    </xt:extension>
+    <xt:extension id="dk.nota.oxygen.epub.ncx">
+        <xt:location href="2.3.0/ncx-2.3.0.zip"/>
+        <xt:version>2.3.0</xt:version>
+        <xt:oxy_version>19.0+</xt:oxy_version>
+        <xt:type>framework</xt:type>
+        <xt:author>Nota</xt:author>
+        <xt:name>NCX framework</xt:name>
+        <xt:description xmlns="http://www.w3.org/1999/xhtml">Framework for NCX</xt:description>
+        <xt:license>Copyrighted by Nota and distributed under GNU LGPL Version 3</xt:license>
+    </xt:extension>
+        <xt:extension id="dk.nota.oxygen.epub.opf3">
+        <xt:location href="2.3.0/opf-2.3.0.zip"/>
+        <xt:version>2.3.0</xt:version>
+        <xt:oxy_version>19.0+</xt:oxy_version>
+        <xt:type>framework</xt:type>
+        <xt:author>Nota</xt:author>
+        <xt:name>OPF framework</xt:name>
+        <xt:description xmlns="http://www.w3.org/1999/xhtml">Framework for OPF</xt:description>
+        <xt:license>Copyrighted by Nota and distributed under GNU LGPL Version 3</xt:license>
+    </xt:extension>
+    <xt:extension id="dk.nota.oxygen.epub.xhtml5epub">
+        <xt:location href="2.3.0/xhtml5epub-2.3.0.zip"/>
+        <xt:version>2.3.0</xt:version>
+        <xt:oxy_version>19.0+</xt:oxy_version>
+        <xt:type>framework</xt:type>
+        <xt:author>Nota</xt:author>
+        <xt:name>XHTML 5 [EPUB 3] framework</xt:name>
+        <xt:description xmlns="http://www.w3.org/1999/xhtml">Framework for EPUB-flavoured XHTML</xt:description>
+        <xt:license>Copyrighted by Nota and distributed under GNU LGPL Version 3</xt:license>
+	</xt:extension>
+	<xt:extension id="dk.nota.oxygen.epub.plugin">
+    	<xt:location href="1.2.2/plugin-1.2.2.zip"/>
         <xt:version>1.2.2</xt:version>
         <xt:oxy_version>16.0+</xt:oxy_version>
         <xt:type>plugin</xt:type>
