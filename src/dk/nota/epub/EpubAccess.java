@@ -377,9 +377,9 @@ public class EpubAccess {
 				throw new EpubException(
 						"Unable to set parameters for OPF updater", e);
 			}
-			opfUpdater.setGlobalContextItem(getOpfDocument());
 			DocumentResult documentResult;
 			try {
+				opfUpdater.setGlobalContextItem(getOpfDocument());
 				documentResult = new DocumentResult(opfUpdater.callTemplate(
 						new QName("OPF")));
 			} catch (SaxonApiException e) {
