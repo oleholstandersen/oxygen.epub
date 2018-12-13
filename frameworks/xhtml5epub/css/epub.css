@@ -55,7 +55,19 @@ div.linegroup {
     padding: .25em;
 }
 
+figure::before {
+    content: "figure ";
+    font-weight: bold;
+}
+
+figure::after {
+    content: oxy_xpath("string-join(img/@src, ' ')");
+    font-weight: normal;
+}
+
 figure {
+    -oxy-foldable: true;
+    -oxy-folded: true;
     border: 3px solid #FBB;
     padding: .5em;
 }
